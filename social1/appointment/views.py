@@ -1,6 +1,7 @@
+from cgi import test
 from multiprocessing import context
 from django.shortcuts import render
-from .forms import KorisnikForm
+from .forms import KorisnikForm, TestForm
 from django.http import HttpResponse
 from datetime import datetime
 
@@ -15,9 +16,19 @@ def home(request):
 
 def zakazi(request):
     sada = datetime.now()
+    form = TestForm()
+
+    if request.method == 'POST':
+        data = TestForm(request.POST)
+        if data.is_valid():
+            data.save()
+            value = data.cleaned_data
+            print(value)
+
     context = {
         'godina': sada.year,
         'mesec': format(sada.month, "02d"),
-        'dan': sada.day,
+        'dan': format(sada.day, "02d"),
+        'form': form,
     }
-    return render(request, 'appointment/zakazivanje.html', context)
+    return render(request, 'appointment/jqr.html', context)
