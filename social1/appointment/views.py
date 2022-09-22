@@ -17,7 +17,7 @@ def home(request):
 def zakazi(request):
     sada = datetime.now()
     form = TestForm()
-
+    interval = 30
     if request.method == 'POST':
         data = TestForm(request.POST)
         if data.is_valid():
@@ -30,5 +30,6 @@ def zakazi(request):
         'mesec': format(sada.month, "02d"),
         'dan': format(sada.day, "02d"),
         'form': form,
+        'interval': interval,
     }
     return render(request, 'appointment/jqr.html', context)

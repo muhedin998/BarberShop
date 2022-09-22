@@ -63,18 +63,18 @@ body, html {
 <!-- Sidebar on small screens when clicking the menu icon -->
 <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
   <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
-  <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button">ABOUT</a>
+  <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button">ZAKAZI</a>
   <a href="#team" onclick="w3_close()" class="w3-bar-item w3-button">TEAM</a>
-  <a href="#work" onclick="w3_close()" class="w3-bar-item w3-button">WORK</a>
-  <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button">PRICING</a>
-  <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button">CONTACT</a>
+  <a href="#work" onclick="w3_close()" class="w3-bar-item w3-button">KATALOG</a>
+  <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button">CENE</a>
+  <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button">KONTAKT</a>
 </nav>
 
 <!-- Header with full-height image -->
 <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
   <div class="w3-display-left w3-text-white" style="padding:48px">
     <span class="w3-jumbo w3-hide-small">Online zakazivanje termina</span><br>
-    <span class="w3-xxlarge w3-hide-large w3-hide-medium">Start something that matters</span><br>
+    <span class="w3-xxlarge w3-hide-large w3-hide-medium">Online zakazivanje termina</span><br>
     <span class="w3-large">Od sada brzo i jednostavno zakazite termin online</span>
     <p><a href="#about" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-opacity w3-hover-opacity-off">Zakazite termin</a></p>
   </div> 
@@ -90,7 +90,7 @@ body, html {
 
 <!-- About Section -->
 <div class="w3-container" style="padding:128px 16px" id="about">
-  <h3 class="w3-center">ABOUT THE COMPANY</h3>
+  <h3 class="w3-center">ZAKAZIVANJE TERMINA</h3><br>
   
   
   
@@ -99,11 +99,11 @@ body, html {
     <form action="" method="post">
         {% csrf_token %}
 
-        <input required style=" padding: 20 5; width: 39rem; margin-bottom: 4px;" class="form-control" placeholder="Ime i Prezime" type="text" name="name" >
-        <input required style=" padding: 20 5; width: 39rem; margin-bottom: 4px;" class="form-control" placeholder="Broj telefona" type="text" name="broj_telefona" >
-        <input required style=" padding: 20 5; width: 39rem; margin-bottom: 4px;" class="form-control" placeholder="Datum vaseg termina" type="date" name="datum" >
-        <input required style=" padding: 20 5; width: 39rem; margin-bottom: 4px;" class="form-control" placeholder="Vreme vaseg termina" type="time" name="vreme">
-        <input required style=" padding: 20 5; width: 39rem; margin-bottom: 4px;" class="btn btn-success"  type="submit" value="Zakazi">
+        <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Ime i Prezime" type="text" name="name" >
+        <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Broj telefona" type="text" name="broj_telefona" >
+        <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Datum vaseg termina" type="date" name="datum" >
+        <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Vreme vaseg termina" type="text" id="myTime" name="vreme">
+        <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="btn btn-success"  type="submit" value="Zakazi">
     </form>
   </div>
     </div>
@@ -427,6 +427,22 @@ function w3_close() {
 
 
   }
+  const conf_time = {
+      altInput: true,
+      altFormat: "H:i",
+      dateFormat: "H:i",
+      noCalendar: true,
+      enableTime: true,
+      time_24hr: true,
+      minuteIncrement: 20,
+      minTime:"10:00",
+      maxTime:"20:00",
+
+
+  }
+
+  flatpickr("#myTime",conf_time)
+
   flatpickr("#myID", config);
 
 </script>
