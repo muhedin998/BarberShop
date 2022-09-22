@@ -20,3 +20,11 @@ class Termin(models.Model):
 
 class Test():
     trajanje = models.DurationField()
+
+class Usluge(models.Model):
+    name = models.CharField(max_length=250)
+    cena = models.CharField(max_length=15)
+    duzina = models.DurationField()
+
+    def __str__(self):
+        return self.name
