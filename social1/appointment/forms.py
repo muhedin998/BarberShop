@@ -1,3 +1,5 @@
+from tkinter import Widget
+from tkinter.tix import Select
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import Korisnik, Termin
@@ -20,4 +22,11 @@ class TimeInp(forms.TimeInput):
 class TestForm(forms.ModelForm):
     class Meta:
         model = Termin
-        fields = ['datum','vreme','name', 'broj_telefona']
+        fields = ['usluga','frizer','datum','vreme','name', 'broj_telefona']
+
+    def __init__(self, *args, **kwargs):
+        super(TestForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            if visible.name == 'frizer' or visible.name == 'usluga':
+                #print(visible.name)
+                visible.field.widget.attrs['class'] = 'w3-select'

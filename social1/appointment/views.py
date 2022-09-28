@@ -1,9 +1,11 @@
 from cgi import test
 from multiprocessing import context
+from unicodedata import name
 from django.shortcuts import render
 from .forms import KorisnikForm, TestForm
 from django.http import HttpResponse
 from datetime import datetime
+from .models import Usluge, Frizer
 
 def home(request):
     form = KorisnikForm()
@@ -16,20 +18,31 @@ def home(request):
 
 def zakazi(request):
     sada = datetime.now()
+    usluge = Usluge.objects.all()
+    frizeri = Frizer.objects.all()
     form = TestForm()
     interval = 30
     if request.method == 'POST':
+        for frizer in frizeri:
+            if frizer.name == request.POST["frizer"]:
+                print(frizer)
+        print(f'{request.POST["frizer"]} & {request.POST["usluga"]}')
         data = TestForm(request.POST)
         if data.is_valid():
             data.save()
-            value = data.cleaned_data
-            print(value)
+            print("Form was VALID AND PASSED")
+            #print(data)
+        else:
+            print(f"From WAS NOT VALID ! -")
+            #print(data)
 
     context = {
         'godina': sada.year,
         'mesec': format(sada.month, "02d"),
         'dan': format(sada.day, "02d"),
-        'form': form,
         'interval': interval,
+        'usluge': usluge,
+        'frizeri': frizeri,
+        'form': form,
     }
     return render(request, 'appointment/jqr.html', context)
