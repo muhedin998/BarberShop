@@ -97,12 +97,44 @@ body, html {
     <div class="mb-3 row justify-content-md-center ">
     <div class="col-md-auto shadow-lg p-3 mb-5 bg-body rounded">
     <form action="" method="post">
-        {% csrf_token %}
 
+
+        {% csrf_token %}
+        {% comment %} <select class="w3-select" required name="usluga">
+          <option value="" disabled selected>Izaberite uslugu</option>
+          {% for usluga in usluge %}
+              <option style=" padding: 20 5; width: 37rem; margin-bottom: 4px;">{{usluga}}</option>
+          {% endfor %}
+        </select>
+        <select class="w3-select" required name="frizer">
+          <option value="" disabled selected>Izaberite Frizera</option>
+          {% for frizer in frizeri %}
+            <option >{{ frizer }}</option>
+          {% endfor %}
+        </select><br> {% endcomment %}
+        <select class='w3-select' name="usluga" required id="id_usluga">
+          <option selected>Izaberite uslugu</option>
+          {% with value=form.usluga.value %}
+          {% for value in form.usluga.field.choices.queryset %}
+          <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
+          {% endfor %}
+          {% endwith %}
+      </select>
+
+      <select class='w3-select' name="frizer" required id="id_frizer">
+        <option selected>Izaberite frizera</option>
+        {% with value=form.frizer.value %}
+        {% for value in form.frizer.field.choices.queryset %}
+        <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
+        {% endfor %}
+        {% endwith %}
+    </select>
+    
         <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Ime i Prezime" type="text" name="name" >
         <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Broj telefona" type="text" name="broj_telefona" >
+
         <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Datum vaseg termina" type="date" name="datum" >
-        <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Vreme vaseg termina" type="text" id="myTime" name="vreme">
+        <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="form-control" placeholder="Vreme vaseg termina" type="time" step="1800" min="10:00" max="20:00" name="vreme">
         <input required style=" padding: 20 5; width: 37rem; margin-bottom: 4px;" class="btn btn-success"  type="submit" value="Zakazi">
     </form>
   </div>
@@ -444,6 +476,9 @@ function w3_close() {
   flatpickr("#myTime",conf_time)
 
   flatpickr("#myID", config);
+
+  
+  document.getElementsByName("datum")[0].setAttribute('min', "{{godina}}-{{mesec}}-{{dan}}");
 
 </script>
 
