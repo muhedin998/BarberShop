@@ -1,0 +1,60 @@
+[
+{
+  "model": "appointment.usluge",
+  "pk": 4,
+  "fields": {
+    "name": "Šišanje",
+    "cena": "600 RSD",
+    "duzina": "00:00:00"
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 5,
+  "fields": {
+    "name": "Šišanje sa strane",
+    "cena": "500 RSD",
+    "duzina": "00:00:00"
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 6,
+  "fields": {
+    "name": "Šišanje djece ( 3 - 12 god )",
+    "cena": "400-500 RSD",
+    "duzina": "00:00:00"
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 7,
+  "fields": {
+    "name": "Šišanje penzionera",
+    "cena": "450 RSD",
+    "duzina": "00:00:00"
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 8,
+  "fields": {
+    "name": "Brijanje glave",
+    "cena": "450 RSD",
+    "duzina": "00:00:00"
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 9,
+  "fields": {
+    "name": "Model šišanje",
+    "cena": "700-800 RSD",
+    "duzina": "00:00:00"
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 10,
+  "fields": {
+    "name": 
