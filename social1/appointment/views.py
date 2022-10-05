@@ -18,9 +18,14 @@ def home(request):
 
 def zakazi(request):
     sada = datetime.now()
+
     usluge = Usluge.objects.all()
+    ls1=usluge[:round(len(usluge)/3)]
+    ls2= usluge[round(len(usluge)/3):round(len(usluge)/3+len(usluge)/3)]
+    ls3= usluge[round(len(usluge)/3+len(usluge)/3):]
+
     frizeri = Frizer.objects.all()
-    form = TestForm()
+    form = TestForm()  
     interval = 30
     if request.method == 'POST':
         for frizer in frizeri:
@@ -44,5 +49,8 @@ def zakazi(request):
         'usluge': usluge,
         'frizeri': frizeri,
         'form': form,
+        'ls1':ls1,
+        'ls2':ls2,
+        "ls3":ls3,
     }
     return render(request, 'appointment/jqr.html', context)
