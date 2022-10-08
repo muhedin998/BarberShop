@@ -7,15 +7,6 @@ from django.http import HttpResponse
 from datetime import datetime
 from .models import Usluge, Frizer
 
-def home(request):
-    form = KorisnikForm()
-    if request.method =='POST':
-        form = KorisnikForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponse("Korisnik je registrovan !")
-    return render(request, 'appointment/index.html' , {'form':form})
-
 def zakazi(request):
     sada = datetime.now()
 
