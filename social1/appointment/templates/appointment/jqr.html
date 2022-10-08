@@ -19,76 +19,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 
-body, html {
-  height: 100%;
-  line-height: 1.8;
-}
-
-/* Full height image header */
-
-.bgimg-1, .bgimg-2, .bgimg-3 {
-  position: relative;
-
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-
-}
-.bgimg-1 {
-  background-image: url("/static/images/pozadina1.jpg");
-  min-height: 100%;
-}
-
-.bgimg-2 {
-  background-image: url("/static/images/pozadina2.jpg");
-  min-height: 500px;
-}
-
-.bgimg-3 {
-  background-image: url("/static/images/pozadina1.jpg");
-  min-height: 500px;
-}
-
-.w3-bar .w3-button {
-  padding: 16px;
-}
-
-ul.leaders {
-    max-width: 50em;
-    padding: 0;
-    overflow-x: hidden;
-    list-style: none}
-ul.leaders li{
-    margin:10px 4px;
-}
-ul.leaders li span{
-  font-family: Copperplate;
-  font-weight: bold;
-  font-size: 15px;
-}
-ul.leaders li:before {
-    float: left;
-    width: 0;
-    white-space: nowrap;
-    content:
- ". . . . . . . . . . . . . . . . . . . . "
- ". . . . . . . . . . . . . . . . . . . . "
- ". . . . . . . . . . . . . . . . . . . . "
- ". . . . . . . . . . . . . . . . . . . . "
- ". . . . . . . . . . . . . . . . . . . . "}
-ul.leaders span:first-child {
-    padding-right: 0.33em;
-    background: white}
-ul.leaders span + span {
-    float: right;
-    padding-left: 0.33em;
-    background: white; 
-  }
-</style>
 </head>
 <body>
 
@@ -126,19 +57,21 @@ ul.leaders span + span {
 <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
   <div class="w3-display-left w3-text-white" style="padding:48px">
     <span class="w3-jumbo w3-hide-small w3-white w3-padding-large w3-large w3-margin-top w3-opacity">Online zakazivanje termina</span><br>
-    <span class="w3-xxlarge w3-hide-large ">Online zakazivanje termina</span><br>
-    <span class="w3-white w3-hide-large w3-padding-large w3-large w3-margin-top w3-opacity">Od sada brzo i jednostavno zakažite termin online</span>
+    <span class="w3-xxlarge e w3-hide-large w3-hide-medium">Online zakazivanje termina</span>
+    <br>
+    <br>
+    <span class="w3-hide-large w3-padding-large w3-large w3-margin-top ">Od sada brzo i jednostavno zakažite termin online</span>
     
     <span class="w3-white w3-hide-medium w3-hide-small w3-padding-large w3-large w3-margin-top w3-opacity">Od sada brzo i jednostavno zakažite termin online</span>
-    <p><a href="#about" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-opacity w3-hover-opacity-off">zakažite termin</a></p>
+    <p><a href="#about" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-opacity w3-hover-opacity-off">ZAKAŽITE TERMIN</a></p>
   </div> 
   <div class="w3-display-bottomleft w3-text-grey w3-large" style="padding:24px 48px">
-    <i class="fa fa-facebook-official w3-hover-opacity"></i>
-    <i class="fa fa-instagram w3-hover-opacity"></i>
-    <i class="fa fa-snapchat w3-hover-opacity"></i>
-    <i class="fa fa-pinterest-p w3-hover-opacity"></i>
-    <i class="fa fa-twitter w3-hover-opacity"></i>
-    <i class="fa fa-linkedin w3-hover-opacity"></i>
+    <i class="fa fa-facebook-official w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"  style="font-size: 2.73em; padding-right: 20px;"></i>
+    <i class="fa fa-instagram w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i>
+    <i class="fa fa-snapchat w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i>
+    <i class="fa fa-pinterest-p w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i>
+    <i class="fa fa-twitter w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i>
+    <i class="fa fa-linkedin w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i>
   </div>
 </header>
 
@@ -167,7 +100,7 @@ ul.leaders span + span {
           {% endfor %}
         </select><br> {% endcomment %}
         <select class='w3-select' name="usluga" required id="id_usluga">
-          <option selected>Izaberite uslugu</option>
+          <option selected disabled>Izaberite uslugu</option>
           {% with value=form.usluga.value %}
           {% for value in form.usluga.field.choices.queryset %}
           <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
@@ -176,7 +109,7 @@ ul.leaders span + span {
       </select>
 
       <select class='w3-select' name="frizer" required id="id_frizer">
-        <option selected>Izaberite frizera</option>
+        <option selected disabled>Izaberite frizera</option>
         {% with value=form.frizer.value %}
         {% for value in form.frizer.field.choices.queryset %}
         <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
@@ -194,28 +127,45 @@ ul.leaders span + span {
   </div>
     </div>
 <br><br><br>
-  <p class="w3-center w3-large">Key features of our company</p>
-  <div class="w3-row-padding w3-center" style="margin-top:64px">
-    <div class="w3-quarter">
+  <p class="w3-center w3-large">Glavne karakteristike našeg salona</p>
+  <div class="w3-row-padding w3-center" style="margin-top:164px">
+    {% comment %} <div class="w3-quarter">
       <i class="fa fa-desktop w3-margin-bottom w3-jumbo w3-center"></i>
       <p class="w3-large">Responsive</p>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
-    </div>
-    <div class="w3-quarter">
+    </div> {% endcomment %}
+    <div class="w3-half">
       <i class="fa fa-heart w3-margin-bottom w3-jumbo"></i>
-      <p class="w3-large">Passion</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
+      <p class="w3-large">Posvećenost</p>
+      <br>
+      <p>
+        Frizerski salon Hasko je više-decenijski salon.
+        Postojimo više od dvadeset godina tako smo izgradili više-decenijskim 
+        iskustvom  i radom most između starih barbera i današnjih modernih frizera.
+        Dođite i posetite nas da vidite kako mi to radimo i uvjerićete se
+        da je kod nas prijatna atmosfera i druženje, i naravno najbolja frizura i brada.
+      </p>
+      <br>    
     </div>
-    <div class="w3-quarter">
+    <div class="w3-half">
       <i class="fa fa-diamond w3-margin-bottom w3-jumbo"></i>
-      <p class="w3-large">Design</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
+      <p class="w3-large">Salon</p>
+      <br>
+      <p>
+        U srcu Sandžaka, grada Novog Pazara, blizu magistralnog puta, u poznatoj i velikoj ulici 
+        Generala Živkovića 183, nalazi se velika i poznata barbernica. Kod nas je uvjek dobro druženje,
+        opuštanje uz priču sa frizerima i drugim  mušterijama. Kod nas ima zakazivanje i bez zakazivanja.
+        Radnim danima zakazujemo termine, a vikendom bez termina, tj. zauzmi svoj red i čekaj.
+        Frizeri iz salona poštuju staru tradiciju, ali i prate najnovije svetske trendove,
+        tako da za svoju frizuru  i bradu brige nemaš!
+      </p>
+      <br>    
     </div>
-    <div class="w3-quarter">
+    {% comment %} <div class="w3-quarter">
       <i class="fa fa-cog w3-margin-bottom w3-jumbo"></i>
       <p class="w3-large">Support</p>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
-    </div>
+    </div> {% endcomment %}
   </div>
 </div>
 <div class="w3-container bgimg-2" style="opacity: 1">
@@ -246,8 +196,9 @@ ul.leaders span + span {
       </div>
       <div class="content">
         <div>
-          <h2>Image Title</h2>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi accusamus molestias quidem iusto.
+          <h2>Hasredin Bećirović</h2>
+          <p>Majstor Hasko, tako ga zovu. Najstariji je, jer tako izgleda. Voli bradu, vjernik je, i porodičan je čovjek.
+            Specijalnost-Trimovanje brade, šišanje itd.
           </p>
         </div>
       </div>
@@ -258,8 +209,9 @@ ul.leaders span + span {
       </div>
       <div class="content">
         <div>
-          <h2>Image Title</h2>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi accusamus molestias quidem iusto.
+          <h2>Daris Kurtenčsušević</h2>
+          <p>Majstor Daki, tako ga zovu. Mlad je, ali vrijedan i pošten. Voli i uziva u druzenju, izlascima po čaršiji. 
+            Specijalnost-Šišanje(fade), brada itd.
           </p>
         </div>
       </div>
@@ -270,8 +222,9 @@ ul.leaders span + span {
       </div>
       <div class="content">
         <div>
-          <h2>Image Title</h2>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi accusamus molestias quidem iusto.
+          <h2>Emil Aljkovič</h2>
+          <p>Majstor Emil ili Emčo. Najmlađi je u timu, i velika je nada salona. Voli muziku, pse i poslušan je momak.
+            Specijalnost-Šišanje, brada itd.
           </p>
         </div>
       </div>
