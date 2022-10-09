@@ -29,10 +29,10 @@
     <a href="#home" class="w3-bar-item w3-button w3-wide">FRIZERSKI SALON <strong> HASKO</strong></a>
     <!-- Right-sided navbar links -->
     <div class="w3-right w3-hide-small">
-      <a href="#work" class="w3-bar-item w3-button"><i class="fa fa-arrow-right"></i> zakaži</a>
-      <a href="#team" class="w3-bar-item w3-button"><i class="fa fa-user"></i> NAS TIM</a>
+      {% comment %} <a href="#work" class="w3-bar-item w3-button"><i class="fa fa-arrow-right"></i> zakaži</a> {% endcomment %}
+      <a href="#team" class="w3-bar-item w3-button"><i class="fa fa-user"></i> NAŠ TIM</a>
       <a href="#work" class="w3-bar-item w3-button"><i class="fa fa-th"></i> KATALOG</a>
-      <a href="#pricing" class="w3-bar-item w3-button"><i class="fa fa-usd"></i> CENE</a>
+      <a href="#pricing" class="w3-bar-item w3-button"><i class="fa fa-usd"></i> USLUGE</a>
       <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> KONTAKT</a>
     </div>
     <!-- Hide right-floated links on small screens and replace them with a menu icon -->
@@ -45,18 +45,18 @@
 
 <!-- Sidebar on small screens when clicking the menu icon -->
 <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
-  <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
-  <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button">ZAKAŽI</a>
-  <a href="#team" onclick="w3_close()" class="w3-bar-item w3-button">TEAM</a>
+  <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Zatvori ×</a>
+  {% comment %} <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button">ZAKAŽI</a> {% endcomment %}
+  <a href="#team" onclick="w3_close()" class="w3-bar-item w3-button">NAŠ TIM</a>
   <a href="#work" onclick="w3_close()" class="w3-bar-item w3-button">KATALOG</a>
-  <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button">CENE</a>
+  <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button">USLUGE</a>
   <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button">KONTAKT</a>
 </nav>
 
 <!-- Header with full-height image -->
 <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
   <div class="w3-display-left w3-text-white" style="padding:48px">
-    <span class="w3-jumbo w3-hide-small w3-white w3-padding-large w3-large w3-margin-top w3-opacity">Online zakazivanje termina</span><br>
+    <span class="w3-jumbo w3-hide-small w3-white w3-padding-large w3-large w3-margin-top w3-opacity">Frizerski salon <strong> HASKO </strong></span><br>
     <span class="w3-xxlarge e w3-hide-large w3-hide-medium">Online zakazivanje termina</span>
     <br>
     <br>
@@ -77,7 +77,7 @@
 
 <!-- About Section -->
 <div class="w3-container" style="padding:128px 16px; margin-bottom: 100px;" id="about">
-  <h3 class="w3-center">ZAKAZIVANJE TERMINA</h3><br>
+ <!-- <h3 class="w3-center">ZAKAZIVANJE TERMINA</h3><br>
   
   
   
@@ -124,16 +124,12 @@
         <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control" placeholder="Vreme vaseg termina" type="time" step="1800" min="10:00" max="20:00" name="vreme">
         <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-secondary"  type="submit" value="ZAKAŽI">
     </form>
-  </div>
-    </div>
+      </div>
+    </div> -->
 <br><br><br>
   <p class="w3-center w3-large">Glavne karakteristike našeg salona</p>
   <div class="w3-row-padding w3-center" style="margin-top:164px">
-    {% comment %} <div class="w3-quarter">
-      <i class="fa fa-desktop w3-margin-bottom w3-jumbo w3-center"></i>
-      <p class="w3-large">Responsive</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
-    </div> {% endcomment %}
+
     <div class="w3-half">
       <i class="fa fa-heart w3-margin-bottom w3-jumbo"></i>
       <p class="w3-large">Posvećenost</p>
@@ -161,11 +157,7 @@
       </p>
       <br>    
     </div>
-    {% comment %} <div class="w3-quarter">
-      <i class="fa fa-cog w3-margin-bottom w3-jumbo"></i>
-      <p class="w3-large">Support</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
-    </div> {% endcomment %}
+
   </div>
 </div>
 <div class="w3-container bgimg-2" style="opacity: 1">
