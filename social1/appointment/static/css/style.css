@@ -9,9 +9,7 @@ body, html {
 
 .bgimg-1, .bgimg-2, .bgimg-3 {
   position: relative;
-
-/*This doesn work on Iphones 
-  background-attachment: fixed; */
+  background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -25,6 +23,7 @@ body, html {
 .bgimg-2 {
   background-image: url("/static/images/pozadina2.jpg");
   min-height: 500px;
+  margin-top: 50px;
 }
 
 .bgimg-3 {
