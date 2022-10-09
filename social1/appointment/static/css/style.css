@@ -10,7 +10,8 @@ body, html {
 .bgimg-1, .bgimg-2, .bgimg-3 {
   position: relative;
 
-  background-attachment: fixed;
+/*This doesn work on Iphones 
+  background-attachment: fixed; */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
