@@ -164,3 +164,6 @@ transition-delay: 0.4s;
 .containerr .box:hover .content p {
 transform: translateY(0px);
 }
+.disable-termin{
+  display: none;
+}
