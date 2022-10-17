@@ -38,6 +38,3 @@ class Termin(models.Model):
     def __str__(self):
         return f"{self.datum},{self.vreme}"
 
-
-    def __str__(self):
-        return self.name
