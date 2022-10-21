@@ -52,7 +52,7 @@ class TestForm(forms.ModelForm):
     class Meta:
         model = Termin
         fields = ['usluga','frizer','datum','vreme','name', 'broj_telefona']
-        widgets = {'vreme': forms.Select(choices=ODABIR_TERMINA)}
+        widgets = {'vreme': forms.Select(choices=ODABIR_TERMINA,attrs={'class':'w3-select'})}
 
     def __init__(self, *args, **kwargs):
         super(TestForm, self).__init__(*args, **kwargs)
