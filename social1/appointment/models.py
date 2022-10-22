@@ -1,6 +1,3 @@
-from email.policy import default
-import imp
-from tkinter.messagebox import RETRY
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from datetime import timedelta
