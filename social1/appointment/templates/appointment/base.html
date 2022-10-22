@@ -156,41 +156,64 @@
   </script>
   
   <script>
-    const config = {
-        altInput: true,
-        altFormat: "F j, Y",
-        dateFormat: "Y-m-d",
-  
-        enableTime: true,
-        time_24hr: true,
-        minuteIncrement: 20,
-        minTime:"10:00",
-        maxTime:"20:00",
-  
-  
-    }
-    const conf_time = {
-        altInput: true,
-        altFormat: "H:i",
-        dateFormat: "H:i",
-        noCalendar: true,
-        enableTime: true,
-        time_24hr: true,
-        minuteIncrement: 20,
-        minTime:"10:00",
-        maxTime:"20:00",
-  
-  
-    }
-  
-    flatpickr("#myTime",conf_time)
-  
-    flatpickr("#myID", config);
-  
-    
     document.getElementsByName("datum")[0].setAttribute('min', "{{godina}}-{{mesec}}-{{dan}}");
   </script>
-  
+  <script>
+    //This is test
+    const datum = document.getElementById("datum");
+    const usluga = document.getElementById("usluga");
+    const frizer = document.getElementById("frizer");
+    const btn = document.getElementById("first_form_button")
+
+    datum.addEventListener("change", (e) =>{
+        if (e.currentTarget.value === "" && usluga.innerHTML === ""){
+            btn.disabled = true;
+        } else {
+            btn.disabled =false;
+            console.log(usluga.innerHTML)
+        }
+    })
+    var duration = "{{ duration }}"
+    console.log(duration*1000)
+    var data = JSON.parse ("{{filtered_list | escapejs}}");
+    console.log(data)
+    for (item in data){
+        console.log(data[item]["pocetak"],data[item]["kraj"])
+    }
+    var compTermin = new Date()
+    var lis = document.getElementById("id_vreme").getElementsByTagName("option");
+    var za_brisanje = []
+    for (let i =0; i <lis.length; i++){
+        var b = lis[i].value.split(":")
+        var term = new Date(2022,10,10,b[0],b[1],b[2])
+        console.log(term)
+        var porduzeni = new Date(term.getTime() + duration * 1000)
+        console.log(porduzeni)
+        for (item in data){
+            var c = data[item]["pocetak"].split(":")
+            var zauzet_pocetak = new Date(2022,10,10,c[0],c[1],c[2])
+
+            var d = data[item]["kraj"].split(":")
+            var zauzet_kraj = new Date(2022,10,10,d[0],d[1],d[2])
+
+            if (term >= zauzet_pocetak && term < zauzet_kraj){
+                lis[i].style.display = "none";
+                za_brisanje.push(lis[i])
+
+                //console.log(lis[i])
+                //lis[i].remove()
+            }
+        }
+
+    }
+    za_brisanje.forEach(zaBrisanje);
+    function zaBrisanje(el){
+        el.remove()
+    }
+
+
+
+</script>
   </body>
   </html>
   
