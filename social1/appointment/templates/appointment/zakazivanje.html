@@ -4,21 +4,21 @@
 <br>
 <br>
 <br>
-<h3 class="w3-center">ZAKAZIVANJE TERMINA</h3><br>
+<h3 class="w3-center">ZAKAZIVANJE TERMINA </h3><br>
   
   
   
 <div class="mb-3 row justify-content-md-center ">
     <br>
     <br>
-    <div class="col-md-auto shadow-lg p-3 mb-5 bg-body rounded" id="prva-forma">
+    <div class="col-md-auto shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "termin" %}w3-hide{% endif %}" id="prva-forma" >
         <form method="post">
             {% csrf_token %}
             <select class='w3-select' name="usluga" required id="id_usluga">
                 <option selected disabled>Izaberite uslugu</option>
                 {% with value=form.usluga.value %}
                 {% for value in form.usluga.field.choices.queryset %}
-                <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
+                <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 %}disabled{% endif %}>{{ value }}</option>
                 {% endfor %}
                 {% endwith %}
                 </select>
@@ -31,98 +31,28 @@
                     {% endfor %}
                     {% endwith %}
                 </select>
-                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control" placeholder="Datum vaseg termina" type="date" name="datum" >
+                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control " placeholder="Datum vaseg termina" type="date" name="datum" id="datum">
                 
                 
-            <input type="submit" name="form_filter_button" value="submit" onclick="changeForm()">
+            <input class="w3-block" disabled type="submit" name="form_filter_button" value="submit"  id="first_form_button">
         </form>
         <br>
-        {% for ft in filtered_list %}
-            <p>{{ ft.pocetak }} - {{ft.kraj}}</p>
-        {% endfor %}
+
     </div>
 
-    <div class="col-md-auto shadow-lg p-3 mb-5 bg-body rounded" id="druga-forma">
+    <div class="col-md-4 col-l-4 col-sm-auto shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "potvrdi" %}w3-hide{% endif %}" id="druga-forma">
         <form action="" method="post">
 
 
             {% csrf_token %}
-            {% comment %} <select class="w3-select" required name="usluga">
-            <option value="" disabled selected>Izaberite uslugu</option>
-            {% for usluga in usluge %}
-                <option style=" padding: 20 5; width: 37rem; margin-bottom: 4px;">{{usluga}}</option>
-            {% endfor %}
-            </select>
-            <select class="w3-select" required name="frizer">
-            <option value="" disabled selected>Izaberite Frizera</option>
-            {% for frizer in frizeri %}
-                <option >{{ frizer }}</option>
-            {% endfor %}
-            </select><br> {% endcomment %}
-            <select class='w3-select' name="usluga" required id="id_usluga">
-            <option selected disabled>Izaberite uslugu</option>
-            {% with value=form.usluga.value %}
-            {% for value in form.usluga.field.choices.queryset %}
-            <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
-            {% endfor %}
-            {% endwith %}
-            </select>
 
-            <!-- <select class='w3-select' name="frizer" required id="id_frizer">
-                <option selected disabled>Izaberite frizera</option>
-                {% with value=form.frizer.value %}
-                {% for value in form.frizer.field.choices.queryset %}
-                <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
-                {% endfor %}
-                {% endwith %}
-            </select> -->
-
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control" placeholder="Ime i Prezime" type="text" name="name" >
+            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control w3-block" placeholder="Ime i Prezime" type="text" name="name" >
             <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control" placeholder="Broj telefona" type="text" name="broj_telefona" >
-
-            <!-- <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control" placeholder="Datum vaseg termina" type="date" name="datum" > -->
-            <!-- <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control" placeholder="Vreme vaseg termina" type="time" step="1800" min="10:00" max="20:00" name="vreme"> -->
-            {{form.vreme}}
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-secondary"  type="submit" value="ZAKAŽI">
+            {{ form.vreme }}
+            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-secondary" name="zakazi_termin" type="submit" value="ZAKAŽI">
         </form>
   </div>
 </div>
 <br><br><br>
-<script>
-    var data = JSON.parse ("{{filtered_list | escapejs}}");
-    for (item in data){
-        console.log(data[item]["pocetak"],data[item]["kraj"])
-    }
-    var compTermin = new Date()
-    var lis = document.getElementById("id_vreme").getElementsByTagName("option");
-    for (let i =0; i <lis.length; i++){
-        var b = lis[i].value.split(":")
-        var term = new Date(2022,10,10,b[0],b[1],b[2])
-        
-        for (item in data){
 
-            var c = data[item]["pocetak"].split(":")
-            var zauzet_pocetak = new Date(2022,10,10,c[0],c[1],c[2])  
-            
-            var d = data[item]["kraj"].split(":")
-            var zauzet_kraj = new Date(2022,10,10,d[0],d[1],d[2])
-            console.log(term)
-            console.log(zauzet_pocetak)
-            console.log(zauzet_kraj)
-            if (term >= zauzet_pocetak && term < zauzet_kraj){
-                lis[i].style.display = "none";
-
-            }
-        }
-
-    }
-    var prva_forma = document.getElementById("prva-forma")
-    
-    var druga_forma = document.getElementById("druga-forma")
-    druga_forma.classList.add("w3-hide")
-    function changeForm(){
-        prva_forma.classList.add("w3-hide")
-        druga_forma.classList.remove("w3-hide")
-    }
-</script>
 {% endblock %}
