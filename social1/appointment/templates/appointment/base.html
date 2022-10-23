@@ -165,14 +165,6 @@
     const frizer = document.getElementById("frizer");
     const btn = document.getElementById("first_form_button")
 
-    datum.addEventListener("change", (e) =>{
-        if (e.currentTarget.value === "" && usluga.innerHTML === ""){
-            btn.disabled = true;
-        } else {
-            btn.disabled =false;
-            console.log(usluga.innerHTML)
-        }
-    })
     var duration = "{{ duration }}"
     console.log(duration*1000)
     var data = JSON.parse ("{{filtered_list | escapejs}}");
