@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import KorisnikForm, TestForm, FilterForm
-from django.http import HttpResponse
+from django.contrib import messages
 from datetime import datetime, timedelta
 from .models import Usluge, Frizer, Termin
 import json
@@ -47,11 +47,13 @@ def potvrdi(request):
             data = TestForm(params)
             if data.is_valid():
                 data.save()
+                messages.success(request,f"Uspešno ste zakazali termin {datum} u {request.POST['vreme']}")
                 print("Form was VALID AND PASSED")
                 return redirect(termin)
 
                 # print(data)
             else:
+                messages.error(request, "Greska na serveru, pokusajte ponovo")
                 print(f"From WAS NOT VALID ! -")
                 # print(data)
 

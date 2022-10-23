@@ -33,5 +33,5 @@ class Termin(models.Model):
     vreme = models.TimeField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.datum},{self.vreme}"
+        return f"{self.name},{self.datum},{self.vreme}"
 

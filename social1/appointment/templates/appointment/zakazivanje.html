@@ -5,7 +5,13 @@
 <br>
 <br>
 <h3 class="w3-center">ZAKAZIVANJE TERMINA </h3><br>
-  
+{% if messages %}
+
+    {% for message in messages %}
+    <p class="bg-success w3-center p-2 text-white bg-opacity-75 fs-1">{{ message }}</p>
+    {% endfor %}
+
+{% endif %}
   
   
 <div class="mb-3 row justify-content-md-center ">
@@ -14,8 +20,8 @@
     <div class="col-md-auto shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "termin" %}w3-hide{% endif %}" id="prva-forma" >
         <form method="post">
             {% csrf_token %}
-            <select class='w3-select' name="usluga" required id="id_usluga">
-                <option selected disabled>Izaberite uslugu</option>
+            <select class='w3-select' name="usluga" required="required" id="id_usluga" style="-webkit-appearance: none;">
+                <option selected disabled value="">Izaberite uslugu</option>
                 {% with value=form.usluga.value %}
                 {% for value in form.usluga.field.choices.queryset %}
                 <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 %}disabled{% endif %}>{{ value }}</option>
@@ -23,8 +29,8 @@
                 {% endwith %}
                 </select>
     
-                <select class='w3-select' name="frizer" required id="id_frizer">
-                    <option selected disabled>Izaberite frizera</option>
+                <select class='w3-select' name="frizer" required="required" id="id_frizer" style="-webkit-appearance: none;">
+                    <option selected disabled value="">Izaberite frizera</option>
                     {% with value=form.frizer.value %}
                     {% for value in form.frizer.field.choices.queryset %}
                     <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
@@ -34,7 +40,7 @@
                 <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control " placeholder="Datum vaseg termina" type="date" name="datum" id="datum">
                 
                 
-            <input class="w3-block" disabled type="submit" name="form_filter_button" value="submit"  id="first_form_button">
+            <input class="w3-block" type="submit" name="form_filter_button" value="submit"  id="first_form_button">
         </form>
         <br>
 
