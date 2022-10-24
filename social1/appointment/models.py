@@ -34,7 +34,7 @@ class Termin(models.Model):
 
 
     class Meta:
-        unique_together = ['datum','vreme']
+        unique_together = ['datum','vreme','frizer']
 
     def __str__(self):
         return f"{self.name},{self.datum},{self.vreme}"
