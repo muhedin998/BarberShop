@@ -53,7 +53,7 @@ def potvrdi(request):
 
                 # print(data)
             else:
-                messages.error(request, "Greska na serveru, pokusajte ponovo")
+                messages.error(request, "Greska na serveru, pokusajte ponovo", extra_tags='danger')
                 print(f"From WAS NOT VALID ! -")
                 # print(data)
 

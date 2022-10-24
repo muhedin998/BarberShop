@@ -8,7 +8,7 @@
 {% if messages %}
 
     {% for message in messages %}
-    <p class="bg-success w3-center p-2 text-white bg-opacity-75 fs-1">{{ message }}</p>
+    <p class="w3-center p-2 text-white bg-opacity-75 fs-1 bg-{{ message.tags }}">{{ message }}</p>
     {% endfor %}
 
 {% endif %}

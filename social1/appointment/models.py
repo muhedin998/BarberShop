@@ -32,6 +32,10 @@ class Termin(models.Model):
     datum = models.DateField(blank=True, null=True)
     vreme = models.TimeField(blank=True, null=True)
 
+
+    class Meta:
+        unique_together = ['datum','vreme']
+
     def __str__(self):
         return f"{self.name},{self.datum},{self.vreme}"
 
