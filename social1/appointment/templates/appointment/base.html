@@ -188,9 +188,9 @@
             var d = data[item]["kraj"].split(":")
             var zauzet_kraj = new Date(2022,10,10,d[0],d[1],d[2])
 
-            if (term >= zauzet_pocetak && term < zauzet_kraj){
+            if (term >= zauzet_pocetak  && term < zauzet_kraj){
                 lis[i].style.display = "none";
-                za_brisanje.push(lis[i])
+                za_brisanje.push(lis[i]);
 
                 //console.log(lis[i])
                 //lis[i].remove()
