@@ -176,6 +176,8 @@
     var lis = document.getElementById("id_vreme").getElementsByTagName("option");
     var za_brisanje = []
     for (let i =0; i <lis.length; i++){
+        var danas = new Date()
+
         var b = lis[i].value.split(":")
         var term = new Date(2022,10,10,b[0],b[1],b[2])
         console.log(term)
@@ -187,8 +189,10 @@
 
             var d = data[item]["kraj"].split(":")
             var zauzet_kraj = new Date(2022,10,10,d[0],d[1],d[2])
-
-            if (term >= zauzet_pocetak  && term < zauzet_kraj){
+            if (new Date().getTime() > term.getTime()){
+                za_brisanje.push(lis[i]);
+            }
+            if (porduzeni  >= zauzet_pocetak.getTime()  && term < zauzet_kraj){
                 lis[i].style.display = "none";
                 za_brisanje.push(lis[i]);
 
