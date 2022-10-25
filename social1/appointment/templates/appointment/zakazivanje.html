@@ -14,47 +14,55 @@
 {% endif %}
   
   
-<div class="mb-3 row justify-content-md-center ">
+<div class="mb-3 row justify-content-center ">
     <br>
     <br>
-    <div class="col-md-auto shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "termin" %}w3-hide{% endif %}" id="prva-forma" >
-        <form method="post">
+    <div class="col-md-auto col-sm-auto col-lg-4 shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "termin" %}w3-hide{% endif %}" id="prva-forma" >
+        <form method="post" class="w3-margin">
             {% csrf_token %}
+            <label>Izaberite uslugu: </label>
             <select class='w3-select' name="usluga" required="required" id="id_usluga" style="-webkit-appearance: none;">
-                <option selected disabled value="">Izaberite uslugu</option>
+                <option selected disabled value=""></option>
                 {% with value=form.usluga.value %}
                 {% for value in form.usluga.field.choices.queryset %}
                 <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 %}disabled{% endif %}>{{ value }}</option>
                 {% endfor %}
                 {% endwith %}
                 </select>
-    
+                <br>
+                <label><br>Izaberite frizera: </label>
                 <select class='w3-select' name="frizer" required="required" id="id_frizer" style="-webkit-appearance: none;">
-                    <option selected disabled value="">Izaberite frizera</option>
+                    <option selected disabled value=""></option>
                     {% with value=form.frizer.value %}
                     {% for value in form.frizer.field.choices.queryset %}
                     <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
                     {% endfor %}
                     {% endwith %}
                 </select>
-                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control " placeholder="Datum vaseg termina" type="date" name="datum" id="datum">
+                <label><br>Izaberite datum: </label><br>
+                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="date" name="datum" id="datum" style="border: none; "><br><br>
                 
                 
-            <input class="w3-block" type="submit" name="form_filter_button" value="submit"  id="first_form_button">
+            <button class="btn btn-secondary"  name="form_filter_button"  id="first_form_button" style="-webkit-appearance: none;">Izaberite termin <i class="fa fa-arrow-right"></i></button>
         </form>
         <br>
 
     </div>
 
-    <div class="col-md-4 col-l-4 col-sm-auto shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "potvrdi" %}w3-hide{% endif %}" id="druga-forma">
-        <form action="" method="post">
+    <div class="col-md-auto col-sm-auto col-lg-4 shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "potvrdi" %}w3-hide{% endif %}" id="druga-forma">
+        <form class="w3-margin" action="" method="post" onsubmit="return confirm('Da li zelite da zakazete termin ?');">
 
 
             {% csrf_token %}
+            <label>Ime i Prezime: </label><br>
+            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="name" >
 
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control w3-block" placeholder="Ime i Prezime" type="text" name="name" >
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="form-control" placeholder="Broj telefona" type="text" name="broj_telefona" >
+            <label>Broj telefona: </label><br>
+            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="broj_telefona" >
+
+            <label>Izaberite termin: </label><br>
             {{ form.vreme }}
+            <br>
             <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-secondary" name="zakazi_termin" type="submit" value="ZAKAŽI">
         </form>
   </div>
