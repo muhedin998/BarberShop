@@ -192,7 +192,7 @@
             if (new Date().getTime() > term.getTime()){
                 za_brisanje.push(lis[i]);
             }
-            if (porduzeni  >= zauzet_pocetak.getTime()  && term < zauzet_kraj){
+            if (porduzeni  > zauzet_pocetak.getTime()  && term < zauzet_kraj){
                 lis[i].style.display = "none";
                 za_brisanje.push(lis[i]);
 
