@@ -1,0 +1,26 @@
+{% extends "appointment/base.html" %}
+{% block content %}
+
+ <div class="w3-container">
+  <h2>Ukupno svi  termini </h2>
+
+
+  <table class="w3-table-all ">
+    <tr>
+      <th>Frizer</th>
+      <th>Klijent</th>
+      <th>Usluga</th>
+      <th>Datum & Vreme</th>
+      </tr>
+      {% for usl in termini %}
+       <tr>
+          <td>{{ usl.frizer }}</td>
+          <td>{{ usl.name }}</td>
+          <td>{{ usl.usluga }}</td>
+          <td>{{ usl.datum }}, {{ usl.vreme }}</td>
+       </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}

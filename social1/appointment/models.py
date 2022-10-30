@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from datetime import timedelta
 
 class Korisnik(AbstractUser):
+    ime_prezime = models.CharField(max_length=220, blank=True, null=True)
     broj_telefona = models.CharField(max_length=20,blank=True)
 
     def __str__(self):
@@ -31,6 +32,7 @@ class Termin(models.Model):
     broj_telefona = models.CharField(max_length=20, default=0)
     datum = models.DateField(blank=True, null=True)
     vreme = models.TimeField(blank=True, null=True)
+    uredjaj = models.CharField(max_length=200, null=True, blank=True)
 
 
     class Meta:
