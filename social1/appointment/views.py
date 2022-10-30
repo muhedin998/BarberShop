@@ -133,8 +133,24 @@ def zafrizera(request):
     return render(request, 'appointment/zafrizera.html', context)
 
 def register(request):
-
     form = KorisnikForm()
+
+    if request.method =='POST':
+        data ={
+            'ime_prezime':request.POST['ime_prezime'],
+            'username':request.POST['username'],
+            'email':request.POST['email'],
+            'password':request.POST['password'],
+            'password2':request.POST['password2'],
+            'broj_telefona':request.POST['broj_telefona'],
+        }
+        form = KorisnikForm(request.POST)
+        if form.is_valid():
+            form.save()
+            
+            messages.success(request, "Uspesno ste se registrovali")
+        else:
+            messages.error(request, "Nepravilno popunjena polja, pokusajte ponovo",extra_tags='danger')
     return render(request, 'appointment/account/register.html',{'form':form})
 
 def login(request):
