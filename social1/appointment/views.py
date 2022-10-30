@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import KorisnikForm, TestForm, FilterForm
 from django.contrib import messages
@@ -5,6 +6,7 @@ from datetime import datetime, timedelta
 from .models import Usluge, Frizer, Termin
 import json
 
+@login_required
 def potvrdi(request):
     viewname = "potvrdi"
     form = TestForm()
@@ -42,7 +44,8 @@ def potvrdi(request):
                 'datum':datum,
                 'vreme':request.POST['vreme'],
                 'name':request.POST['name'],
-                'broj_telefona':request.POST['broj_telefona']
+                'broj_telefona':request.POST['broj_telefona'],
+                'uredjaj': request.COOKIES['device']
             }
             data = TestForm(params)
             if data.is_valid():
@@ -66,6 +69,7 @@ def potvrdi(request):
     }
     return render(request, 'appointment/zakazivanje.html',context)
 
+@login_required
 def termin(request):
     
     viewname = "termin"
@@ -121,3 +125,17 @@ def zakazi(request):
         "ls3":ls3,
     }
     return render(request, 'appointment/jqr.html', context)
+
+def zafrizera(request):
+    termini = Termin.objects.all().order_by('datum')
+
+    context = {'termini':termini}
+    return render(request, 'appointment/zafrizera.html', context)
+
+def register(request):
+
+    form = KorisnikForm()
+    return render(request, 'appointment/account/register.html',{'form':form})
+
+def login(request):
+    return render(request, 'appointment/account/register.html')

@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '*',
-
 ]
 CSRF_TRUSTED_ORIGINS = ['https://5149-87-116-167-252.eu.ngrok.io']
 
@@ -132,3 +131,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_ROOT = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'

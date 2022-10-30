@@ -1,0 +1,29 @@
+{% extends 'appointment/base.html' %}
+{% block content %}
+    <br>
+    <br>
+    <br>
+ <div class="w3-margin mb-3 row justify-content-center">
+    <div class="mb-3 row justify-content-center">
+     <form>
+    {% csrf_token %}
+     <label> Ime i prezime:</label>
+    <input name="ime_prezime" id="id_username" class="w3-select" required>
+     <br>
+
+    <label>Korisnicko ime: </label>
+    <input name="username" id="id_username" class="w3-select" required>
+         <br>
+
+
+         <label>Email:</label>
+    <input name="email" id="id_email" class="w3-select" required>
+    <br>
+
+    <input name="password1" id="id_password1" class="w3-select" required>
+    <input name="password2" id="id_pasword2" class="w3-select" required>
+    <input type="submit" class="btn btn-info" value="Registruj se">
+    </form>
+    </div>
+</div>
+{% endblock %}
