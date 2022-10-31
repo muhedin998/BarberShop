@@ -7,17 +7,22 @@
 
   <table class="w3-table-all ">
     <tr>
-      <th>Frizer</th>
-      <th>Klijent</th>
+      {% comment %} <th>Frizer</th> {% endcomment %}
+      <th>Mušterija</th>
       <th>Usluga</th>
       <th>Datum & Vreme</th>
+      
       </tr>
       {% for usl in termini %}
        <tr>
-          <td>{{ usl.frizer }}</td>
-          <td>{{ usl.name }}</td>
-          <td>{{ usl.usluga }}</td>
-          <td>{{ usl.datum }}, {{ usl.vreme }}</td>
+          {% comment %} <td>{{ usl.frizer }}</td> {% endcomment %}
+          <td>{{ usl.name }}
+            <br>{{ usl.broj_telefona }}
+          </td>
+          <td>{{ usl.usluga.name }}</td>
+          <td>{{ usl.datum }}, {{ usl.vreme|time:"H:i" }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');"><i class="fa-solid fa-xmark"></i></a></td>
+         
+
        </tr>
     {% endfor %}
   </table>
