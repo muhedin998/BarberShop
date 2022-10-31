@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import Korisnik, Termin
 import datetime as dt
+#import django.contrib.auth.password_validation.CommonPasswordValidator
 
 ODABIR_TERMINA = [
     (dt.time(hour=10, minute=0),"10:00"),
@@ -39,14 +40,44 @@ class FilterForm(forms.Form):
         model = Termin
         fields = ['usluga', 'frizer', 'datum']
 
-
-class KorisnikForm(UserCreationForm):
-    password1 = forms.PasswordInput()
-    password2 = forms.PasswordInput()
+my_default_errors = {
+    'required': "Ovo polje je obavezno",
+    'invalid': "Nepravilan Unos !"
+}
+class KorisnikForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(),label="Unesite sifru")
+    password2 = forms.CharField(widget=forms.PasswordInput(), label="Potvrda sifre")
 
     class Meta:
         model = Korisnik
-        fields = ['ime_prezime', 'username', 'email', 'password1','password2', 'broj_telefona']
+        fields = ['ime_prezime', 'username', 'email', 'broj_telefona','password']
+        labels ={
+            'username': "Vase korisicko ime", 
+        }
+        error_messages = {
+            'username':{
+                "unique": "Korisnicko ime je zauzeto"
+            },
+            'email':{
+                "unique":"Email adresa je zauzeta"
+            }
+        }
+
+    def clean(self):
+        cleaned_data = super(KorisnikForm, self).clean()
+        password = cleaned_data.get("password")
+        password2 = cleaned_data.get("password2")
+        
+        if len(password) < 8 or len(password2) < 8:
+            self.add_error('password',"Lozinka mora sadrzati 8 karaktera")
+
+        if password != password2:
+           self.add_error('password2', "Sifre se ne podudaraju !")
+    
+    def __init__(self, *args, **kwargs):
+        super(KorisnikForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'w3-select'
 
 class TestForm(forms.ModelForm):
     class Meta:

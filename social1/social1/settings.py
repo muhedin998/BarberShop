@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '*',
 ]
-CSRF_TRUSTED_ORIGINS = ['https://5149-87-116-167-252.eu.ngrok.io']
+CSRF_TRUSTED_ORIGINS = ['https://802f-87-116-164-199.eu.ngrok.io']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
@@ -125,6 +125,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+LOGIN_URL = '/user_login/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

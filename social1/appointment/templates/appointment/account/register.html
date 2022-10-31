@@ -3,26 +3,54 @@
     <br>
     <br>
     <br>
+    <br>
+    <h1 class="w3-center w3-margin">Registracija naloga </h1>
+    {%if messages%}
+    {% for message in messages %} 
+        <p class="w3-center p-2 text-white bg-opacity-75 fs-1 bg-{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    
  <div class="w3-margin mb-3 row justify-content-center">
-    <div class="mb-3 row justify-content-center">
-     <form>
+    <div class="col-md-auto col-sm-auto col-lg-4 shadow-lg p-3 mb-5 bg-body rounded ">
+     <form method="POST">
     {% csrf_token %}
-     <label> Ime i prezime:</label>
-    <input name="ime_prezime" id="id_username" class="w3-select" required>
+     {% comment %} <label> Ime i prezime:</label>
+    <input type="text" name="ime_prezime" id="id_ime_prezime" class="w3-select" required>
      <br>
 
     <label>Korisnicko ime: </label>
-    <input name="username" id="id_username" class="w3-select" required>
+    <input type="text" name="username" id="id_username" class="w3-select" required>
          <br>
+
+    <label>Broj telefona: </label>
+    <input type="text" name="broj_telefona" id="id_broj_telefona" class="w3-select" required>
+    <br>
 
 
          <label>Email:</label>
-    <input name="email" id="id_email" class="w3-select" required>
+    <input type="email" name="email" id="id_email" class="w3-select" required>
     <br>
 
-    <input name="password1" id="id_password1" class="w3-select" required>
-    <input name="password2" id="id_pasword2" class="w3-select" required>
-    <input type="submit" class="btn btn-info" value="Registruj se">
+    <label>Lozinka:</label>
+    <input type="password" name="password" id="id_password" class="w3-select" required>
+    <br>
+
+    <label>Potvrdite lozinku:</label>
+    <input type="password" name="password2" id="id_pasword2" class="w3-select" required>
+    <br> {% endcomment %}
+        {% if form.errors %}
+        {% for key, value in form.errors.items %}
+            <div class="alert alert-danger">
+                {{ value }}
+            </div>
+        {% endfor %}
+        {% endif %}
+        {% for f in form %}
+            <p>{{ f.label }}</p>
+            <p>{{ f }}</p>
+        {% endfor %}
+    <input type="submit" class="btn btn-info" value="Registruj se" style="margin-top: 16px; width: 100%;">
     </form>
     </div>
 </div>

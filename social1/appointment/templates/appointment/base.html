@@ -80,6 +80,9 @@
       <a href="#work" class="w3-bar-item w3-button"><i class="fa fa-th"></i> KATALOG</a>
       <a href="#pricing" class="w3-bar-item w3-button"><i class="fa fa-usd"></i> USLUGE</a>
       <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> KONTAKT</a>
+      {% if user.is_superuser %}
+      <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> MOJI TERMINI</a>
+      {% endif %}
     {%else %}
         <a href="{% url "zakazi" %}" class="w3-bar-item w3-button"><i class="fa fa-arrow-right"></i> POČETNA</a>
     {% endif %}
