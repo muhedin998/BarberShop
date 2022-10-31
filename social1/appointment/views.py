@@ -5,8 +5,9 @@ from django.contrib import messages
 from datetime import datetime, timedelta
 from .models import Usluge, Frizer, Termin
 import json
+from django.contrib.auth import authenticate, login
 
-@login_required
+@login_required(redirect_field_name='user_login/')
 def potvrdi(request):
     viewname = "potvrdi"
     form = TestForm()
@@ -69,7 +70,7 @@ def potvrdi(request):
     }
     return render(request, 'appointment/zakazivanje.html',context)
 
-@login_required
+@login_required(redirect_field_name='user_login/')
 def termin(request):
     
     viewname = "termin"
@@ -125,17 +126,54 @@ def zakazi(request):
         "ls3":ls3,
     }
     return render(request, 'appointment/jqr.html', context)
-
+@login_required(redirect_field_name='user_login/')
 def zafrizera(request):
-    termini = Termin.objects.all().order_by('datum')
-
+    if request.user.is_superuser:
+        frizer = []
+        if request.user.username == "hasko123":
+            frizer = Frizer.objects.get(name="Hasredin Bećirović")
+        if request.user.username == "daris123":
+            frizer = Frizer.objects.get(name="Daris Kurtenčsušević")
+        if request.user.username == "emil123":
+            frizer = Frizer.objects.get(name="Emil Aljković")
+        termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
+    else:
+        return redirect(zakazi)
     context = {'termini':termini}
     return render(request, 'appointment/zafrizera.html', context)
 
-def register(request):
-
+def user_register(request):
+    if request.method == "GET":
+        if request.user.is_authenticated:
+            redirect(zakazi)
     form = KorisnikForm()
+
+    if request.method =='POST':
+        data ={
+            'ime_prezime':request.POST['ime_prezime'],
+            'username':request.POST['username'],
+            'email':request.POST['email'],
+            'password':request.POST['password'],
+            'password2':request.POST['password2'],
+            'broj_telefona':request.POST['broj_telefona'],
+        }
+        form = KorisnikForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(request.POST['password'])
+            user.save()
+            
+            messages.success(request, "Uspesno ste se registrovali")
+        else:
+            messages.error(request, "Nepravilno popunjena polja, pokusajte ponovo",extra_tags='danger')
     return render(request, 'appointment/account/register.html',{'form':form})
 
-def login(request):
-    return render(request, 'appointment/account/register.html')
+def user_login(request):
+    if request.method =="POST":
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        print(user)
+        if user is not None:
+            print(user)
+            login(request, user)
+            return redirect(zakazi)
+    return render(request, 'appointment/account/login.html')

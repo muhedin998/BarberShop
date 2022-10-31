@@ -1,4 +1,42 @@
 {% extends 'appointment/base.html' %}
 {% block content %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1 class="w3-center w3-margin">Prijavite se </h1>
+    {%if messages%}
+    {% for message in messages %} 
+        <p class="w3-center p-2 text-white bg-opacity-75 fs-1 bg-{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    
+ <div class="w3-margin mb-3 row justify-content-center">
+    <div class="col-md-auto col-sm-auto col-lg-4 shadow-lg p-3 mb-5 bg-body rounded ">
+     <form method="POST">
+    {% csrf_token %}
+    <br>
 
+    <label>Korisnicko ime: </label>
+    <input type="text" name="username" id="id_username" class="w3-select" required>
+         <br>
+
+    <br>
+
+    <label>Lozinka:</label>
+    <input type="password" name="password" id="id_password" class="w3-select" required>
+    <br>
+    <br> 
+        {% if form.errors %}
+        {% for key, value in form.errors.items %}
+            <div class="alert alert-danger">
+                {{ value }}
+            </div>
+        {% endfor %}
+        {% endif %}
+
+    <input type="submit" class="btn btn-info" value="Prijavi se" style="margin-top: 16px; width: 100%;">
+    </form>
+    </div>
+</div>
 {% endblock %}

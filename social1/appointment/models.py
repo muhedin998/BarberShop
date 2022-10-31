@@ -4,7 +4,7 @@ from datetime import timedelta
 
 class Korisnik(AbstractUser):
     ime_prezime = models.CharField(max_length=220, blank=True, null=True)
-    broj_telefona = models.CharField(max_length=20,blank=True)
+    broj_telefona = models.CharField(max_length=20,blank=True, null=True)
 
     def __str__(self):
         return self.username
