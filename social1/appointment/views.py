@@ -142,10 +142,13 @@ def zafrizera(request):
     context = {'termini':termini}
     return render(request, 'appointment/zafrizera.html', context)
 
+
 def user_register(request):
     if request.method == "GET":
         if request.user.is_authenticated:
             redirect(zakazi)
+
+def register(request):
     form = KorisnikForm()
 
     if request.method =='POST':
@@ -162,6 +165,7 @@ def user_register(request):
             user = form.save(commit=False)
             user.set_password(request.POST['password'])
             user.save()
+            form.save()
             
             messages.success(request, "Uspesno ste se registrovali")
         else:
