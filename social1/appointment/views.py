@@ -143,12 +143,12 @@ def zafrizera(request):
     return render(request, 'appointment/zafrizera.html', context)
 
 
-def user_register(request):
-    if request.method == "GET":
-        if request.user.is_authenticated:
-            redirect(zakazi)
+# def user_register(request):
+#     if request.method == "GET":
+#         if request.user.is_authenticated:
+#             redirect(zakazi)
 
-def register(request):
+def user_register(request):
     form = KorisnikForm()
 
     if request.method =='POST':
@@ -181,3 +181,8 @@ def user_login(request):
             login(request, user)
             return redirect(zakazi)
     return render(request, 'appointment/account/login.html')
+
+def otkazivanje(request, termin_id):
+    termin = Termin.objects.get(pk=termin_id)
+    termin.delete()
+    return redirect(zafrizera)

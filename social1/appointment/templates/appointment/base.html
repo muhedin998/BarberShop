@@ -1,0 +1,257 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hasko Frizer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+      <!--
+          TIK TOK ICON
+      -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.css">
+      <!--Flat Picker-->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      {% comment %} Hover Effect on //cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css {% endcomment %}
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/imagehover.css/2.0.0/css/imagehover.min.css">
+      <link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<script type="text/javascript">
+
+		function getCookie(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = cookies[i].trim();
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+
+
+		function uuidv4() {
+		  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+		    return v.toString(16);
+		  });
+		}
+
+
+
+
+		let device = getCookie('device')
+
+		if (device == null || device == undefined){
+			device = uuidv4()
+		}
+
+		document.cookie ='device=' + device + ";domain=;path=/"
+
+	</script>
+
+</head>
+<body>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+  <div class="w3-bar w3-white w3-card" id="myNavbar">
+    <a href="{% url "zakazi" %}" class="w3-bar-item w3-button w3-wide">FRIZERSKI SALON <strong> HASKO</strong></a>
+    <!-- Right-sided navbar links -->
+    <div class="w3-right w3-hide-small">
+    {% if viewname == "zakazi" %}
+      <a href="{% url "termin" %}" class="w3-bar-item w3-button"><i class="fa fa-arrow-right"></i> ZAKAŽI</a>
+      <a href="#team" class="w3-bar-item w3-button"><i class="fa fa-user"></i> NAŠ TIM</a>
+      <a href="#work" class="w3-bar-item w3-button"><i class="fa fa-th"></i> KATALOG</a>
+      <a href="#pricing" class="w3-bar-item w3-button"><i class="fa fa-usd"></i> USLUGE</a>
+      <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> KONTAKT</a>
+      {% if user.is_superuser %}
+      <a href="{% url 'zafrizera' %}" class="w3-bar-item w3-button"><i class="fa-solid fa-user"></i>  MOJI TERMINI</a>
+      {% endif %}
+    {%else %}
+        <a href="{% url "zakazi" %}" class="w3-bar-item w3-button"><i class="fa fa-arrow-right"></i> POČETNA</a>
+    {% endif %}
+    </div>
+    <!-- Hide right-floated links on small screens and replace them with a menu icon -->
+
+    <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
+      <i class="fa fa-bars"></i>
+    </a>
+  </div>
+</div>
+
+<!-- Sidebar on small screens when clicking the menu icon -->
+<nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
+  {% if viewname == "zakazi" %}
+    <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Zatvori ×</a>
+    <a href="{% url "termin" %}" onclick="w3_close()" class="w3-bar-item w3-button">ZAKAŽI</a>
+    <a href="#team" onclick="w3_close()" class="w3-bar-item w3-button">NAŠ TIM</a>
+    <a href="#work" onclick="w3_close()" class="w3-bar-item w3-button">KATALOG</a>
+    <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button">USLUGE</a>
+    <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button">KONTAKT</a>
+  {% else %}
+     <a href="{% url "zakazi" %}" onclick="w3_close()" class="w3-bar-item w3-button">POČETNA</a>
+  {% endif %}
+</nav>
+{% block content %}
+
+
+
+{% endblock %}
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-64">
+
+    <div class="container">
+      <di class="row ">
+        <div class="col-sm " style="padding-right: 150px ;">
+          <h3 class="d-flex justify-content-start "><b>GDE SE NALAZIMO</b></h3>
+          <br>
+          <p class="text-left" >Frizerski salon radi radnim danima na zakazivanje, vikendom po starom sistemu cekanja reda</p>
+            <br>
+            <p class="d-flex justify-content-start"><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i>Generala Zivkovica 183 Novi Pazar, Srbija</p>
+            <p class="d-flex justify-content-start"><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +381 64 2172921</p>
+            <p class="d-flex justify-content-start"><i class="fab fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p>
+            
+        </div>
+        <div class="col-sm" style="padding-right: 150px ;">
+          <h3 class="d-flex justify-content-start"><b>KADA RADIMO</b></h3>
+          <br>
+            <h4 class="d-flex justify-content-start">PON-ČET / SUB-NED:</h4>  
+            <p class="d-flex justify-content-start"> od 10:00 do 19:00</p>
+            <h4 class="d-flex justify-content-start"> Petkom ne radimo !
+              <br/>
+              <br/>
+              <br/>
+              <h4 class="d-flex justify-content-start"><a href="#about">Kliknite da zakazete</a></h4>
+        </div>
+        <div class="col-sm">        
+          <h3 class="d-flex justify-content-start"><b>PRATITE NAS</b></h3>
+          <br>
+  
+            <br>
+            <a href="http://www.instagram.com" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-instagram w3-hover-opacity"></i>  <p>  Instagram </p></a>
+            <br>
+            <a href="http://www.instagram.com" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-youtube-play w3-hover-opacity"></i>  <p>  Youtube </p></a>
+            <br>
+            <a href="http://www.instagram.com" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-facebook-official w3-hover-opacity"></i>  <p>  Facebook </p></a>
+            <br>
+            <a href="https://vm.tiktok.com/ZMFjSnoWv/" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fab fa-tiktok w3-hover-opacity"></i>  <p>  TikTok </p></a>
+        </div>
+      </div>
+    </div>
+  
+    {% comment %} <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>Na vrh</a>
+    <div class="w3-xlarge w3-section">
+      <i class="fa fa-facebook-official w3-hover-opacity"></i>
+      <i style="font-size: 1.73em;" class="fa fa-instagram w3-hover-opacity"></i>
+      <i class="fa fa-snapchat w3-hover-opacity"></i>
+      <i class="fa fa-youtube-play w3-hover-opacity"></i>
+      <i class="fa fa-twitter w3-hover-opacity"></i>
+      <i class="fa fa-linkedin w3-hover-opacity"></i>
+    </div> {% endcomment %}
+    <!-- <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a></p> -->
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+      
+  <script>
+  // Modal Image Gallery
+  function onClick(element) {
+    document.getElementById("img01").src = element.src;
+    document.getElementById("modal01").style.display = "block";
+    var captionText = document.getElementById("caption");
+    captionText.innerHTML = element.alt;
+  }
+  
+  
+  // Toggle between showing and hiding the sidebar when clicking the menu icon
+  var mySidebar = document.getElementById("mySidebar");
+  
+  function w3_open() {
+    if (mySidebar.style.display === 'block') {
+      mySidebar.style.display = 'none';
+    } else {
+      mySidebar.style.display = 'block';
+    }
+  }
+  
+  // Close the sidebar with the close button
+  function w3_close() {
+      mySidebar.style.display = "none";
+  }
+  </script>
+  
+  <script>
+    document.getElementsByName("datum")[0].setAttribute('min', "{{godina}}-{{mesec}}-{{dan}}");
+  </script>
+  <script>
+    //This is test
+
+    const datum = document.getElementById("datum");
+    const usluga = document.getElementById("usluga");
+    const frizer = document.getElementById("frizer");
+    const btn = document.getElementById("first_form_button")
+
+    var duration = "{{ duration }}"
+    console.log(duration*1000)
+    var data = JSON.parse ("{{filtered_list | escapejs}}");
+    console.log(data)
+    for (item in data){
+        console.log(data[item]["pocetak"],data[item]["kraj"])
+    }
+    var compTermin = new Date()
+    var lis = document.getElementById("id_vreme").getElementsByTagName("option");
+    var za_brisanje = []
+    for (let i =0; i <lis.length; i++){
+        var danas = new Date()
+
+        var b = lis[i].value.split(":")
+        var term = new Date(2022,10,10,b[0],b[1],b[2])
+        console.log(term)
+        var porduzeni = new Date(term.getTime() + duration * 1000)
+        console.log(porduzeni)
+        for (item in data){
+            var c = data[item]["pocetak"].split(":")
+            var zauzet_pocetak = new Date(2022,10,10,c[0],c[1],c[2])
+
+            var d = data[item]["kraj"].split(":")
+            var zauzet_kraj = new Date(2022,10,10,d[0],d[1],d[2])
+            if (new Date().getTime() > term.getTime()){
+                za_brisanje.push(lis[i]);
+            }
+            if (porduzeni  > zauzet_pocetak.getTime()  && term < zauzet_kraj){
+                lis[i].style.display = "none";
+                za_brisanje.push(lis[i]);
+
+                //console.log(lis[i])
+                //lis[i].remove()
+            }
+        }
+
+    }
+    za_brisanje.forEach(zaBrisanje);
+    function zaBrisanje(el){
+        el.remove()
+    }
+
+
+
+</script>
+  </body>
+  </html>
+  

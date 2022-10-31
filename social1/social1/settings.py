@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '*',
 ]
-CSRF_TRUSTED_ORIGINS = ['https://802f-87-116-164-199.eu.ngrok.io']
+CSRF_TRUSTED_ORIGINS = ['https://c41c-87-116-163-174.eu.ngrok.io']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
