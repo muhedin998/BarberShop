@@ -51,6 +51,7 @@ class KorisnikForm(forms.ModelForm):
     class Meta:
         model = Korisnik
         fields = ['ime_prezime', 'username', 'email', 'broj_telefona','password']
+        fields = ['ime_prezime', 'username', 'email', 'broj_telefona']
         labels ={
             'username': "Vase korisicko ime", 
         }
