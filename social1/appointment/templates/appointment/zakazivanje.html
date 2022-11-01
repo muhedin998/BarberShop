@@ -50,15 +50,15 @@
     </div>
 
     <div class="col-md-auto col-sm-auto col-lg-4 shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "potvrdi" %}w3-hide{% endif %}" id="druga-forma">
-        <form class="w3-margin" action="" method="post" onsubmit="return confirm('Da li zelite da zakazete termin ?');">
+        <form class="w3-margin" action="" method="post">
 
 
             {% csrf_token %}
-            <label>Ime i Prezime: </label><br>
+            {% comment %} <label>Ime i Prezime: </label><br>
             <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="name" >
 
             <label>Broj telefona: </label><br>
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="broj_telefona" >
+            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="broj_telefona" > {% endcomment %}
 
             <label>Izaberite termin: </label><br>
             {{ form.vreme }}

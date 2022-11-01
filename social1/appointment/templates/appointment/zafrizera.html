@@ -2,13 +2,17 @@
 {% block content %}
 
  <div class="w3-container">
-  <h2>Ukupno svi  termini </h2>
+  <h2 class="w3-center" style="margin: 75px;">Vaši termini</h2>
 
-
+  
   <table class="w3-table-all ">
     <tr>
       {% comment %} <th>Frizer</th> {% endcomment %}
+      {% if user.is_superuser %}
       <th>Mušterija</th>
+      {% else %}
+      <th>Frizer</th>
+      {% endif %}
       <th>Usluga</th>
       <th>Datum & Vreme</th>
       
@@ -16,11 +20,16 @@
       {% for usl in termini %}
        <tr>
           {% comment %} <td>{{ usl.frizer }}</td> {% endcomment %}
+          {% if user.is_superuser %}
           <td>{{ usl.name }}
             <br>{{ usl.broj_telefona }}
           </td>
+          {% else %}
+          <td>{{ usl.frizer }} </td>
+          {% endif %}
+
           <td>{{ usl.usluga.name }}</td>
-          <td>{{ usl.datum }}, {{ usl.vreme|time:"H:i" }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');"><i class="fa-solid fa-xmark"></i></a></td>
+          <td>{{ usl.datum }}, {{ usl.vreme|time:"H:i" }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>
          
 
        </tr>

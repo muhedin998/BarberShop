@@ -1,3 +1,4 @@
+from io import open_code
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from datetime import timedelta
@@ -26,18 +27,18 @@ class Usluge(models.Model):
 
 
 class Termin(models.Model):
+    user  = models.ForeignKey(Korisnik, on_delete=models.CASCADE)
     frizer = models.ForeignKey(Frizer, on_delete=models.CASCADE, null=True)
     usluga = models.ForeignKey(Usluge, on_delete=models.CASCADE, null=True)
-    name = models.CharField(max_length=250, blank=True)
-    broj_telefona = models.CharField(max_length=20, default=0)
+    #name = models.CharField(max_length=250, blank=True)
+    #broj_telefona = models.CharField(max_length=20, default=0)
     datum = models.DateField(blank=True, null=True)
     vreme = models.TimeField(blank=True, null=True)
-    uredjaj = models.CharField(max_length=200, null=True, blank=True)
-
+    
 
     class Meta:
         unique_together = ['datum','vreme','frizer']
 
     def __str__(self):
-        return f"{self.name},{self.datum},{self.vreme}"
+        return f"{self.user.ime_prezime},{self.datum},{self.vreme}"
 
