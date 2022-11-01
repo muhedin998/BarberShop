@@ -130,18 +130,22 @@ def zakazi(request):
 @login_required(redirect_field_name='user_login/')
 def zafrizera(request):
     if request.user.is_authenticated:
-        frizer = []
-        if request.user.username == "hasko123":
-            frizer = Frizer.objects.get(name="Hasredin Bećirović")
-        if request.user.username == "daris123":
-            frizer = Frizer.objects.get(name="Daris Kurtenčsušević")
-        if request.user.username == "emil123":
-            frizer = Frizer.objects.get(name="Emil Aljković")
+        if request.user.is_superuser:
+            frizer = []
+            if request.user.username == "hasko123":
+                frizer = Frizer.objects.get(name="Hasredin Bećirović")
+            if request.user.username == "daris123":
+                frizer = Frizer.objects.get(name="Daris Kurtenčsušević")
+            if request.user.username == "emil123":
+                frizer = Frizer.objects.get(name="Emil Aljković")
+            termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
+
         else:
             frizer = Korisnik.objects.get(username = request.user.username)
-        termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(user=frizer)
+            termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(user=frizer)
     else:
         return redirect(zakazi)
+    print(termin)
     context = {'termini':termini}
     return render(request, 'appointment/zafrizera.html', context)
 
