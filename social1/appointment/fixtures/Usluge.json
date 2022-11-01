@@ -1,60 +1,173 @@
 [
-{
-  "model": "appointment.usluge",
-  "pk": 4,
-  "fields": {
-    "name": "äiöanje",
-    "cena": "600 RSD",
-    "duzina": "00:00:00"
+  {
+    "model": "appointment.usluge",
+    "pk": 4,
+    "fields": {
+      "name": "≈†i≈°anje",
+      "cena": "600 RSD",
+      "duzina": "00:30:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 5,
+    "fields": {
+      "name": "≈†i≈°anje sa strane",
+      "cena": "500 RSD",
+      "duzina": "00:20:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 6,
+    "fields": {
+      "name": "≈†i≈°anje djece(3-12 god)",
+      "cena": "400-500 RSD",
+      "duzina": "00:30:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 7,
+    "fields": {
+      "name": "≈†i≈°anje penzionera",
+      "cena": "450 RSD",
+      "duzina": "00:30:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 8,
+    "fields": {
+      "name": "Brijanje glave",
+      "cena": "450 RSD",
+      "duzina": "00:20:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 9,
+    "fields": {
+      "name": "Model ≈°i≈°anje",
+      "cena": "700-800 RSD",
+      "duzina": "01:00:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 10,
+    "fields": {
+      "name": "Sreƒëivanje brade",
+      "cena": "300-400 RSD",
+      "duzina": "00:40:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 11,
+    "fields": {
+      "name": "Model brade",
+      "cena": "400-500 RSD",
+      "duzina": "00:40:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 12,
+    "fields": {
+      "name": "Samo skraƒáivanje brade",
+      "cena": "200 RSD",
+      "duzina": "00:20:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 13,
+    "fields": {
+      "name": "Pranje kose",
+      "cena": "150 RSD",
+      "duzina": "00:40:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 14,
+    "fields": {
+      "name": "Fazon",
+      "cena": "100 RSD",
+      "duzina": "00:15:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 15,
+    "fields": {
+      "name": "Ne brijemo brade",
+      "cena": "XXX",
+      "duzina": "00:00:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 16,
+    "fields": {
+      "name": "Farbanje kose",
+      "cena": "500-600 RSD",
+      "duzina": "00:40:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 17,
+    "fields": {
+      "name": "Farbanje brade",
+      "cena": "300-500 RSD",
+      "duzina": "00:20:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 18,
+    "fields": {
+      "name": "Airbrush sjenƒçenje",
+      "cena": "300-400 RSD",
+      "duzina": "01:00:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 19,
+    "fields": {
+      "name": "Crna maska",
+      "cena": "400 RSD",
+      "duzina": "00:30:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 20,
+    "fields": {
+      "name": "Depilacija toplim voskom",
+      "cena": "200-300 RSD",
+      "duzina": "00:20:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 21,
+    "fields": {
+      "name": "Vlakna za kosu",
+      "cena": "200-300 RSD",
+      "duzina": "00:30:00"
+    }
+  },
+  {
+    "model": "appointment.usluge",
+    "pk": 22,
+    "fields": {
+      "name": "Tatto tribali",
+      "cena": "200-400 RSD",
+      "duzina": "00:20:00"
+    }
   }
-},
-{
-  "model": "appointment.usluge",
-  "pk": 5,
-  "fields": {
-    "name": "äiöanje sa strane",
-    "cena": "500 RSD",
-    "duzina": "00:00:00"
-  }
-},
-{
-  "model": "appointment.usluge",
-  "pk": 6,
-  "fields": {
-    "name": "äiöanje djece ( 3 - 12 god )",
-    "cena": "400-500 RSD",
-    "duzina": "00:00:00"
-  }
-},
-{
-  "model": "appointment.usluge",
-  "pk": 7,
-  "fields": {
-    "name": "äiöanje penzionera",
-    "cena": "450 RSD",
-    "duzina": "00:00:00"
-  }
-},
-{
-  "model": "appointment.usluge",
-  "pk": 8,
-  "fields": {
-    "name": "Brijanje glave",
-    "cena": "450 RSD",
-    "duzina": "00:00:00"
-  }
-},
-{
-  "model": "appointment.usluge",
-  "pk": 9,
-  "fields": {
-    "name": "Model öiöanje",
-    "cena": "700-800 RSD",
-    "duzina": "00:00:00"
-  }
-},
-{
-  "model": "appointment.usluge",
-  "pk": 10,
-  "fields": {
-    "name": 
+  ]

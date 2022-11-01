@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from .forms import KorisnikForm, TestForm, FilterForm
 from django.contrib import messages
 from datetime import datetime, timedelta
-from .models import Usluge, Frizer, Termin
+from .models import Korisnik, Usluge, Frizer, Termin
 import json
 from django.contrib.auth import authenticate, login
 
@@ -40,13 +40,14 @@ def potvrdi(request):
     if request.method == 'POST':
         if 'zakazi_termin' in request.POST:
             params = {
+                'user': request.user,
                 'usluga': usluga,
                 'frizer':frizer,
                 'datum':datum,
                 'vreme':request.POST['vreme'],
-                'name':request.POST['name'],
-                'broj_telefona':request.POST['broj_telefona'],
-                'uredjaj': request.COOKIES['device']
+                #'name':request.POST['name'],
+                #'broj_telefona':request.POST['broj_telefona'],
+                #'uredjaj': request.COOKIES['device']
             }
             data = TestForm(params)
             if data.is_valid():
@@ -128,7 +129,7 @@ def zakazi(request):
     return render(request, 'appointment/jqr.html', context)
 @login_required(redirect_field_name='user_login/')
 def zafrizera(request):
-    if request.user.is_superuser:
+    if request.user.is_authenticated:
         frizer = []
         if request.user.username == "hasko123":
             frizer = Frizer.objects.get(name="Hasredin Bećirović")
@@ -136,7 +137,9 @@ def zafrizera(request):
             frizer = Frizer.objects.get(name="Daris Kurtenčsušević")
         if request.user.username == "emil123":
             frizer = Frizer.objects.get(name="Emil Aljković")
-        termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
+        else:
+            frizer = Korisnik.objects.get(username = request.user.username)
+        termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(user=frizer)
     else:
         return redirect(zakazi)
     context = {'termini':termini}
