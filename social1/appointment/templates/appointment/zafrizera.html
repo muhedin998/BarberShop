@@ -21,8 +21,8 @@
        <tr>
           {% comment %} <td>{{ usl.frizer }}</td> {% endcomment %}
           {% if user.is_superuser %}
-          <td>{{ usl.name }}
-            <br>{{ usl.broj_telefona }}
+          <td>{{ usl.user.ime_prezime }}
+            <br>{{ usl.user.broj_telefona }}
           </td>
           {% else %}
           <td>{{ usl.frizer }} </td>
@@ -35,6 +35,7 @@
        </tr>
     {% endfor %}
   </table>
+
 </div>
 
 {% endblock %}
