@@ -187,6 +187,10 @@ def user_login(request):
             print(user)
             login(request, user)
             return redirect(zakazi)
+        else:
+            messages.error(request, "Nepravilno korisnicko ime ili lozinka !", extra_tags="danger")
+            return redirect(user_login)
+
     return render(request, 'appointment/account/login.html')
 
 def otkazivanje(request, termin_id):
