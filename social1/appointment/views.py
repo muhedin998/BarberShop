@@ -1,3 +1,4 @@
+from math import fabs
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import KorisnikForm, TestForm, FilterForm
@@ -6,6 +7,8 @@ from datetime import datetime, timedelta
 from .models import Korisnik, Usluge, Frizer, Termin
 import json
 from django.contrib.auth import authenticate, login
+from django.core.mail import send_mail
+from django.conf import settings
 
 @login_required(redirect_field_name='user_login/')
 def potvrdi(request):
@@ -53,6 +56,7 @@ def potvrdi(request):
             if data.is_valid():
                 data.save()
                 messages.success(request,f"Uspešno ste zakazali termin {datum} u {request.POST['vreme']}")
+                send_mail("Termin Frizerski salon HASKO",f"<h1>Uspešno ste zakazali termin {datum} u {request.POST['vreme']}</h1>\n",settings.EMAIL_HOST_USER,["muhedin1998@gmail.com",], fail_silently=False)
                 print("Form was VALID AND PASSED")
                 return redirect(termin)
 
