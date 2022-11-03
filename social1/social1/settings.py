@@ -85,6 +85,12 @@ DATABASES = {
     }
 }
 
+EMAIL_HOST = "smtp.office365.com"
+EMAIL_HOST_USER = "muhedin998@gmail.com"
+EMAIL_HOST_PASSWORD = "Kokoska123!"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
