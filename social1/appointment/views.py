@@ -201,3 +201,6 @@ def otkazivanje(request, termin_id):
     termin = Termin.objects.get(pk=termin_id)
     termin.delete()
     return redirect(zafrizera)
+
+def password_reset_done(request):
+    return redirect(zakazi)
