@@ -85,6 +85,7 @@ DATABASES = {
     }
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.office365.com"
 EMAIL_HOST_USER = "muhedin998@gmail.com"
 EMAIL_HOST_PASSWORD = "Kokoska123!"
