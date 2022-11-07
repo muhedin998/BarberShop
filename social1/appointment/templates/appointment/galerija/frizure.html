@@ -1,0 +1,37 @@
+{% extends 'appointment/galerija/galerija.html' %}
+{% block slike %}
+
+    <div class="carousel">
+		<div class="carousel-cell" style="background-image: url('media/images/frizer1.jpg'); background-repeat: no-repeat; background-size: cover;">
+			
+		</div>
+		<div class="carousel-cell" style="background-image: url('media/images/frizer1.jpg'); background-repeat: no-repeat; background-size:cover;">
+			
+		</div>
+		<div class="carousel-cell" style="background-image: url('media/images/frizer1.jpg'); background-repeat: no-repeat; background-size: cover;">
+			
+		</div>
+	</div>
+	<script>
+		
+		var flkty = new Flickity('.carousel');
+
+		var previousButton = document.querySelector('.button--previous');
+		previousButton.addEventListener( 'click', function() {
+		  flkty.previous();
+		});
+
+		var previousWrappedButton = document.querySelector('.button--previous-wrapped');
+		previousWrappedButton.addEventListener( 'click', function() {
+		  flkty.previous( true );
+		});
+
+	</script>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit">
+    </form>
+    <br>
+
+{% endblock %}

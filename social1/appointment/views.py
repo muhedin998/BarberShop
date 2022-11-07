@@ -1,10 +1,10 @@
 from math import fabs
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .forms import KorisnikForm, TestForm, FilterForm
+from .forms import KorisnikForm, TestForm, FilterForm, SlikaForm
 from django.contrib import messages
 from datetime import datetime, timedelta
-from .models import Korisnik, Usluge, Frizer, Termin
+from .models import Korisnik, Usluge, Frizer, Termin, Slike
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
@@ -148,7 +148,6 @@ def zafrizera(request):
             termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(user=frizer)
     else:
         return redirect(zakazi)
-    print(termin)
     context = {'termini':termini}
     return render(request, 'appointment/zafrizera.html', context)
 
@@ -205,3 +204,13 @@ def user_logout(request):
 
     logout(request)
     return redirect(user_login)
+
+def galerija(request):
+    form = SlikaForm()
+    slike = Slike.objects.all()
+    if request.method == 'POST':
+        form = SlikaForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+    return render(request, 'appointment/galerija/frizure.html',{"form":form,
+                                                                "slike":slike})
