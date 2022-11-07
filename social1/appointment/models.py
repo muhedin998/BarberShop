@@ -42,3 +42,19 @@ class Termin(models.Model):
     def __str__(self):
         return f"{self.user.ime_prezime},{self.datum},{self.vreme}"
 
+KATEGORIJE = [
+    ("fejdovi","fejdovi"),
+
+    ("frizure","fejdovi"),
+
+    ("brade","fejdovi"),
+
+    ("duga_kosa","duga kosa"),
+
+]
+
+class Slike(models.Model):
+    kategorija = models.CharField(max_length=50, choices=KATEGORIJE)
+    slika = models.ImageField(null=True, blank=True, upload_to="images/")
+
+
