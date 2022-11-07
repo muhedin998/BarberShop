@@ -10,6 +10,7 @@ urlpatterns =[
     path('user_login/', views.user_login, name='user_login'),
     path('user_register/', views.user_register, name='user_register'),
     path('otkazivanje/<termin_id>', views.otkazivanje, name="otkazivanje"),
+    path('user_logout/', views.user_logout, name='user_logout'),
     path('reset_password', auth_views.PasswordResetView.as_view(), name="password_reset"),
     path('reset_password/done', auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),    
     path('reset/<uidb64>/<token>', auth_views.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),

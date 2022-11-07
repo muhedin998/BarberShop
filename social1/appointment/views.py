@@ -6,7 +6,7 @@ from django.contrib import messages
 from datetime import datetime, timedelta
 from .models import Korisnik, Usluge, Frizer, Termin
 import json
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -56,7 +56,6 @@ def potvrdi(request):
             if data.is_valid():
                 data.save()
                 messages.success(request,f"Uspešno ste zakazali termin {datum} u {request.POST['vreme']}")
-                send_mail("Termin Frizerski salon HASKO",f"<h1>Uspešno ste zakazali termin {datum} u {request.POST['vreme']}</h1>\n",settings.EMAIL_HOST_USER,["muhedin1998@gmail.com",], fail_silently=False)
                 print("Form was VALID AND PASSED")
                 return redirect(termin)
 
@@ -202,5 +201,7 @@ def otkazivanje(request, termin_id):
     termin.delete()
     return redirect(zafrizera)
 
-def password_reset_done(request):
-    return redirect(zakazi)
+def user_logout(request):
+
+    logout(request)
+    return redirect(user_login)
