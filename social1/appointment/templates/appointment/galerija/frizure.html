@@ -2,13 +2,13 @@
 {% block slike %}
 
     <div class="carousel">
-		<div class="carousel-cell" style="background-image: url('media/images/frizer1.jpg'); background-repeat: no-repeat; background-size: cover;">
+		<div class="carousel-cell" style="background-image: url('media/images/slika.jpeg'); background-repeat: no-repeat; background-size: cover;">
 			
 		</div>
-		<div class="carousel-cell" style="background-image: url('media/images/frizer1.jpg'); background-repeat: no-repeat; background-size:cover;">
+		<div class="carousel-cell" style="background-image: url('media/images/slika.jpeg'); background-repeat: no-repeat; background-size:cover;">
 			
 		</div>
-		<div class="carousel-cell" style="background-image: url('media/images/frizer1.jpg'); background-repeat: no-repeat; background-size: cover;">
+		<div class="carousel-cell" style="background-image: url('media/images/slika.jpeg'); background-repeat: no-repeat; background-size: cover;">
 			
 		</div>
 	</div>
@@ -27,6 +27,7 @@
 		});
 
 	</script>
+	<br>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{form.as_p}}
