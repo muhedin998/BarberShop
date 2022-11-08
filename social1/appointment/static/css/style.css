@@ -178,8 +178,8 @@ transform: translateY(0px);
 }
 
 .carousel-cell {
-  width: 66%;
-  height: 90vh;
+  width: 86%;
+  height: 80vh;
   margin-right: 10px;
   border-radius: 5px;
   counter-increment: carousel-cell;
