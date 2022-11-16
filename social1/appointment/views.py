@@ -1,10 +1,10 @@
 from math import fabs
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .forms import KorisnikForm, TestForm, FilterForm, SlikaForm
+from .forms import KorisnikForm, TestForm, FilterForm
 from django.contrib import messages
 from datetime import datetime, timedelta
-from .models import Korisnik, Usluge, Frizer, Termin, Slike
+from .models import Korisnik, Usluge, Frizer, Termin
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
@@ -12,6 +12,7 @@ from django.conf import settings
 
 @login_required(redirect_field_name='user_login/')
 def potvrdi(request):
+    sada = datetime.now()
     viewname = "potvrdi"
     form = TestForm()
     usluga = request.session.get('usluga')
@@ -20,6 +21,8 @@ def potvrdi(request):
     duration = Usluge.objects.get(pk=usluga).duzina.total_seconds()
     termini = Termin.objects.filter(frizer=frizer,datum=datum)
     termini_2 = []
+
+    
 
     try:
         ter = f"{termini[0].vreme}".split(":")
@@ -33,8 +36,8 @@ def potvrdi(request):
             # Ovo radi ! vr + usl.duzina
             # duration = timedelta(usl.duzina)
             termini_2.append({
-                'pocetak': f'{pocetak.strftime("%H:%M:%S")}',
-                'kraj': f'{kraj.strftime("%H:%M:%S")}'
+                "pocetak": f"{pocetak.strftime('%H:%M:%S')}",
+                "kraj": f"{kraj.strftime('%H:%M:%S')}"
             })
 
         print(Usluge.objects.get(pk=usluga).duzina.total_seconds())
@@ -48,6 +51,9 @@ def potvrdi(request):
                 'frizer':frizer,
                 'datum':datum,
                 'vreme':request.POST['vreme'],
+                'godina': sada.year,
+                'mesec': format(sada.month, "02d"),
+                'dan': format(sada.day, "02d"),
                 #'name':request.POST['name'],
                 #'broj_telefona':request.POST['broj_telefona'],
                 #'uredjaj': request.COOKIES['device']
@@ -204,13 +210,3 @@ def user_logout(request):
 
     logout(request)
     return redirect(user_login)
-
-def galerija(request):
-    form = SlikaForm()
-    slike = Slike.objects.all()
-    if request.method == 'POST':
-        form = SlikaForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-    return render(request, 'appointment/galerija/frizure.html',{"form":form,
-                                                                "slike":slike})

@@ -182,15 +182,22 @@ transform: translateY(0px);
   height: 80vh;
   margin-right: 10px;
   border-radius: 5px;
-  counter-increment: carousel-cell;
+  /* counter-increment: carousel-cell; */
+}
+
+.brds{
+  border-radius: 0 30px 0 30px;
+}
+.brds-sm{
+  border-radius: 0 15px 0 15px;
 }
 
 /* cell number */
-.carousel-cell:before {
-  display: block;
+/* .carousel-cell:before {
+  display: none;
   text-align: center;
   content: counter(carousel-cell);
   line-height: 200px;
   font-size: 80px;
   color: white;
-}
+} */

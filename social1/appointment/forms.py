@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Korisnik, Termin, Slike
+from .models import Korisnik, Termin
 import datetime as dt
 #import django.contrib.auth.password_validation.CommonPasswordValidator
 
@@ -93,7 +93,3 @@ class TestForm(forms.ModelForm):
     #             #print(visible.name)
     #             visible.field.widget.attrs['class'] = 'w3-select'
 
-class SlikaForm(forms.ModelForm):
-    class Meta:
-        model = Slike
-        fields = '__all__'

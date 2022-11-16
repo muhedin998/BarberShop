@@ -30,7 +30,8 @@ ALLOWED_HOSTS = [
 ]
 CSRF_TRUSTED_ORIGINS = ['https://ca39-212-200-112-208.eu.ngrok.io/galerija',
                         'https://ca39-212-200-112-208.eu.ngrok.io',
-                        'https://881d-87-116-163-252.eu.ngrok.io']
+                        'https://881d-87-116-163-252.eu.ngrok.io',
+                        'https://b127-212-200-112-208.eu.ngrok.io']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'appointment',
     'crispy_forms',
+    'galerija',
 ]
 
 MIDDLEWARE = [
