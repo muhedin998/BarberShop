@@ -80,9 +80,9 @@
     {% if viewname == "zakazi" %}
       <a href="{% url "termin" %}" class="w3-bar-item w3-button"><i class="fa fa-arrow-right"></i> ZAKAŽI</a>
       <a href="#team" class="w3-bar-item w3-button"><i class="fa fa-user"></i> NAŠ TIM</a>
-      <a href="#work" class="w3-bar-item w3-button"><i class="fa fa-th"></i> KATALOG</a>
+      <a href="{% url "galerija" %}" class="w3-bar-item w3-button"><i class="fa fa-th"></i> KATALOG</a>
       <a href="#pricing" class="w3-bar-item w3-button"><i class="fa fa-usd"></i> USLUGE</a>
-      <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> KONTAKT</a>
+      <!-- <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> KONTAKT</a> -->
       {% if user.is_authenticated %}
       <a href="{% url 'zafrizera' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar" aria-hidden="true"></i> TERMINI</a>
       <a href="{% url 'user_logout' %}" class="w3-bar-item w3-button"><i class="fa fa-sign-out" aria-hidden="true"></i> ODJAVI SE</a>
@@ -109,9 +109,9 @@
   
     <a href="{% url "termin" %}" onclick="w3_close()" class="w3-bar-item w3-button">ZAKAŽI</a>
     <a href="#team" onclick="w3_close()" class="w3-bar-item w3-button">NAŠ TIM</a>
-    <a href="#work" onclick="w3_close()" class="w3-bar-item w3-button">KATALOG</a>
+    <a href="{% url "galerija" %}" onclick="w3_close()" class="w3-bar-item w3-button">KATALOG</a>
     <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button">USLUGE</a>
-    <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button">KONTAKT</a>
+    <!-- <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button">KONTAKT</a> -->
     <a href="{% url 'user_logout' %}" class="w3-bar-item w3-button" style="position: absolute; bottom: 0;"><i class="fa fa-sign-out" aria-hidden="true"></i> ODJAVI SE</a>
 
   {% else %}
@@ -209,9 +209,8 @@
   <script>
     document.getElementsByName("datum")[0].setAttribute('min', "{{godina}}-{{mesec}}-{{dan}}");
   </script>
-  <script>
+  <script >
     //This is test
-
     const datum = document.getElementById("datum");
     const usluga = document.getElementById("usluga");
     const frizer = document.getElementById("frizer");
@@ -221,45 +220,60 @@
     console.log(duration*1000)
     var data = JSON.parse ("{{filtered_list | escapejs}}");
     console.log(data)
-    for (item in data){
-        console.log(data[item]["pocetak"],data[item]["kraj"])
-    }
+
     var compTermin = new Date()
     var lis = document.getElementById("id_vreme").getElementsByTagName("option");
+    var id_vreme = document.getElementById("id_vreme")
     var za_brisanje = []
+    
+
+    //Iterate over all possible termins
     for (let i =0; i <lis.length; i++){
+
+        const vreme_python = "{{ godina }},{{ mesec }},{{ dan }}".split(",")
         var danas = new Date()
 
         var b = lis[i].value.split(":")
-        var term = new Date(2022,10,10,b[0],b[1],b[2])
-        console.log(term)
+        var term = new Date(vreme_python[0],vreme_python[1],vreme_python[2],b[0],b[1],b[2])
+        console.log("Termin =",  term)
+
+        //To be scheduled + duration to tetermin if there is enough time
         var porduzeni = new Date(term.getTime() + duration * 1000)
-        console.log(porduzeni)
+
+        //Iterate over all appoinments from database
         for (item in data){
-            var c = data[item]["pocetak"].split(":")
-            var zauzet_pocetak = new Date(2022,10,10,c[0],c[1],c[2])
+          var c = data[item]["pocetak"].split(":")
+          var zauzet_pocetak = new Date(vreme_python[0],vreme_python[1],vreme_python[2],c[0],c[1],c[2])
 
-            var d = data[item]["kraj"].split(":")
-            var zauzet_kraj = new Date(2022,10,10,d[0],d[1],d[2])
-            if (new Date().getTime() > term.getTime()){
+          var d = data[item]["kraj"].split(":")
+          var zauzet_kraj = new Date(vreme_python[0],vreme_python[1],vreme_python[2],d[0],d[1],d[2])
+          //Prevent todays expired termin of beeing selected
+          if (datum.value == danas.getDate()){            
+            if (danas.getTime() > term.getTime()){
+
+              //check if we have already deleted that item
+              if (!za_brisanje.includes(lis[i])){
+
+                //appent to list for deleting
                 za_brisanje.push(lis[i]);
+              }
             }
-            if (porduzeni  > zauzet_pocetak.getTime()  && term < zauzet_kraj){
-                lis[i].style.display = "none";
+          }
+          if (porduzeni  > zauzet_pocetak.getTime()  && term < zauzet_kraj){
+              lis[i].style.display = "none";
+              if (!za_brisanje.includes(lis[i])){
                 za_brisanje.push(lis[i]);
+              }
+          }
+      }
 
-                //console.log(lis[i])
-                //lis[i].remove()
-            }
-        }
-
-    }
-    za_brisanje.forEach(zaBrisanje);
-    function zaBrisanje(el){
-        el.remove()
-    }
-
-
+  }
+  //deleting taken termins
+  za_brisanje.forEach(zaBrisanje);
+  function zaBrisanje(el){
+      el.remove()
+      console.log(el)
+  }
 
 </script>
   </body>
