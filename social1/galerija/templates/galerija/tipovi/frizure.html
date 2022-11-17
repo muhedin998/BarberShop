@@ -1,14 +1,33 @@
 {% extends 'galerija/galerija.html' %}
 {% block slike %}
 
-    <div class="carousel">
-		{% for sl in slike %}
+<div class="carousel">
+	{% for sl in slike %}
 
-		<div class="carousel-cell" style="background-image: url('media/{{sl.slika}}'); background-repeat: no-repeat; background-size: contain; background-position: center;">
-			
-		</div>
-		{% endfor %}
+	<div class="carousel-cell" style="background-image: url('media/{{sl.slika}}'); background-repeat: no-repeat; background-size: contain; background-position: center;">
+	{% if user.is_staff %}
+		<a class="w3-white w3-opacity" href="{% url 'brisanje' sl.id %}" onclick="return confirm('Da li zelite da izbrisete ovu sliku ?');" style="margin: 20px;  padding: 20px;"> <i class="fa-sharp fa-solid fa-trash w3-white w3-opacity"></i> Ukloni</a>
+	{% endif %}
 	</div>
+	{% endfor %}
+</div>
+
+	<div id="modal01" class="w3-modal w3-black" onclick="this.style.display='none'">
+		<span class="w3-button w3-xxlarge w3-black w3-padding-large w3-display-topright" title="Close Modal Image">×</span>
+		<div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64">
+		  <img id="img01" class="w3-image">
+		  <p id="caption" class="w3-opacity w3-large"></p>
+		</div>
+	  </div>
+	<script>
+	
+		function onClick(element) {
+		document.getElementById("img01").src = element.src;
+		document.getElementById("modal01").style.display = "block";
+		var captionText = document.getElementById("caption");
+		captionText.innerHTML = element.alt;
+		}
+	</script>
 
 	<script>
 		

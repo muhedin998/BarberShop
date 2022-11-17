@@ -1,16 +1,19 @@
 from django.db import models
 
 KATEGORIJE = [
-    ("fejdovi","Fejdovi"),
+    ("krace-moderne","Kraće moderne"),
 
-    ("frizure","Frizure"),
+    ("duze-moderne","Duže moderne"),
 
-    ("brade","Brade"),
+    ("decije-frizure","Dečije frizure"),
 
-    ("duga_kosa","Duga kosa"),
+    ("tribali","Tribali"),
 
 ]
 
 class Slike(models.Model):
     kategorija = models.CharField(max_length=50, choices=KATEGORIJE)
-    slika = models.ImageField(null=True, blank=True, upload_to="images/")
+    slika = models.ImageField(upload_to="images/")
+
+    def __str__(self):
+        return f"{self.kategorija} - {self.slika}"

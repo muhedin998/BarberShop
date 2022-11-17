@@ -5,7 +5,9 @@
 		{% for sl in slike %}
 
 		<div class="carousel-cell" style="background-image: url('media/{{sl.slika}}'); background-repeat: no-repeat; background-size: contain; background-position: center;">
-			
+		{% if user.is_staff %}
+			<a class="w3-white w3-opacity" href="{% url 'brisanje' sl.id %}" onclick="return confirm('Da li zelite da izbrisete ovu sliku ?');" style="margin: 20px;  padding: 20px;"> <i class="fa-sharp fa-solid fa-trash w3-white w3-opacity"></i> Ukloni</a>
+		{% endif %}
 		</div>
 		{% endfor %}
 	</div>
