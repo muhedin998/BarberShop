@@ -5,13 +5,13 @@ from . import views
 urlpatterns = [
     path('katalog', views.galerija, name='galerija'),
 
-    path('frizure', views.frizure, name='frizure'),
+    path('krace-moderne', views.krace_moderne, name='krace-moderne'),
 
-    path('brade', views.brade, name='brade'),
+    path('duze-moderne', views.duze_moderne, name='duze-moderne'),
 
-    path('fadeovi', views.fadeovi, name='fadeovi'),
+    path('decije-frizure', views.decije_frizure, name='decije-frizure'),
 
-    path('duga-kosa', views.duga_kosa, name='duga-kosa'),
+    path('tribali', views.tribali, name='tribali'),
 
     path('brisanje/<slika_id>', views.brisanje, name='brisanje')
 ]

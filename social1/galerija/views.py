@@ -3,12 +3,12 @@ from .models import Slike
 from .forms import SlikaForm
 
 
-def frizure(request):
+def krace_moderne(request):
     form = SlikaForm()
     slike = Slike.objects.all()
     list_katalog = []
     for sl in slike:
-        if sl.kategorija == 'frizure':
+        if sl.kategorija == 'krace-moderne':
             list_katalog.append(sl)
 
     if request.method == 'POST':
@@ -18,12 +18,12 @@ def frizure(request):
     return render(request, 'galerija/tipovi/frizure.html',{"form":form,
                                                            "slike":list_katalog})
 
-def fadeovi(request):
+def duze_moderne(request):
     form = SlikaForm()
     slike = Slike.objects.all()
     list_katalog = []
     for sl in slike:
-        if sl.kategorija == 'fejdovi':
+        if sl.kategorija == 'duze-moderne':
             list_katalog.append(sl)
 
     if request.method == 'POST':
@@ -34,12 +34,12 @@ def fadeovi(request):
                                                            "slike":list_katalog})
 
 
-def brade(request):
+def decije_frizure(request):
     form = SlikaForm()
     slike = Slike.objects.all()
     list_katalog = []
     for sl in slike:
-        if sl.kategorija == 'brade':
+        if sl.kategorija == 'decije-frizure':
             list_katalog.append(sl)
 
     if request.method == 'POST':
@@ -50,12 +50,12 @@ def brade(request):
                                                            "slike":list_katalog})
 
 
-def duga_kosa(request):
+def tribali(request):
     form = SlikaForm()
     slike = Slike.objects.all()
     list_katalog = []
     for sl in slike:
-        if sl.kategorija == 'duga_kosa':
+        if sl.kategorija == 'tribali':
             list_katalog.append(sl)
 
     if request.method == 'POST':
