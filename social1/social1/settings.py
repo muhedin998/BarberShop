@@ -138,6 +138,8 @@ LOGIN_URL = '/user_login/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 STATICFILES_ROOT = (
     os.path.join(BASE_DIR, 'static'),
 )
