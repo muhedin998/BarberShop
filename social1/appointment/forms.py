@@ -83,7 +83,7 @@ class KorisnikForm(forms.ModelForm):
 class TestForm(forms.ModelForm):
     class Meta:
         model = Termin
-        fields = ['user','usluga','frizer','datum','vreme']
+        fields = ['user','usluga','frizer','name','broj_telefona','datum','vreme']
         widgets = {'vreme': forms.Select(choices=ODABIR_TERMINA,attrs={'class':'w3-select'})}
 
     # def __init__(self, *args, **kwargs):

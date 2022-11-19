@@ -45,21 +45,30 @@ def potvrdi(request):
 
     if request.method == 'POST':
         if 'zakazi_termin' in request.POST:
+            name = ""
+            broj_telefona = ""
+            if request.user.is_superuser:
+                name = request.POST['name']
+                broj_telefona = request.POST['broj_telefona']
+            else:
+                name = request.user.ime_prezime
+                broj_telefona = request.user.broj_telefona
             params = {
                 'user': request.user,
                 'usluga': usluga,
                 'frizer':frizer,
                 'datum':datum,
+                'name':name,
                 'vreme':request.POST['vreme'],
                 'godina': sada.year,
                 'mesec': format(sada.month, "02d"),
-                'dan': format(sada.day, "02d"),
+                'dan': format(sada.day, "02d"),                
+                'broj_telefona':broj_telefona
                 #'name':request.POST['name'],
-                #'broj_telefona':request.POST['broj_telefona'],
                 #'uredjaj': request.COOKIES['device']
             }
             data = TestForm(params)
-            if data.is_valid():
+            if data.is_valid():              
                 data.save()
                 messages.success(request,f"Uspešno ste zakazali termin {datum} u {request.POST['vreme']}")
                 print("Form was VALID AND PASSED")
