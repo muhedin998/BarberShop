@@ -54,11 +54,13 @@
 
 
             {% csrf_token %}
-            {% comment %} <label>Ime i Prezime: </label><br>
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="name" >
+            {% if user.is_superuser %} 
+                <label>Ime i Prezime: </label><br>
+                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="name" >
 
-            <label>Broj telefona: </label><br>
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="broj_telefona" > {% endcomment %}
+                <label>Broj telefona: </label><br>
+                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="broj_telefona" > 
+            {% endif %}
 
             <label>Izaberite termin: </label><br>
             {{ form.vreme }}
