@@ -160,11 +160,11 @@
           <br>
   
             <br>
-            <a href="http://www.instagram.com" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-instagram w3-hover-opacity"></i>  <p>  Instagram </p></a>
+            <a href="https://www.instagram.com/frizerski_salon_hasko/?igshid=YmMyMTA2M2Y=" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-instagram w3-hover-opacity"></i>  <p>  Instagram </p></a>
             <br>
-            <a href="http://www.instagram.com" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-youtube-play w3-hover-opacity"></i>  <p>  Youtube </p></a>
+            <a href="www.youtube.com" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-youtube-play w3-hover-opacity"></i>  <p>  Youtube </p></a>
             <br>
-            <a href="http://www.instagram.com" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-facebook-official w3-hover-opacity"></i>  <p>  Facebook </p></a>
+            <a href="https://www.facebook.com/muvehid.beciro?mibextid=ZbWKwL" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fa fa-facebook-official w3-hover-opacity"></i>  <p>  Facebook </p></a>
             <br>
             <a href="https://vm.tiktok.com/ZMFjSnoWv/" class="d-flex justify-content-start"><i style="font-size: 2.73em; padding-right: 20px;" class="fab fa-tiktok w3-hover-opacity"></i>  <p>  TikTok </p></a>
         </div>
@@ -229,6 +229,7 @@
     var compTermin = new Date()
     var lis = document.getElementById("id_vreme").getElementsByTagName("option");
     var id_vreme = document.getElementById("id_vreme")
+    var potvrdi_form = document.getElementById("potvrdi-form")
     var za_brisanje = []
     
 
@@ -279,7 +280,10 @@
       el.remove()
       console.log(el)
   }
-
+  if (lis.length === 0 ) {
+    potvrdi_form.remove();
+    document.getElementById("nema-termina").style.display = "block"
+  }
 </script>
   </body>
   </html>

@@ -2,8 +2,26 @@
 {% block content %}
 
  <div class="w3-container">
-  <h2 class="w3-center" style="margin: 75px;">Vaši termini</h2>
+<br><br><br>
+  {% if user.is_superuser %}
+  <div class="row">
+    <div class="col-sm-6 col-lg-6 col-md-6">
 
+      <h2 class="w3-center">Vaši termini  <i class="fa fa-arrow-down"></i></h2>  
+    </div>
+    <div class="col-sm-6 col-lg-6 col-md-6 w3-padding">
+      <form action="" method="post">
+        {% csrf_token %}
+        <h4>Iskljucite termine za..</h4>
+        <input type="date" class="form-control"  name="datum" id="datum" style=" width: 70%;"><br>
+        <input type="submit" value="Iskljuci termine" class="btn btn-danger">
+      </form>
+      <br>
+    </div>
+  </div>
+  {% else %}
+  <h2 class="w3-center">Vaši termini <i class="fa fa-arrow-down"></i></h2>
+  {% endif %}
   
   <table class="w3-table-all ">
     <tr>
@@ -19,23 +37,36 @@
       </tr>
       {% for usl in termini %}
        <tr>
-          {% comment %} <td>{{ usl.frizer }}</td> {% endcomment %}
+          
           {% if user.is_superuser %}
-          <td>{{ usl.name }}
-            <br>{{ usl.broj_telefona }}
-          </td>
+            {% if usl.name == "OTKAZAN DAN" %}
+             <!-- <td class="bg-danger text-light w3-center">{{ usl.name }}</td> -->
+             <td class="bg-danger text-light w3-center" colspan="3">{{ usl.name }} &nbsp {{ usl.datum }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>         
+
+            {% else %}
+              <td>{{ usl.name }}
+              <br>{{ usl.broj_telefona }}
+              </td>
+              {% endif %}
           {% else %}
           <td>{{ usl.frizer }} </td>
           {% endif %}
-
+          {% if usl.name == "OTKAZAN DAN" %}
+          <!-- <td class="bg-danger text-light w3-center" colspan="2"> &nbsp {{ usl.datum }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>          -->
+          {% else %}
           <td>{{ usl.usluga.name }}</td>
           <td>{{ usl.datum }}, {{ usl.vreme|time:"H:i" }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>
-         
+          {% endif %}
 
        </tr>
     {% endfor %}
   </table>
 
 </div>
-
+<script>
+  var date = document.getElementById("datum");
+  var novi = new Date().toISOString().split('T')[0];
+  date.setAttribute("value", novi)
+  console.log(novi)
+</script>
 {% endblock %}
