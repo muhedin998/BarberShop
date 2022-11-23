@@ -50,7 +50,7 @@
     </div>
 
     <div class="col-md-auto col-sm-auto col-lg-4 shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "potvrdi" %}w3-hide{% endif %}" id="druga-forma">
-        <form class="w3-margin" action="" method="post">
+        <form class="w3-margin" action="" method="post" id="potvrdi-form">
 
 
             {% csrf_token %}
@@ -67,6 +67,7 @@
             <br>
             <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-secondary" name="zakazi_termin" type="submit" value="ZAKAŽI">
         </form>
+        <h1 class="bg-dark w3-padding text-white" style="display:none;" id="nema-termina">Nema dostupnih termina za ovaj dan !</h1>
   </div>
 </div>
 <br><br><br>

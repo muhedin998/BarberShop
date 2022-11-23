@@ -126,9 +126,9 @@ def zakazi(request):
     sada = datetime.now()
 
     usluge = Usluge.objects.all()
-    ls1=usluge[:round(len(usluge)/3)]
-    ls2= usluge[round(len(usluge)/3):round(len(usluge)/3+len(usluge)/3)-1]
-    ls3= usluge[round(len(usluge)/3+len(usluge)/3)-1:]
+    ls1=usluge[:round(len(usluge)/3)-1]
+    ls2= usluge[round(len(usluge)/3)-1:round(len(usluge)/3+len(usluge)/3)]
+    ls3= usluge[round(len(usluge)/3+len(usluge)/3):]
 
     frizeri = Frizer.objects.all()
     interval = 30
@@ -147,15 +147,40 @@ def zakazi(request):
     return render(request, 'appointment/jqr.html', context)
 @login_required(redirect_field_name='user_login/')
 def zafrizera(request):
+    frizer = []
+    if request.user.username == "hasko123":
+        frizer = Frizer.objects.get(name="Hasredin Bećirović")
+    if request.user.username == "daris123":
+        frizer = Frizer.objects.get(name="Daris Kurtenčsušević")
+    if request.user.username == "emil123":
+        frizer = Frizer.objects.get(name="Emil Aljković")
+
+    za_otkazivanje = Usluge.objects.get(pk=15)
+    print(za_otkazivanje.name)
+    if request.method =='POST':
+        form = TestForm()
+        name = "OTKAZAN DAN"
+        broj_telefona = ""
+        params = {
+            'user': request.user,
+            'usluga': za_otkazivanje,
+            'frizer':frizer,
+            'datum':request.POST['datum'],
+            'name':name,
+            'vreme':'09:00:00',
+            # 'godina': sada.year,
+            # 'mesec': format(sada.month, "02d"),
+            # 'dan': format(sada.day, "02d"),                
+            'broj_telefona':broj_telefona
+            #'name':request.POST['name'],
+            #'uredjaj': request.COOKIES['device']
+            }
+        form = TestForm(params)
+        if form.is_valid():
+            form.save()
+        print(request.POST['datum'])
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            frizer = []
-            if request.user.username == "hasko123":
-                frizer = Frizer.objects.get(name="Hasredin Bećirović")
-            if request.user.username == "daris123":
-                frizer = Frizer.objects.get(name="Daris Kurtenčsušević")
-            if request.user.username == "emil123":
-                frizer = Frizer.objects.get(name="Emil Aljković")
             termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
 
         else:
