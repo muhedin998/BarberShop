@@ -21,14 +21,24 @@
     "model": "appointment.usluge",
     "pk": 3,
     "fields": {
-      "name": "Šišanje djece(3-12 god)",
-      "cena": "400-500 RSD",
-      "duzina": "00:25:00"
+      "name": "Šišanje + Sređivanje brade",
+      "cena": "800-1000 RSD",
+      "duzina": "00:40:00"
     }
   },
   {
     "model": "appointment.usluge",
     "pk": 4,
+    "fields": {
+      "name": "Model šišanje(fade sjenčenje)",
+      "cena": "700-800 RSD",
+      "duzina": "00:30:00"
+    }
+  },
+
+  {
+    "model": "appointment.usluge",
+    "pk": 5,
     "fields": {
       "name": "Šišanje penzionera",
       "cena": "450 RSD",
@@ -37,36 +47,29 @@
   },
   {
     "model": "appointment.usluge",
-    "pk": 5,
+    "pk": 6,
     "fields": {
       "name": "Brijanje glave",
       "cena": "450 RSD",
       "duzina": "00:20:00"
     }
   },
-  {
-    "model": "appointment.usluge",
-    "pk": 6,
-    "fields": {
-      "name": "Model šišanje",
-      "cena": "700-800 RSD",
-      "duzina": "00:30:00"
-    }
-  },
+
   {
     "model": "appointment.usluge",
     "pk": 7,
     "fields": {
-      "name": "Šišanje + Sređivanje brade",
-      "cena": "700-800 RSD",
-      "duzina": "00:40:00"
+      "name": "Šišanje djece(3-12 god)",
+      "cena": "400-500 RSD",
+      "duzina": "00:25:00"
     }
   },
+
   {
     "model": "appointment.usluge",
     "pk": 10,
     "fields": {
-      "name": "Sređivanje brade",
+      "name": "Sređivanje brade(manje-veće)",
       "cena": "300-400 RSD",
       "duzina": "00:20:00"
     }
@@ -75,7 +78,7 @@
     "model": "appointment.usluge",
     "pk": 11,
     "fields": {
-      "name": "Model brade",
+      "name": "Model brade(fade sjenčenje)",
       "cena": "400-500 RSD",
       "duzina": "00:20:00"
     }
@@ -129,7 +132,7 @@
     "model": "appointment.usluge",
     "pk": 17,
     "fields": {
-      "name": "Izvlačenje pramenova",
+      "name": "Izvlačenje pramenova (šatiranje)",
       "cena": "1500 RSD",
       "duzina": "00:40:00"
     }
