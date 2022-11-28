@@ -6,32 +6,49 @@ import datetime as dt
 
 ODABIR_TERMINA = [
     (dt.time(hour=10, minute=0),"10:00"),
-    (dt.time(hour=10, minute=20),"10:20"),
-    (dt.time(hour=10, minute=40),"10:40"),
+    (dt.time(hour=10, minute=15),"10:15"),
+    (dt.time(hour=10, minute=30),"10:30"),
+    (dt.time(hour=10, minute=45),"10:45"),
+
     (dt.time(hour=11, minute=0),"11:00"),
-    (dt.time(hour=11, minute=20),"11:20"),
-    (dt.time(hour=11, minute=40),"11:40"),
+    (dt.time(hour=11, minute=15),"11:15"),
+    (dt.time(hour=11, minute=30),"11:30"),
+    (dt.time(hour=11, minute=45),"11:45"),
+
     (dt.time(hour=12, minute=0),"12:00"),
-    (dt.time(hour=12, minute=20),"12:20"),
-    (dt.time(hour=12, minute=40),"12:40"),
+    (dt.time(hour=12, minute=15),"12:15"),
+    (dt.time(hour=12, minute=30),"12:30"),
+    (dt.time(hour=12, minute=45),"12:45"),
+
     (dt.time(hour=13, minute=0),"13:00"),
-    (dt.time(hour=13, minute=20),"13:20"),
-    (dt.time(hour=13, minute=40),"13:40"),
+    (dt.time(hour=13, minute=15),"13:15"),    
+    (dt.time(hour=13, minute=30),"13:30"),
+    (dt.time(hour=13, minute=45),"13:45"),
+
     (dt.time(hour=14, minute=0),"14:00"),
-    (dt.time(hour=14, minute=20),"14:20"),
-    (dt.time(hour=14, minute=40),"14:40"),
+    (dt.time(hour=14, minute=15),"14:15"),
+    (dt.time(hour=14, minute=30),"14:30"),
+    (dt.time(hour=14, minute=45),"14:45"),
+
     (dt.time(hour=15, minute=0),"15:00"),
-    (dt.time(hour=15, minute=20),"15:20"),
-    (dt.time(hour=15, minute=40),"15:40"),
+    (dt.time(hour=15, minute=15),"15:15"),
+    (dt.time(hour=15, minute=30),"15:30"),
+    (dt.time(hour=15, minute=45),"15:45"),
+
     (dt.time(hour=16, minute=0),"16:00"),
-    (dt.time(hour=16, minute=20),"16:20"),
-    (dt.time(hour=16, minute=40),"16:40"),
+    (dt.time(hour=16, minute=15),"16:15"),
+    (dt.time(hour=16, minute=30),"16:30"),
+    (dt.time(hour=16, minute=45),"16:45"),
+
     (dt.time(hour=17, minute=0),"17:00"),
-    (dt.time(hour=17, minute=20),"17:20"),
-    (dt.time(hour=17, minute=40),"17:40"),
+    (dt.time(hour=17, minute=15),"17:15"),
+    (dt.time(hour=17, minute=30),"17:30"),
+    (dt.time(hour=17, minute=45),"17:45"),
+
     (dt.time(hour=18, minute=0),"18:00"),
-    (dt.time(hour=18, minute=20),"18:20"),
-    (dt.time(hour=18, minute=40),"18:40"),
+    (dt.time(hour=18, minute=15),"18:15"),
+    (dt.time(hour=18, minute=30),"18:30"),
+    (dt.time(hour=18, minute=45),"18:45"),
 
 ]
 
