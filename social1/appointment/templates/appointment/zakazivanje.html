@@ -25,7 +25,7 @@
                 <option selected disabled value=""></option>
                 {% with value=form.usluga.value %}
                 {% for value in form.usluga.field.choices.queryset %}
-                <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 %}disabled{% endif %}>{{ value }}</option>
+                <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 or value.id == 14 or value.id == 13 %}disabled{% endif %}>{{ value }}</option>
                 {% endfor %}
                 {% endwith %}
                 </select>
@@ -67,9 +67,25 @@
             <br>
             <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-secondary" name="zakazi_termin" type="submit" value="ZAKAŽI">
         </form>
-        <h1 class="bg-dark w3-padding text-white" style="display:none;" id="nema-termina">Nema dostupnih termina za ovaj dan !</h1>
+        <div style="display:none;" id="nema-termina">
+            <h1 class="bg-secondary w3-padding text-white" >Nema dostupnih termina za ovaj dan !</h1>
+            <br>
+            <a href="{% url 'termin' %}" class="btn btn-secondary"> <i class="fa fa-arrow-left"> </i> Promeni datum</a>
+        </div>
   </div>
 </div>
 <br><br><br>
+
+<script>
+    const picker = document.getElementById('datum');
+    picker.addEventListener('input', function(e){
+      var day = new Date(this.value).getUTCDay();
+      if([5,6,0].includes(day)){
+        e.preventDefault();
+        this.value = '';
+        alert('Petkom ne radimo,\nVikendom bez zakazivanja !');
+      }
+    });
+</script>
 
 {% endblock %}
