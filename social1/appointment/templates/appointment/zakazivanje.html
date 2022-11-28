@@ -25,7 +25,7 @@
                 <option selected disabled value=""></option>
                 {% with value=form.usluga.value %}
                 {% for value in form.usluga.field.choices.queryset %}
-                <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 %}disabled{% endif %}>{{ value }}</option>
+                <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 or value.id == 14 or value.id == 13 %}disabled{% endif %}>{{ value }}</option>
                 {% endfor %}
                 {% endwith %}
                 </select>
@@ -71,5 +71,17 @@
   </div>
 </div>
 <br><br><br>
+
+<script>
+    const picker = document.getElementById('datum');
+    picker.addEventListener('input', function(e){
+      var day = new Date(this.value).getUTCDay();
+      if([5,6,0].includes(day)){
+        e.preventDefault();
+        this.value = '';
+        alert('Petkom ne radimo,\nVikendom bez zakazivanja !');
+      }
+    });
+</script>
 
 {% endblock %}
