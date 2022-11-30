@@ -217,6 +217,7 @@ def user_register(request):
             form.save()
             
             messages.success(request, "Uspesno ste se registrovali")
+            return redirect(user_login)
         else:
             messages.error(request, "Nepravilno popunjena polja, pokusajte ponovo",extra_tags='danger')
     return render(request, 'appointment/account/register.html',{'form':form})

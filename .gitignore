@@ -136,3 +136,4 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+social1/appointment/__pycache__/views.cpython-310.pyc
