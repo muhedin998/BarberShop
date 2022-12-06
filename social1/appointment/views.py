@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError
 from .utils import generate_token
+from django.utils.safestring import mark_safe
 
 def send_action_email(request, user):
     current_site = get_current_site(request)
@@ -247,11 +248,15 @@ def user_register(request):
     return render(request, 'appointment/account/register.html',{'form':form})
 
 def user_login(request):
+    if request.user.is_authenticated:
+        if request.user.is_email_verified:
+            return redirect(zakazi)
     if request.method =="POST":
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         print(user)
         if user is not None:
             if not user.is_email_verified:
+                send_action_email(request, user)
                 messages.error(request, "Email nije aktiviran, proverite poštansko sanduče", extra_tags="danger")
                 return redirect(user_login)
             else:
@@ -287,4 +292,13 @@ def activate_user(request, uidb64, token):
 
         messages.add_message(request, messages.SUCCESS, "Email je verifikovan, sada se možete prijaviti")
         return redirect(user_login)
-    return render(request,'appointment/authentication-failed.html',{'user': user})
+    if request.user.is_authenticated:
+        if not request.user.is_email_verified:
+            #return render(request,'appointment/account/authentication-failed.html',{'user': user})
+            messages.error(request,"Link za prijavu je istekao, prijavite se za novi link", extra_tags="danger")
+            return redirect(user_login)
+        else:
+            return redirect(user_login)
+    else:
+        messages.error(request,"Morate se prvo prijaviti", extra_tags="danger")
+        return redirect(user_login)
