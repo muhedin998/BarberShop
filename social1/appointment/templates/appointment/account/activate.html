@@ -1,0 +1,9 @@
+{% autoescape off %}
+
+Zdravo {{user.username}}
+
+Molimo vas iskoristite link ispod da aktivirate vaš nalog.
+
+http://{{domain}}{% url 'activate' uidb64=uid token=token %}
+
+{% endautoescape %}

@@ -34,15 +34,16 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
 
 INSTALLED_APPS = [
+    'appointment',
+    'crispy_forms',
+    'galerija',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'appointment',
-    'crispy_forms',
-    'galerija',
+
 ]
 
 MIDDLEWARE = [
@@ -87,12 +88,12 @@ DATABASES = {
     }
 }
 
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = "smtp.gmail.com"
-# EMAIL_HOST_USER = "funygo36@gmail.com"
-# EMAIL_HOST_PASSWORD = "kokoska123"
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "frizerskisalonhasko@gmail.com"
+EMAIL_HOST_PASSWORD = "wtweppqeiptlxoxf"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 
 # Password validation

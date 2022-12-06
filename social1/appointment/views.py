@@ -7,8 +7,25 @@ from datetime import datetime, timedelta
 from .models import Korisnik, Usluge, Frizer, Termin
 import json
 from django.contrib.auth import authenticate, login, logout
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError
+from .utils import generate_token
+
+def send_action_email(request, user):
+    current_site = get_current_site(request)
+    email_sibject = 'Aktiviraje vaš nalog'
+    email_body = render_to_string('appointment/account/activate.html',{
+        'user': user,
+        'domain': current_site,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token' : generate_token().make_token(user)
+    })
+    email = EmailMessage(subject=email_sibject, body=email_body,from_email=settings.EMAIL_HOST_USER, to=[user.email])
+    email.send()
 
 @login_required(redirect_field_name='user_login/')
 def potvrdi(request):
@@ -133,6 +150,11 @@ def zakazi(request):
     frizeri = Frizer.objects.all()
     interval = 30
 
+    if request.method == 'POST':
+        if 'kontakt_mail' in request.POST:
+            poruka = EmailMessage(subject=request.POST['Subject'], body=f"{request.POST['Name']}\n{request.POST['Email']}\n\n{request.POST['Message']}", from_email=settings.EMAIL_HOST_USER, to=['hasko83@gmail.com'])
+            poruka.send()
+
     context = {
         'viewname': viewname,
         'godina': sada.year,
@@ -215,8 +237,10 @@ def user_register(request):
             user.set_password(request.POST['password'])
             user.save()
             form.save()
+
+            send_action_email(request, user)
             
-            messages.success(request, "Uspesno ste se registrovali")
+            messages.success(request, "Proverite vaše email sanduče za aktivaciju naloga, ukoliko ne vidite email pogledajte u folderu nepoželjno(spam)")
             return redirect(user_login)
         else:
             messages.error(request, "Nepravilno popunjena polja, pokusajte ponovo",extra_tags='danger')
@@ -227,8 +251,11 @@ def user_login(request):
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         print(user)
         if user is not None:
-            print(user)
-            login(request, user)
+            if not user.is_email_verified:
+                messages.error(request, "Email nije aktiviran, proverite poštansko sanduče", extra_tags="danger")
+                return redirect(user_login)
+            else:
+                login(request, user)
             return redirect(zakazi)
         else:
             messages.error(request, "Nepravilno korisnicko ime ili lozinka !", extra_tags="danger")
@@ -245,3 +272,19 @@ def user_logout(request):
 
     logout(request)
     return redirect(user_login)
+
+def activate_user(request, uidb64, token):
+    
+    try:
+        uid=force_str(urlsafe_base64_decode(uidb64))
+        user = Korisnik.objects.get(pk=uid) 
+    except Exception as e:
+        user=None
+    
+    if user and generate_token().check_token(user, token):
+        user.is_email_verified = True
+        user.save()
+
+        messages.add_message(request, messages.SUCCESS, "Email je verifikovan, sada se možete prijaviti")
+        return redirect(user_login)
+    return render(request,'appointment/authentication-failed.html',{'user': user})

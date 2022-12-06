@@ -311,13 +311,14 @@
     <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +381 64 2172921</p>
     <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: hasko83@gmail.com</p>
     <br>
-    <form action="/action_page.php" target="_blank">
+    <form  method="POST">
+      {%  csrf_token %}
       <p><input class="w3-input w3-border" type="text" placeholder="Ime" required name="Name"></p>
       <p><input class="w3-input w3-border" type="text" placeholder="Email" required name="Email"></p>
       <p><input class="w3-input w3-border" type="text" placeholder="Naslov" required name="Subject"></p>
       <p><input class="w3-input w3-border" type="text" placeholder="Poruka" required name="Message"></p>
       <p>
-        <button class="w3-button w3-black" type="submit">
+        <button class="w3-button w3-black" type="submit" name="kontakt_mail" id="kontakt_mail">
           <i class="fa fa-paper-plane"></i> POSALJI PORUKU
         </button>
       </p>
