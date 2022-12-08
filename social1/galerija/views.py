@@ -49,6 +49,39 @@ def decije_frizure(request):
     return render(request, 'galerija/tipovi/brade.html',{"form":form,
                                                            "slike":list_katalog})
 
+def internet_frizure(request):
+    form = SlikaForm()
+    slike = Slike.objects.all()
+    list_katalog = []
+    for sl in slike:
+        if sl.kategorija == 'internet-frizure':
+            list_katalog.append(sl)
+
+    if request.method == 'POST':
+        form = SlikaForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+    return render(request, 'galerija/tipovi/internet-frizure.html',{"form":form,
+                                                           "slike":list_katalog})
+
+
+def ostale_usluge(request):
+    form = SlikaForm()
+    slike = Slike.objects.all()
+    list_katalog = []
+    for sl in slike:
+        if sl.kategorija == 'ostale-usluge':
+            list_katalog.append(sl)
+
+    if request.method == 'POST':
+        form = SlikaForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+    return render(request, 'galerija/tipovi/ostale-usluge.html',{"form":form,
+                                                           "slike":list_katalog})
+
+
+
 
 def tribali(request):
     form = SlikaForm()
