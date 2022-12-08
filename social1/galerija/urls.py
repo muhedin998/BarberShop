@@ -13,5 +13,11 @@ urlpatterns = [
 
     path('tribali', views.tribali, name='tribali'),
 
+    path('ostale-usluge', views.ostale_usluge, name='ostale-usluge'),
+
+    path('internet-frizure', views.internet_frizure, name='internet-frizure'),
+
+    
+
     path('brisanje/<slika_id>', views.brisanje, name='brisanje')
 ]

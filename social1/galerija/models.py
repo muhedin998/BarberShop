@@ -9,6 +9,10 @@ KATEGORIJE = [
 
     ("tribali","Tribali"),
 
+    ("internet-frizure", "Internet frizure"),
+
+    ("ostale-usluge", "Ostale usluge")
+
 ]
 
 class Slike(models.Model):
