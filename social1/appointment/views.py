@@ -18,7 +18,7 @@ from django.utils.safestring import mark_safe
 
 def send_action_email(request, user):
     current_site = get_current_site(request)
-    email_sibject = 'Aktiviraje vaš nalog'
+    email_sibject = 'Aktivirajte vaš nalog'
     email_body = render_to_string('appointment/account/activate.html',{
         'user': user,
         'domain': current_site,
@@ -88,7 +88,9 @@ def potvrdi(request):
             data = TestForm(params)
             if data.is_valid():              
                 data.save()
-                messages.success(request,f"Uspešno ste zakazali termin {datum} u {request.POST['vreme']}")
+                vreme_za_poruku = datetime.strptime(request.POST['vreme'][:5],"%H:%M")
+                za_disp = f"{vreme_za_poruku.hour}:{vreme_za_poruku.minute}"
+                messages.success(request,f"Uspešno ste zakazali termin {datum} u {za_disp}")
                 print("Form was VALID AND PASSED")
                 return redirect(termin)
 

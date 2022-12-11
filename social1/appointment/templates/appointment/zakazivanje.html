@@ -65,7 +65,14 @@
             <label>Izaberite termin: </label><br>
             {{ form.vreme }}
             <br>
-            <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-secondary" name="zakazi_termin" type="submit" value="ZAKAŽI">
+            <div class="row mt-3">
+            <div class="col">
+            <input style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="btn btn-success" name="zakazi_termin" type="submit" value="ZAKAŽI">
+            </div>
+            <div class="col">
+            <a href="{% url 'termin' %}" class="btn"> <i class="fa fa-arrow-left"> </i> Izmena unosa</a>
+            </div>
+            </div>
         </form>
         <div style="display:none;" id="nema-termina">
             <h1 class="bg-secondary w3-padding text-white" >Nema dostupnih termina za ovaj dan !</h1>
