@@ -13,7 +13,7 @@ urlpatterns =[
     path('activate-user/<uidb64>/<token>', views.activate_user, name="activate"),
     path('otkazivanje/<termin_id>', views.otkazivanje, name="otkazivanje"),
     path('user_logout/', views.user_logout, name='user_logout'),
-    path('reset_password', auth_views.PasswordResetView.as_view(template_name='appointment/registration/password_reset_form.html'), 
+    path('reset_password', auth_views.PasswordResetView.as_view(template_name='appointment/registration/password_reset_form.html', html_email_template_name='appointment/registration/password_reset_email.html'), 
             name="password_reset"),
     path('reset_password/done', auth_views.PasswordResetDoneView.as_view(template_name='appointment/registration/password_reset_done.html'), 
             name="password_reset_done"),    
