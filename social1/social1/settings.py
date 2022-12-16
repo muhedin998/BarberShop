@@ -26,7 +26,12 @@ SECRET_KEY = 'xgmia2j!q1f+=77*yjc6^axs82dz@kb7c)z%__igt@k0#-b+*&'
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '*',
+    "localhost",  
+    "127.0.0.1", 
+    "https://frizerskisalonhasko.com",
+    "http://frizerskisalonhasko.com",
+    "www.frizerskisalonhasko.com",
+    "https://www.frizerskisalonhasko.com/"
 ]
 CSRF_TRUSTED_ORIGINS = ['https://a7df-178-149-237-173.eu.ngrok.io']
 
