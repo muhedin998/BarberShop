@@ -31,7 +31,8 @@ ALLOWED_HOSTS = [
     "https://frizerskisalonhasko.com",
     "http://frizerskisalonhasko.com",
     "www.frizerskisalonhasko.com",
-    "https://www.frizerskisalonhasko.com/"
+    "frizerskisalonhasko.com",
+    "https://www.frizerskisalonhasko.com"
 ]
 CSRF_TRUSTED_ORIGINS = ['https://a7df-178-149-237-173.eu.ngrok.io']
 
