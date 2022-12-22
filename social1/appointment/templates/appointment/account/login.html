@@ -18,13 +18,22 @@
     <br>
 
     <label>Korisnicko ime: </label>
-    <input type="text" name="username" id="id_username" class="w3-select" required>
+
+    <input type="text" name="username" id="id_username" class="w3-select mt-4 " required>
          <br>
 
     <br>
 
     <label>Lozinka:</label>
-    <input type="password" name="password" id="id_password" class="w3-select" required>
+    <div class="d-flex flex-row w3-select">
+        <input
+        type="password" name="password" id="id_password" class="w3-select" required style="border:none;" />
+        <button type="button" onclick="change()" id="show" style="border: none; background:none;">
+            <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+  
+    <!-- <input type="password" name="password" id="id_password" class="w3-select" required> -->
     <br>
     <br> 
         {% if form.errors %}
@@ -40,4 +49,25 @@
     </form>
     </div>
 </div>
+
+<script>
+    var showPassword =  true
+    var dugme = document.getElementById('show');
+    var pw = document.getElementById('id_password');
+
+    function change() {
+      if (showPassword)
+        {
+            dugme.innerHTML = '<i class="fa-sharp fa-solid fa-eye-slash"></i>';
+            showPassword  = !showPassword;
+            pw.type = "text";
+        }
+      else {
+        dugme.innerHTML = '<i class="fa-solid fa-eye"></i>'
+        showPassword = !showPassword;
+        pw.type = "password";
+      }
+    }
+
+</script>
 {% endblock %}

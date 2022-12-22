@@ -48,7 +48,25 @@
         {% endif %}
         {% for f in form %}
             <p><strong>{{ f.label }}</strong></p>
+            {% if f.label == 'Unesite sifru'%}
+            <div class="d-flex flex-row w3-select" style="margin-top:-10px;">
+                <input
+                type="password" name="password" id="id_password" class="w3-select" required style="border:none;" />
+                <button type="button" onclick="change()" id="show" style="border: none; background:none;">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            {% elif f.label == "Potvrda sifre"  %}
+            <div class="d-flex flex-row w3-select" style="margin-top:-10px;">
+                <input
+                type="password" name="password2" id="id_password2" class="w3-select" required style="border:none;" />
+                <button type="button" onclick="change2()" id="show2" style="border: none; background:none;">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            {% else %}
             <p>{{ f }}</p>
+            {% endif %}
         {% endfor %}
         <br>
         <br>
@@ -57,4 +75,43 @@
     </form>
     </div>
 </div>
+<script>
+    var showPassword =  true
+    var showPassword2 =  true
+
+    var dugme = document.getElementById('show');
+    var dugme2 = document.getElementById('show2');
+
+    var pw = document.getElementById('id_password');
+    var pw2 = document.getElementById('id_password2');
+
+    function change() {
+      if (showPassword)
+        {
+            dugme.innerHTML = '<i class="fa-sharp fa-solid fa-eye-slash"></i>';
+            showPassword  = !showPassword;
+            pw.type = "text";
+        }
+      else {
+        dugme.innerHTML = '<i class="fa-solid fa-eye"></i>'
+        showPassword = !showPassword;
+        pw.type = "password";
+      }
+    }
+
+    function change2() {
+        if (showPassword2)
+          {
+              dugme2.innerHTML = '<i class="fa-sharp fa-solid fa-eye-slash"></i>';
+              showPassword2  = !showPassword2;
+              pw2.type = "text";
+          }
+        else {
+          dugme2.innerHTML = '<i class="fa-solid fa-eye"></i>'
+          showPassword2 = !showPassword2;
+          pw2.type = "password";
+        }
+      }
+  
+</script>
 {% endblock %}
