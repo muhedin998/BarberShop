@@ -206,7 +206,7 @@ def zafrizera(request):
         print(request.POST['datum'])
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
+            termini = Termin.objects.all().order_by('datum','vreme').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
 
         else:
             frizer = Korisnik.objects.get(username = request.user.username)
