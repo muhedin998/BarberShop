@@ -87,12 +87,12 @@
     const picker = document.getElementById('datum');
     picker.addEventListener('input', function(e){
       var day = new Date(this.value).getUTCDay();
-      if([5,6,0].includes(day)){
+      if([5].includes(day)){
         e.preventDefault();
 
 	
 	picker.value = getNextMonday().toISOString().substring(0,10);
-        alert('Petkom ne radimo,\nVikendom bez zakazivanja !');
+        alert('Petkom ne radimo ! \n');
       }
     });
 
