@@ -203,3 +203,15 @@ transform: translateY(0px);
   font-size: 80px;
   color: white;
 } */
+.google-button {
+  border: 1px solid #000;
+  border-radius: 17px;
+  font-style: Helvetica;
+  font-size: 18px;
+  color: #000;
+}
+.linija {
+  overflow-x: hidden;
+  margin-top: 18px;
+  border-top: 1px solid rgb(209, 206, 206);
+}
