@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'xgmia2j!q1f+=77*yjc6^axs82dz@kb7c)z%__igt@k0#-b+*&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",  
@@ -39,6 +39,8 @@ CSRF_TRUSTED_ORIGINS = ['https://a7df-178-149-237-173.eu.ngrok.io']
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
 
+SITE_ID = 4
+
 INSTALLED_APPS = [
     'appointment',
     'crispy_forms',
@@ -49,8 +51,24 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 ROOT_URLCONF = 'social1.urls'
@@ -68,15 +87,14 @@ ROOT_URLCONF = 'social1.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':  [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
+                'django.contrib.messages.context_processors.messages',            ],
         },
     },
 ]
@@ -143,6 +161,14 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 LOGIN_URL = '/user_login/'
 
+SOCIALACCOUNT_LOGIN_ON_GET=True
+LOGIN_REDIRECT_URL = '/'
+
+ACCOUNT_FORMS = {
+    'signup': 'yourapp.forms.CustomSignupForm',
+}
+
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -153,3 +179,8 @@ STATICFILES_ROOT = (
 )
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)

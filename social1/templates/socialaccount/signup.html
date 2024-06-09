@@ -1,0 +1,29 @@
+{% extends 'appointment/base.html' %}
+{% load i18n %} 
+{% load allauth %} 
+
+{% block content %}
+<style>
+    .heding {
+        color: red;
+        font-size: 24px;
+        font-family:  Helvetica, sans-serif;
+      
+    }
+    .container {
+       height: 50vh;
+     
+       justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+</style>
+<div class="container d-flex">
+<p class="w3-center heding alert-danger poruka col-12">Email <u>{{ form.email.value }} </u> adresa je vec u upotrebi !</p>
+<a class="btn btn-info col-12" href="{% url 'user_login' %}"> <i class="fa fa-arrow-left"> </i> Nazad ba prijavljivanje </a>
+<hr>
+
+    <p>{{ request.user.email  }}</p>
+
+</div>
+ {% endblock content %}
