@@ -5,22 +5,27 @@
 {% block content %}
 <style>
     .heding {
+        border-radius: 5px;
         color: red;
         font-size: 24px;
         font-family:  Helvetica, sans-serif;
       
     }
     .container {
-       height: 50vh;
+        margin-top: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+       min-height: 50vh;
      
        justify-content: center;
         align-items: center;
         flex-wrap: wrap;
     }
 </style>
-<div class="container d-flex">
-<p class="w3-center heding alert-danger poruka col-12">Email <u>{{ form.email.value }} </u> adresa je vec u upotrebi !</p>
-<a class="btn btn-info col-12" href="{% url 'user_login' %}"> <i class="fa fa-arrow-left"> </i> Nazad ba prijavljivanje </a>
+<div class="container pt-5 ">
+<p class="w3-center heding alert-danger poruka col-12">Email adresa <u>{{ form.email.value }} </u>  je vec u upotrebi !</p>
+<a class="btn btn-info col-12" href="{% url 'user_login' %}"> <i class="fa fa-arrow-left"> </i> Nazad na prijavljivanje </a>
 <hr>
 
     <p>{{ request.user.email  }}</p>
