@@ -7,12 +7,17 @@
     <br>
     <br>
     <h4 class="w3-center my-1">Prijavite se </h4>
+    <br>
     <div class="w3-center my-3">
     <a class="w3-center google-button py-3 px-5" href="{% provider_login_url 'google' %}?next=/">
-        <img src="/static/images/google-logo.svg" height=35 width=35>
-        Login with Google</a>
-    <h5>ili</h5>
+        <img src="/static/images/google-logo.svg" height=30 width=30>
+        Prijavi se uz pomoć Google</a>
+        <div class="d-flex mt-4">
+            <div class="linija col-xs-5"></div>
 
+    <h5 class="col-xs-2">ili</h5>
+    <div class="linija col-xs-5"></div>
+        </div>
     </div>
     {%if messages%}
     {% for message in messages %} 
