@@ -15,6 +15,31 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError
 from .utils import generate_token
 from django.utils.safestring import mark_safe
+from allauth.account.signals import user_logged_in
+from allauth.socialaccount.models import SocialAccount
+from django.dispatch import receiver
+
+@receiver(user_logged_in)
+def update_ime_prezime(request, user, **kwargs):
+    social_info = SocialAccount.objects.filter(user=user).first()
+    if social_info:
+        google_data = social_info.extra_data
+        if google_data:
+            first_name = google_data.get('given_name')
+            last_name = google_data.get('family_name')
+            if first_name and last_name:
+                user.ime_prezime = f"{first_name} {last_name}"
+                user.save()
+
+@login_required
+def complete_profile(request):
+    if request.method == 'POST':
+        broj_telefona = request.POST.get('broj_telefona')
+        if broj_telefona:
+            request.user.broj_telefona = broj_telefona
+            request.user.save()
+            return redirect('/')
+    return render(request, 'complete_profile.html')
 
 def send_action_email(request, user):
     current_site = get_current_site(request)
