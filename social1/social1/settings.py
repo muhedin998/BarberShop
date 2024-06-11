@@ -39,7 +39,7 @@ CSRF_TRUSTED_ORIGINS = ['https://a7df-178-149-237-173.eu.ngrok.io']
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
 
-SITE_ID = 4
+SITE_ID = 5
 
 INSTALLED_APPS = [
     'appointment',
