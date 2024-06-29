@@ -23,13 +23,21 @@ from django.dispatch import receiver
 def update_ime_prezime(request, user, **kwargs):
     social_info = SocialAccount.objects.filter(user=user).first()
     if social_info:
-        google_data = social_info.extra_data
-        if google_data:
-            first_name = google_data.get('given_name')
-            last_name = google_data.get('family_name')
-            if first_name and last_name:
-                user.ime_prezime = f"{first_name} {last_name}"
-                user.save()
+        extra_data = social_info.extra_data
+        # Check if it's Google's data structure
+        if 'given_name' in extra_data and 'family_name' in extra_data:
+            first_name = extra_data.get('given_name')
+            last_name = extra_data.get('family_name')
+            full_name = f"{first_name} {last_name}"
+        # Check if it's Facebook's data structure
+        elif 'name' in extra_data:
+            full_name = extra_data.get('name')
+        else:
+            full_name = None
+
+        if full_name:
+            user.ime_prezime = full_name
+            user.save()
 
 @login_required
 def complete_profile(request):
