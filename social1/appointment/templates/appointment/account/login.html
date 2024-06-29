@@ -9,9 +9,15 @@
     <h4 class="w3-center my-1">Prijavite se </h4>
     <br>
     <div class="w3-center my-3">
-    <a class="w3-center google-button py-3 px-5" href="{% provider_login_url 'google' %}?next=/">
+        <div class="row align-items-center flex-column">
+    <a class="w3-center google-button py-3 px-5 col-xs-11 col-sm-8 col-md-6" href="{% provider_login_url 'google' %}?next=/">
         <img src="/static/images/google-logo.svg" height=30 width=30>
         Prijavi se uz pomoć Google</a>
+        <br>
+        <a class="w3-center google-button py-3 px-5 col-xs-11 col-sm-8 col-md-6" href="{% provider_login_url 'facebook' %}?next=/">
+            <img src="/static/images/icons8-facebook.svg" height=30 width=30>
+            Prijavi se uz pomoć Facebook</a>
+    </div>
         <div class="d-flex mt-4">
             <div class="linija col-xs-5"></div>
 
