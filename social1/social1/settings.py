@@ -73,7 +73,7 @@ SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
         'SCOPE': ['email', 'public_profile'],  # Add desired permissions here
         'METHOD': 'oauth2',
-        'VERIFIED_EMAIL': False,
+        'VERIFIED_EMAIL': True,
         'VERSION': 'v12.0',  # Use the latest version of the Facebook Graph API
     }
 }
