@@ -209,7 +209,7 @@ def zafrizera(request):
     if request.user.username == "hasko123":
         frizer = Frizer.objects.get(name="Hasredin Bećirović")
     if request.user.username == "daris123":
-        frizer = Frizer.objects.get(name="Daris Kurtenčsušević")
+        frizer = Frizer.objects.get(name="Muvehid Bećirović")
     if request.user.username == "emil123":
         frizer = Frizer.objects.get(name="Emil Aljković")
 
