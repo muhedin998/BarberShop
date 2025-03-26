@@ -1,0 +1,175 @@
+{% extends 'appointment/zafrizera.html' %}
+{% block opcije %}
+<style>
+    .dropdown-menu {
+        max-height: 500px;
+        overflow-y: auto;
+        width: 100%;
+    }
+    .dropdown-item {
+        cursor: pointer;
+    }
+    .search-box {
+        width: 100%;
+        padding: 5px;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        outline: none;
+    }
+    .burger-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    #User stylinggg
+
+    .user-profile {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-width: 350px;
+        margin: auto;
+      }
+  
+      .user-profile .user-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+  
+      .user-profile .user-name {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333333;
+        margin: 0;
+      }
+  
+      .user-profile .user-phone {
+        font-size: 16px;
+        color: #666666;
+        margin: 5px 0 0;
+      }
+  
+      .user-profile .user-details {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+  
+      .user-profile .detail-card {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 15px;
+        flex: 1;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+  
+      .user-profile .detail-card h3 {
+        font-size: 14px;
+        color: #888888;
+        margin: 0 0 10px;
+      }
+  
+      .user-profile .detail-card p {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333333;
+        margin: 0;
+      }
+</style>
+
+<div class="container my-4 broder">
+    <div class="d-flex align-items-center">
+        <!-- Burger Button -->
+        <div class="dropdown">
+            <button class="burger-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                ☰
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <input type="text" class="search-box form-control" placeholder="Pretrazi..." onkeyup="filterDropdown()">
+                </li>
+                {% for usr in users %}
+                 <li><a type="submit" class="dropdown-item" href="{% url 'opcije_klijenti' %}?user_id={{usr.id}}" onclick="selectOption(this)">{{ usr.ime_prezime }}</a></li>
+                {% endfor %}
+
+            </ul>
+        </form>
+        </div>
+
+        <!-- Selected Option Display -->
+        <span class="ms-3" id="selected-option">Izaberite korisnika:</span>
+    </div>
+</div>
+<hr>
+{% if user.is_superuser %}
+<div class="profile-view mb-5">
+    {% if user_view %}
+    <div class="user-profile">
+        <div class="user-header">
+          <h1 class="user-name">{{user_view.ime_prezime}}</h1>
+          <p class="user-phone">{{user_view.broj_telefona}}</p>
+        </div>
+        <div class="user-details">
+          <div class="detail-card">
+            <h3>Ukupno potroseno</h3>
+            <p>{{ ukupno }} RSD</p>
+          </div>
+          <div class="detail-card">
+            <h3>Zakazanih termina</h3>
+            <p>{{ broj_termina }}</p>
+          </div>
+          <div class="detail-card">
+            <h3>Duguje</h3>
+            <p>{{user_view.dugovanje}} RSD</p>
+          </div>
+        </div>
+      </div>
+    {% else %}
+    <h3 class="p-5">Izaberite  korisnika !</h3>
+    {% endif %}
+</div>
+{% else %}
+<div class="profile-view mb-5">
+  {% if user_view %}
+  <div class="user-profile">
+      <div class="user-header">
+        <h1 class="user-name">{{user_view.ime_prezime}}</h1>
+        <p class="user-phone">{{user_view.broj_telefona}}</p>
+      </div>
+      <div class="user-details">
+        <div class="detail-card">
+          <h3>Zakazanih termina</h3>
+          <p>{{ broj_termina }}</p>
+        </div>
+        <div class="detail-card">
+          <h3>Duguje</h3>
+          <p>{{user_view.dugovanje}} RSD</p>
+        </div>
+      </div>
+    </div>
+  {% else %}
+  <h3 class="p-5">Izaberite  korisnika !</h3>
+  {% endif %}
+</div>
+{% endif %}
+<script>
+    function filterDropdown() {
+        let input = document.querySelector(".search-box");
+        let filter = input.value.toLowerCase();
+        let items = document.querySelectorAll(".dropdown-item");
+
+        items.forEach(item => {
+            let text = item.textContent || item.innerText;
+            item.style.display = text.toLowerCase().includes(filter) ? "" : "none";
+        });
+    }
+
+    function selectOption(element) {
+        document.getElementById("selected-option").textContent = element.textContent;
+    }
+</script>
+{% endblock %}

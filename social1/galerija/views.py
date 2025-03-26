@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 from .models import Slike
 from .forms import SlikaForm
 
@@ -100,9 +101,13 @@ def tribali(request):
 
 
 def galerija(request):
-    slike = Slike.objects.all()
-    
-    context = {'slike':slike}
+    slike_list = Slike.objects.all()
+    paginator = Paginator(slike_list, 10)  # Show 10 images per page
+
+    page_number = request.GET.get('page')
+    slike = paginator.get_page(page_number)
+
+    context = {'slike': slike}
     return render(request, 'galerija/katalog.html', context)
 
 def brisanje(request, slika_id):

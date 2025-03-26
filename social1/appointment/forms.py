@@ -100,8 +100,9 @@ class KorisnikForm(forms.ModelForm):
 class TestForm(forms.ModelForm):
     class Meta:
         model = Termin
-        fields = ['user','usluga','frizer','name','broj_telefona','datum','vreme']
-        widgets = {'vreme': forms.Select(choices=ODABIR_TERMINA,attrs={'class':'w3-select'})}
+        fields = ['user','usluga','frizer','name','broj_telefona','datum','vreme', 'poruka']
+        widgets = {'vreme': forms.Select(choices=ODABIR_TERMINA,attrs={'class':'w3-select'}),
+                   'poruka': forms.Textarea(attrs={'class': 'w-100 mt-1', 'placeholder': 'Ovde unesite poruku za vaseg frizera...'})}
 
     # def __init__(self, *args, **kwargs):
     #     super(TestForm, self).__init__(*args, **kwargs)

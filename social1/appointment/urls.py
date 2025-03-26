@@ -21,5 +21,9 @@ urlpatterns =[
             name="password_reset_confirm"),
     path('reset/done', auth_views.PasswordResetCompleteView.as_view(template_name='appointment/registration/password_reset_complete.html'),
             name="password_reset_complete") , 
+    path('opcije_termini/', views.opcije_termini, name='opcije_termini'),
+    path('opcije_klijenti/', views.opcije_klijenti, name='opcije_klijenti'),
+    path('opcije_izvestaj/', views.opcije_izvestaj, name='opcije_izvestaj'),
+
   
 ]

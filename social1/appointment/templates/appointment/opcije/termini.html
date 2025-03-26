@@ -1,0 +1,174 @@
+{% extends 'appointment/zafrizera.html' %}
+{% block opcije %}
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Upisi duznika: </h2>
+      <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="form2">
+          <input type="hidden" name="user_id" id="user_id">
+  
+  
+        <label for="firstName"> Ime i Prezime:</label>
+        <input type="text" readonly id="firstName" name="ime_prezime" >
+  
+        <label for="phoneNumber">Broj telefona:</label>
+        <input type="text" id="phoneNumber" readonly name="broj_telefona" >
+  
+        <label for="price">Duguje:</label>
+        <input type="number" id="price" name="duguje" required>
+  
+        <div class="button-container">
+          <button class="btn btn-success" onclick="confirmAction()">Potvrdi</button>
+          <button type="button"  onclick="closeModal()">Otkazi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <div class="w3-container">
+      <br /><br /><br />
+      {% if user.is_superuser %}
+      <div class="row">
+          <div class="col-xs-6 col-lg-6 col-md-6">
+              <h2 class="w3-center">
+                  Vaši termini <i class="fa fa-arrow-down"></i>
+              </h2>
+          </div>
+          <div class="col-xs-6 col-lg-6 col-md-6 w3-padding">
+              <form action="" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="form_type" value="form1">
+  
+                  <h4>Iskljucite termine za..</h4>
+                  <input
+                      type="date"
+                      class="form-control"
+                      name="datum"
+                      id="datum"
+                      style="width: 70%"
+                  /><br />
+                  <input
+                      type="submit"
+                      value="Iskljuci termine"
+                      class="btn btn-danger"
+                  />
+              </form>
+              <br />
+          </div>
+      </div>
+      {% else %}
+      <h2 class="w3-center">Vaši termini <i class="fa fa-arrow-down"></i></h2>
+      {% endif %}
+  
+      <table class="w3-table-all my-2">
+          <tr>
+              {% if user.is_superuser %}
+                  <th>Mušterija</th>
+              {% else %}
+                  <th>Frizer</th>
+              {% endif %}
+              <th>Poruka</th>
+              <th>Usluga</th>
+              <th>Datum & Vreme</th>
+          </tr>
+          {% for usl in termini %}
+              {% if user.is_superuser %}
+                  <tr onclick="openModal('{{usl.user.id}}', '{{usl.usluga.cena}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{{usl.user.ime_prezime}}', '{{usl.user.broj_telefona}}')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              {% else %}
+                  <tr>
+              {% endif %}
+              {% if user.is_superuser %} {% if usl.name == "OTKAZAN DAN" %}
+              <!-- <td class="bg-danger text-light w3-center">{{ usl.name }}</td> -->
+              <td class="bg-danger text-light w3-center" colspan="3">
+                  {{ usl.name }} &nbsp {{ usl.datum }} &nbsp
+                  <a
+                      href="{% url 'otkazivanje' usl.id %}"
+                      onclick="event.stopPropagation(); return confirm('Da li zelite da oktažete termin ?');"
+                      >Otkaži <i class="fa-solid fa-xmark"></i
+                  ></a>
+              </td>
+  
+              {% else %}
+              <td>{{ usl.name }} <br />{{ usl.broj_telefona }}</td>
+              {% endif %} {% else %}
+              <td>{{ usl.frizer }}</td>
+              {% endif %} {% if usl.name == "OTKAZAN DAN" %}
+              <!-- <td class="bg-danger text-light w3-center" colspan="2"> &nbsp {{ usl.datum }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>          -->
+              {% else %}
+              <td>{{ usl.poruka|default:"" }}</td>
+              <td>{{ usl.usluga.name }}</td>
+              <td>
+                  {{ usl.datum }}, {{ usl.vreme|time:"H:i" }} &nbsp
+                  <a
+                      href="{% url 'otkazivanje' usl.id %}"
+                      onclick="return confirm('Da li zelite da oktažete termin ?');"
+                      >Otkaži <i class="fa-solid fa-xmark"></i
+                  ></a>
+              </td>
+              {% endif %}
+          </tr>
+          {% endfor %}
+      </table>
+  </div>
+  <script>
+      var date = document.getElementById("datum");
+      var novi = new Date().toISOString().split("T")[0];
+      date.setAttribute("value", novi);
+      console.log(novi);
+  
+      // Get the modal
+      const modal = document.getElementById("myModal");
+  
+      // Function to open the modal
+      function openModal(user_id, usluga_cena, usl_name, usl_broj_telefona, user_ime_prezime, user_broj_telefona) {
+          console.log(user_id, usluga_cena, usl_name, usl_broj_telefona, user_ime_prezime, user_broj_telefona)
+              console.log(typeof(user_id), user_id)
+              if (user_id !== '21') {
+                  document.getElementById("user_id").value =  user_id  ;
+              }
+              document.getElementById("firstName").value = user_id === '21' ? usl_name : user_ime_prezime ;
+              document.getElementById("phoneNumber").value = user_id === '21' ? usl_broj_telefona: user_broj_telefona; 
+              document.getElementById("price").value = usluga_cena;
+            
+          
+            // Display the modal
+            modal.style.display = "block";
+      }
+      
+      // Function to close the modal
+      function closeModal() {
+        modal.style.display = "none";
+      }
+      
+      // Function to handle confirm action
+      function confirmAction() {
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;
+        const phoneNumber = document.getElementById("phoneNumber").value;
+        const price = document.getElementById("price").value;
+      
+        if (firstName && lastName && phoneNumber && price) {
+          alert(`Confirmed!\nName: ${firstName} ${lastName}\nPhone: ${phoneNumber}\nPrice: $${price}`);
+          closeModal();
+        } else {
+          alert("Please fill out all fields.");
+        }
+      }
+      
+      // Close the modal if the user clicks outside of it
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+  
+  </script>
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+{% endblock %}
