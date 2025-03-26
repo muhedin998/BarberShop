@@ -10,4 +10,5 @@ sqlparse==0.4.3
 tablib==3.2.1
 tzdata==2022.4
 whitenoise==6.2.0
-django-allauth=0.59.0
+django-allauth==0.59.0
+six==1.17.0

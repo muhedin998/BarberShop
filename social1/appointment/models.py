@@ -8,9 +8,10 @@ class Korisnik(AbstractUser):
     broj_telefona = models.CharField(max_length=20,blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
+    dugovanje = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.username
+        return f"{self.username} - {self.dugovanje}"
 
 class Frizer(models.Model):
     name = models.CharField(max_length=250, default='Izaberite Frizera')
@@ -21,7 +22,7 @@ class Frizer(models.Model):
 
 class Usluge(models.Model):
     name = models.CharField(max_length=250, default="Izaberite Uslugu")
-    cena = models.CharField(max_length=15)
+    cena = models.IntegerField(max_length=15)
     duzina = models.DurationField(default=timedelta)
 
     def __str__(self):
@@ -36,6 +37,8 @@ class Termin(models.Model):
     broj_telefona = models.CharField(max_length=20, blank=True, null=True)
     datum = models.DateField(blank=True, null=True)
     vreme = models.TimeField(blank=True, null=True)
+    poruka = models.CharField(max_length=250, blank=True, null=True)
+
     
 
     class Meta:
@@ -45,4 +48,12 @@ class Termin(models.Model):
         return f"{self.user.ime_prezime},{self.datum},{self.vreme}"
 
 
+class Duznik(models.Model):
+    user = models.ForeignKey("Korisnik", null=True, blank=True, on_delete=models.SET_NULL)
+    name = models.CharField(max_length=200, blank=True) 
+    broj_telefona = models.CharField(max_length=200, blank=True)  
+    duguje = models.IntegerField(null=True, blank=True)
+    datum_upisa = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name if self.name else (self.user.ime_prezime if self.user and hasattr(self.user, 'ime_prezime') else "Nema ime")

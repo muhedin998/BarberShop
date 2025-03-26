@@ -1,27 +1,84 @@
-{% extends 'galerija/galerija.html' %}
+{% extends 'galerija/galerija.html' %} {% block slike %}
 
-{% block slike %}
-    <div id="photos" style="width: 100%; ">
-            {% for sl in slike%} 
-                    
-                      <img src="media/{{sl.slika}}" onclick="onClick(this)" class="w3-hover-opacity" style="padding: 4px;">
-            {% endfor %}
-    </div>
+<div class="pagination d-flex justify-content-center align-items-center mt-3">
+    {% if slike.has_previous %}
+    <a href="?page=1" class="btn btn-outline-primary mx-1">
+        <i class="fas fa-angle-double-left"></i> Prva
+    </a>
+    <a href="?page={{ slike.previous_page_number }}" class="btn btn-outline-primary mx-1">
+        <i class="fas fa-angle-left"></i> Predhodna
+    </a>
+    {% endif %}
+
+    <span class="mx-3 fw-bold text-primary">
+        Page {{ slike.number }} of {{ slike.paginator.num_pages }}
+    </span>
+
+    {% if slike.has_next %}
+    <a href="?page={{ slike.next_page_number }}" class="btn btn-outline-primary mx-1">
+        Sledeca <i class="fas fa-angle-right"></i>
+    </a>
+    <a href="?page={{ slike.paginator.num_pages }}" class="btn btn-outline-primary mx-1">
+        Poslednja <i class="fas fa-angle-double-right"></i>
+    </a>
+    {% endif %}
+</div>
+<div id="photos" style="width: 100%">
+    {% for sl in slike%}
+
+    <img
+        src="media/{{sl.slika}}"
+        onclick="onClick(this)"
+        class="w3-hover-opacity"
+        style="padding: 4px"
+    />
+    {% endfor %}
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination d-flex justify-content-center align-items-center mt-3">
+    {% if slike.has_previous %}
+    <a href="?page=1" class="btn btn-outline-primary mx-1">
+        <i class="fas fa-angle-double-left"></i> Prva
+    </a>
+    <a href="?page={{ slike.previous_page_number }}" class="btn btn-outline-primary mx-1">
+        <i class="fas fa-angle-left"></i> Predhodna
+    </a>
+    {% endif %}
+
+    <span class="mx-3 fw-bold text-primary">
+        Page {{ slike.number }} of {{ slike.paginator.num_pages }}
+    </span>
+
+    {% if slike.has_next %}
+    <a href="?page={{ slike.next_page_number }}" class="btn btn-outline-primary mx-1">
+        Sledeca <i class="fas fa-angle-right"></i>
+    </a>
+    <a href="?page={{ slike.paginator.num_pages }}" class="btn btn-outline-primary mx-1">
+        Poslednja <i class="fas fa-angle-double-right"></i>
+    </a>
+    {% endif %}
+</div>
 
 <div id="modal01" class="w3-modal w3-black" onclick="this.style.display='none'">
-    <span class="w3-button w3-xxlarge w3-black w3-padding-large w3-display-topright" title="Close Modal Image">×</span>
-    <div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64">
-      <img id="img01" class="w3-image">
-      <p id="caption" class="w3-opacity w3-large"></p>
+    <span
+        class="w3-button w3-xxlarge w3-black w3-padding-large w3-display-topright"
+        title="Close Modal Image"
+        >×</span
+    >
+    <div
+        class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64"
+    >
+        <img id="img01" class="w3-image" />
+        <p id="caption" class="w3-opacity w3-large"></p>
     </div>
-  </div>
+</div>
 <script>
-
     function onClick(element) {
-    document.getElementById("img01").src = element.src;
-    document.getElementById("modal01").style.display = "block";
-    var captionText = document.getElementById("caption");
-    captionText.innerHTML = element.alt;
+        document.getElementById("img01").src = element.src;
+        document.getElementById("modal01").style.display = "block";
+        var captionText = document.getElementById("caption");
+        captionText.innerHTML = element.alt;
     }
 </script>
 {% endblock %}

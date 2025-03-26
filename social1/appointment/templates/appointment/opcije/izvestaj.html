@@ -1,0 +1,237 @@
+{% extends 'appointment/zafrizera.html' %}
+{% block opcije %}
+
+<style>
+    body {
+        background-color: #f4f7fc;
+        font-family: 'Arial', sans-serif;
+    }
+    .container1 {
+        max-width: 800px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+    }
+    h2 {
+        color:rgb(18, 132, 35);
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .table thead {
+        background-color:rgb(18, 132, 35);
+        color: white;
+    }
+    .table thead th {
+        flex: 1;              /* Equal width for columns */
+        text-align: right;    /* Align data to the right */
+    }
+    .table tbody td {
+        flex: 1;              /* Equal width for columns */
+        text-align: right;    /* Align data to the right */
+    }
+    .form-select {
+        border-radius: 8px;
+    }
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+
+<div class="mb-4">
+    <label for="viewSelector" class="form-label">Izaberite prikaz:</label>
+    <select id="viewSelector" class="form-select">
+        <option value="appointments" selected>Neplaćeni termini</option>
+        <option value="earnings">Praćenje zarade</option>
+        <option value="duznici">Dužnici</option>
+    </select>
+</div>
+
+<div id="appointments-section" class="card p-3">
+    <h2>Neplaćeni termini</h2>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Korisnik</th>
+                <th>Termin datum</th>
+                <th>Duguje</th>
+            </tr>
+        <tbody>
+            <tr>
+                <td>John Doe</td>
+                <td>2025-03-01</td>
+                <td>$100</td>
+            </tr>
+            <tr>
+                <td>Jane Smith</td>
+                <td>2025-02-28</td>
+                <td>$150</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="earnings-section" class="card p-3" style="display: none;">
+    <h2>Pracenje zarade</h2>
+    <div class="mb-3">
+        <label for="selectPeriod" class="form-label">Prikazi za:</label>
+        <select id="selectPeriod" class="form-select">
+            <option value="zarada_1">Dan</option>
+            <option value="zarada_7">Nedelja</option>
+            <option value="zarada_30" selected>Mesec</option>
+        </select>
+    </div>
+    <!-- Zarada 30 -->
+    <table class="table table-hover" id="zarada_30">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Zarada</th>
+            </tr>
+        </thead>
+        <tbody id="earnings">
+            {% for z in zarada_30 %}
+            <tr>
+                <td>{{ z.datum|date:"Y-m-d" }}</td>
+                <td>{{ z.total_earnings }} RSD</td>
+            </tr>
+        {% endfor %}
+        <tr class="bg-success">
+            <td>Ukupno: </td>
+            <td>{{sve_30}} RSD</td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- Zarada 7 -->
+    <table class="table table-hover" id="zarada_7" style="display: none">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Zarada</th>
+            </tr>
+        </thead>
+        <tbody id="earnings">
+            {% for z in zarada_7 %}
+            <tr>
+                <td>{{ z.datum|date:"Y-m-d" }}</td>
+                <td>{{ z.total_earnings }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- zarada_1 -->
+    <table class="table table-hover" id="zarada_1" style="display: none">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Zarada</th>
+            </tr>
+        </thead>
+        <tbody id="earnings">
+            {% for z in zarada_1 %}
+            <tr>
+                <td>{{ z.datum|date:"Y-m-d" }}</td>
+                <td>{{ z.total_earnings }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="duzniciSection" class="container mt-5" style="display:none">
+    <h1 class="text-center mb-4">Lista Dužnika</h1>
+    <div class="list-group">
+        <!-- Primjer dužnika -->
+        <div class="list-group-item list-group-item-action flex-column align-items-start" style="border-bottom: 1px solid gray">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">Ivan Horvat</h5>
+                <small class="text-muted">Dug: 500 RSD</small>
+                <button class="btn btn-danger btn-sm" onclick="deleteDebtor(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <p class="mb-1">Broj: 062525252</p>
+        </div>
+        <!-- Dodajte više dužnika po potrebi -->
+        {% for duz in duznici %}
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ duz.name }}</h5>
+                <small class="text-muted">Dug: {{duz.duguje}} RSD</small>
+                <button class="btn btn-danger btn-sm" onclick="deleteDebtor(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <p class="mb-1">Broj: {{duz.broj_telefona}}</p>
+        </div>
+        {% endfor %}
+        {% for duz in duznici_kor %}
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ duz.ime_prezime }}</h5>
+                <small class="text-muted">Dug: {{duz.dugovanje}} RSD</small>
+                <button class="btn btn-danger btn-sm" onclick="deleteDebtor(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <p class="mb-1">Broj: {{duz.broj_telefona}}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const viewSelector = document.getElementById("viewSelector");
+    const appointmentsSection = document.getElementById("appointments-section");
+    const earningsSection = document.getElementById("earnings-section");
+    const selectPeriod = document.getElementById("selectPeriod");
+    const earningsRows = document.querySelectorAll("#earnings tr");
+    const zarada_30 = document.getElementById("zarada_30")
+    const zarada_7 = document.getElementById("zarada_7")
+    const zarada_1 = document.getElementById("zarada_1")
+
+    viewSelector.addEventListener("change", function () {
+        if (this.value === "appointments") {
+            appointmentsSection.style.display = "block";
+            earningsSection.style.display = "none";
+            duzniciSection.style.display = "none";
+        } else if (this.value === "duznici") {
+            appointmentsSection.style.display = "none";
+            earningsSection.style.display = "none";
+            duzniciSection.style.display = "block";
+
+        } else {
+            appointmentsSection.style.display = "none";
+            earningsSection.style.display = "block";
+            duzniciSection.style.display = "none";
+        }
+    });
+
+    function filterEarnings() {
+        selectPeriod.addEventListener("change", function () {
+            [zarada_30, zarada_7, zarada_1].forEach(table => {
+                table.style.display = "none";  // Hide all tables
+                table.style.width = "100%";    // Ensure width is retained
+            });
+    
+            // Show the selected table
+            const selectedTable = document.getElementById(this.value);
+            selectedTable.style.display = "table"; // Use "table" instead of "block"
+            selectedTable.style.width = "100%";    // Force full width
+        });
+    }
+
+    selectPeriod.addEventListener("change", filterEarnings);
+    filterEarnings();
+});
+
+</script>
+
+{% endblock %}
