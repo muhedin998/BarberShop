@@ -1,0 +1,95 @@
+{% extends 'appointment/zafrizera.html' %}
+{% block opcije %}
+    <!-- Pagination Controls -->
+    <div class="pagination d-flex justify-content-center align-items-center mt-3">
+        {% if termini.has_previous %}
+            <a href="?page=1" class="btn btn-outline-primary mx-1">
+                <i class="fas fa-angle-double-left"></i> Prva
+            </a>
+            <a href="?page={{ termini.previous_page_number }}" class="btn btn-outline-primary mx-1">
+                <i class="fas fa-angle-left"></i> Predhodna
+            </a>
+        {% endif %}
+
+        <span class="mx-3 fw-bold text-primary">
+        Page {{ termini.number }} of {{ termini.paginator.num_pages }}
+    </span>
+
+        {% if termini.has_next %}
+            <a href="?page={{ termini.next_page_number }}" class="btn btn-outline-primary mx-1">
+                Sledeca <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ termini.paginator.num_pages }}" class="btn btn-outline-primary mx-1">
+                Poslednja <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% endif %}
+    </div>
+    <table class="w3-table-all my-2 m-3">
+        <tr>
+            {% if user.is_superuser %}
+                <th>Mušterija</th>
+            {% else %}
+                <th>Frizer</th>
+            {% endif %}
+            <th>Poruka</th>
+            <th>Usluga</th>
+            <th>Datum & Vreme</th>
+        </tr>
+        {% for usl in termini %}
+            {% if user.is_superuser %}
+                <tr>
+                    {% else %}
+                <tr>
+            {% endif %}
+        {% if user.is_superuser %} {% if usl.name == "OTKAZAN DAN" %}
+            <!-- <td class="bg-danger text-light w3-center">{{ usl.name }}</td> -->
+            <td class="bg-danger text-light w3-center" colspan="3">
+                {{ usl.name }} &nbsp {{ usl.datum }} &nbsp
+                <a
+                        href="{% url 'otkazivanje' usl.id %}"
+                        onclick="event.stopPropagation(); return confirm('Da li zelite da oktažete termin ?');"
+                >Otkaži <i class="fa-solid fa-xmark"></i
+                ></a>
+            </td>
+
+        {% else %}
+            <td>{{ usl.name }} <br />{{ usl.broj_telefona }}</td>
+        {% endif %} {% else %}
+            <td>{{ usl.frizer }}</td>
+        {% endif %} {% if usl.name == "OTKAZAN DAN" %}
+            <!-- <td class="bg-danger text-light w3-center" colspan="2"> &nbsp {{ usl.datum }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>          -->
+        {% else %}
+            <td>{{ usl.poruka|default:"" }}</td>
+            <td>{{ usl.usluga.name }}</td>
+            <td>
+                {{ usl.datum }}, {{ usl.vreme|time:"H:i" }} &nbsp
+            </td>
+        {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="pagination d-flex justify-content-center align-items-center mt-3">
+        {% if termini.has_previous %}
+            <a href="?page=1" class="btn btn-outline-primary mx-1">
+                <i class="fas fa-angle-double-left"></i> Prva
+            </a>
+            <a href="?page={{ termini.previous_page_number }}" class="btn btn-outline-primary mx-1">
+                <i class="fas fa-angle-left"></i> Predhodna
+            </a>
+        {% endif %}
+
+        <span class="mx-3 fw-bold text-primary">
+        Page {{ termini.number }} of {{ termini.paginator.num_pages }}
+    </span>
+
+        {% if termini.has_next %}
+            <a href="?page={{ termini.next_page_number }}" class="btn btn-outline-primary mx-1">
+                Sledeca <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ termini.paginator.num_pages }}" class="btn btn-outline-primary mx-1">
+                Poslednja <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% endif %}
+    </div>
+
+{% endblock %}

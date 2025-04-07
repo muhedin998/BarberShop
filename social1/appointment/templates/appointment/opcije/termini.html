@@ -77,13 +77,13 @@
           </tr>
           {% for usl in termini %}
               {% if user.is_superuser %}
-                  <tr onclick="openModal('{{usl.user.id}}', '{{usl.usluga.cena}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{{usl.user.ime_prezime}}', '{{usl.user.broj_telefona}}')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  <tr class="{% if usl.cena_termina == 0 %} bg-warning {% endif %}" onclick="openModal('{{usl.user.id}}', '{{usl.usluga.cena}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{{usl.user.ime_prezime}}', '{{usl.user.broj_telefona}}')" data-bs-toggle="modal" data-bs-target="#exampleModal">
               {% else %}
                   <tr>
               {% endif %}
               {% if user.is_superuser %} {% if usl.name == "OTKAZAN DAN" %}
               <!-- <td class="bg-danger text-light w3-center">{{ usl.name }}</td> -->
-              <td class="bg-danger text-light w3-center" colspan="3">
+              <td class="bg-danger text-light w3-center" colspan="4">
                   {{ usl.name }} &nbsp {{ usl.datum }} &nbsp
                   <a
                       href="{% url 'otkazivanje' usl.id %}"

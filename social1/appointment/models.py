@@ -38,8 +38,24 @@ class Termin(models.Model):
     datum = models.DateField(blank=True, null=True)
     vreme = models.TimeField(blank=True, null=True)
     poruka = models.CharField(max_length=250, blank=True, null=True)
+    cena_termina = models.IntegerField(blank=True, null=True)
 
-    
+def save(self, *args, **kwargs):
+    if self.cena_termina is None:
+        if self.usluga:
+            self.cena_termina = self.usluga.cena
+
+        if self.user and not self.user.is_superuser:
+            # Count *existing* appointments (excluding the one we're about to save)
+            previous_appointments = Termin.objects.filter(user=self.user).count()
+
+            # This one will be the (previous + 1)th
+            next_number = previous_appointments + 1
+
+            if next_number % 15 == 0:
+                self.cena_termina = 0
+
+    super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ['datum','vreme','frizer']
