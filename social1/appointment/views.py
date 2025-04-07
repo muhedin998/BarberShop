@@ -1,5 +1,6 @@
 from math import fabs
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from .forms import KorisnikForm, TestForm, FilterForm
 from django.contrib import messages
@@ -75,8 +76,6 @@ def potvrdi(request):
     termini = Termin.objects.filter(frizer=frizer,datum=datum)
     termini_2 = []
 
-    
-
     try:
         ter = f"{termini[0].vreme}".split(":")
 
@@ -84,16 +83,10 @@ def potvrdi(request):
             pocetak = datetime.strptime(f"{ter.datum} {ter.vreme}", '%Y-%m-%d %H:%M:%S')
             kraj = pocetak + ter.usluga.duzina
 
-            # usl = Usluge.objects.get(pk=request.POST['usluga'])
-            # zauzet = datetime(termini[0].datum,termini[0].vreme)
-            # Ovo radi ! vr + usl.duzina
-            # duration = timedelta(usl.duzina)
             termini_2.append({
                 "pocetak": f"{pocetak.strftime('%H:%M:%S')}",
                 "kraj": f"{kraj.strftime('%H:%M:%S')}"
             })
-
-        print(Usluge.objects.get(pk=usluga).duzina.total_seconds())
     except  Exception as e: print(e)
 
     if request.method == 'POST':
@@ -118,8 +111,6 @@ def potvrdi(request):
                 'mesec': format(sada.month, "02d"),
                 'dan': format(sada.day, "02d"),                
                 'broj_telefona':broj_telefona
-                #'name':request.POST['name'],
-                #'uredjaj': request.COOKIES['device']
             }
             data = TestForm(params)
             if data.is_valid():              
@@ -127,14 +118,9 @@ def potvrdi(request):
                 vreme_za_poruku = datetime.strptime(request.POST['vreme'][:5],"%H:%M")
                 za_disp = f"{vreme_za_poruku.hour}:{vreme_za_poruku.minute}"
                 messages.success(request,f"Uspešno ste zakazali termin {datum} u {za_disp}")
-                print("Form was VALID AND PASSED")
                 return redirect(termin)
-
-                # print(data)
             else:
                 messages.error(request, "Greska na serveru, pokusajte ponovo", extra_tags='danger')
-                print(f"From WAS NOT VALID ! -")
-                # print(data)
 
     context = {
         'filtered_list': json.dumps(list(termini_2)),
@@ -153,12 +139,23 @@ def termin(request):
     termini = []
     form_filter = TestForm()
 
+    is_next_free = False
+
+    try:
+        termin_counter = Termin.objects.filter(user=request.user).count() + 1
+    except Exception as e:
+        termin_counter = 0
+        print("User not logged in")
+
+    is_next_free = "Sledeci termin je besplatan !" if (termin_counter % 15 == 0) else f"Još  {15 - termin_counter % 15} zakazivanja do besplatnog šišanja!"
+
+
+
+    print(termin_counter)
+
     if request.method == 'POST':
         #check if first form button is clicked
         if 'form_filter_button' in request.POST:
-
-            # termini = Termin.objects.filter(usluga=request.POST['usluga'], frizer=request.POST['frizer'], datum=request.POST['datum'])
-            # request.session['termini'] = Termin.objects.filter( frizer=request.POST['frizer'], datum=request.POST['datum'])
             # Sharing parameters between  views
             request.session['frizer'] = request.POST['frizer']
             request.session['datum'] = request.POST['datum']
@@ -167,17 +164,17 @@ def termin(request):
             return redirect(potvrdi)
 
     context = {
-        #'filter_form': form_filter,
-
         'viewname': viewname,
         'godina': sada.year,
         'mesec': format(sada.month, "02d"),
         'dan': format(sada.day, "02d"),
-        'form': form_filter
+        'form': form_filter,
+        "termin_counter": is_next_free,
     }
     return render(request, 'appointment/zakazivanje.html', context)
 
 def zakazi(request):
+    print("ZAKAZI")
     viewname = "zakazi"
     sada = datetime.now()
 
@@ -206,87 +203,10 @@ def zakazi(request):
         "ls3":ls3,
     }
     return render(request, 'appointment/jqr.html', context)
+
 @login_required(redirect_field_name='user_login/')
 def zafrizera(request):
-    # frizer = []
-    # if request.user.username == "hasko123":
-    #     frizer = Frizer.objects.get(name="Hasredin Bećirović")
-    # if request.user.username == "Muvehid":
-    #     frizer = Frizer.objects.get(name="Muvehid Bećirović")
-    # if request.user.username == "emil123":
-    #     frizer = Frizer.objects.get(name="Emil Aljković")
-
-    # za_otkazivanje = Usluge.objects.get(pk=15)
-    # print(za_otkazivanje.name)
-    # if request.method =='POST':
-    #     form_type = request.POST.get('form_type')
-    #     if form_type == 'form1':
-    #         form = TestForm()
-    #         name = "OTKAZAN DAN"
-    #         broj_telefona = ""
-    #         params = {
-    #             'user': request.user,
-    #             'usluga': za_otkazivanje,
-    #             'frizer':frizer,
-    #             'datum':request.POST['datum'],
-    #             'name':name,
-    #             'vreme':'09:00:00',
-    #             # 'godina': sada.year,
-    #             # 'mesec': format(sada.month, "02d"),
-    #             # 'dan': format(sada.day, "02d"),                
-    #             'broj_telefona':broj_telefona
-    #             #'name':request.POST['name'],
-    #             #'uredjaj': request.COOKIES['device']
-    #             }
-    #         form = TestForm(params)
-    #         if form.is_valid():
-    #             form.save()
-    #     elif form_type == 'form2':
-    #         try:
-    #             user = Korisnik.objects.get(id = request.POST['user_id'])
-    #         except Exception as e:
-    #             print(e)
-    #             user = None
-    #         print(request.POST['duguje'])
-    #         if user:
-    #             if user.dugovanje:
-    #                 user.dugovanje += int(request.POST['duguje'])
-    #             else:
-    #                 user.dugovanje = int(request.POST['duguje'])
-    #                 user.save()
-    #                 print(user.dugovanje)
-    #         else:
-    #             duznik, created = Duznik.objects.get_or_create(
-    #             name=request.POST['ime_prezime'],
-    #             broj_telefona=request.POST['broj_telefona'],
-    #             defaults={"duguje": request.POST['duguje']}
-    #         )
-
-    #             if created:
-    #                 print("Sačuvano!")  # New record created
-    #             else:
-    #                 duznik.duguje += int(request.POST['duguje'])  # Convert to int before adding
-    #                 duznik.save()
-    #                 print("Dužnik već postoji! Povećano duguje!")
-
-    # if request.user.is_authenticated:
-    #     if request.user.is_superuser:
-    #         termini = Termin.objects.all().order_by('datum','vreme').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
-
-    #     else:
-    #         frizer = Korisnik.objects.get(username = request.user.username)
-    #         termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(user=frizer)
-    # else:
-    #     return redirect(zakazi)
-    # context = {'termini':termini}
-    # return render(request, 'appointment/zafrizera.html', context)
     return redirect(opcije_termini)
-
-
-# def user_register(request):
-#     if request.method == "GET":
-#         if request.user.is_authenticated:
-#             redirect(zakazi)
 
 def user_register(request):
     form = KorisnikForm()
@@ -321,7 +241,6 @@ def user_login(request):
             return redirect(zakazi)
     if request.method =="POST":
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        print(user)
         if user is not None:
             if not user.is_email_verified:
                 send_action_email(request, user)
@@ -362,7 +281,6 @@ def activate_user(request, uidb64, token):
         return redirect(user_login)
     if request.user.is_authenticated:
         if not request.user.is_email_verified:
-            #return render(request,'appointment/account/authentication-failed.html',{'user': user})
             messages.error(request,"Link za prijavu je istekao, prijavite se za novi link", extra_tags="danger")
             return redirect(user_login)
         else:
@@ -381,7 +299,6 @@ def opcije_termini(request):
         frizer = Frizer.objects.get(name="Emil Aljković")
 
     za_otkazivanje = Usluge.objects.get(pk=15)
-    print(za_otkazivanje.name)
     if request.method =='POST':
         form_type = request.POST.get('form_type')
         if form_type == 'form1':
@@ -396,12 +313,7 @@ def opcije_termini(request):
                 'name':name,
                 'poruka': request.POST['poruka'],
                 'vreme':'09:00:00',
-                # 'godina': sada.year,
-                # 'mesec': format(sada.month, "02d"),
-                # 'dan': format(sada.day, "02d"),                
                 'broj_telefona':broj_telefona
-                #'name':request.POST['name'],
-                #'uredjaj': request.COOKIES['device']
                 }
             form = TestForm(params)
             if form.is_valid():
@@ -417,15 +329,10 @@ def opcije_termini(request):
                     user.dugovanje += int(request.POST['duguje'])
                     user.save()
                     user.refresh_from_db()  # Reload from DB
-                    user_zaprint = Korisnik.objects.get(id = request.POST['user_id'])
-                    print(f"After update: user.dugovanje = {user_zaprint}")
                 else:
                     user.dugovanje = int(request.POST['duguje'])
                     user.save()
                     user.refresh_from_db()  # Reload from DB
-                    user_zaprint = Korisnik.objects.get(id = request.POST['user_id'])
-
-                    print(f"After update: user.dugovanje = {user_zaprint}")
             else:
                 duznik, created = Duznik.objects.get_or_create(
                 name=request.POST['ime_prezime'],
@@ -466,7 +373,7 @@ def opcije_klijenti(request):
         broj_termina = Termin.objects.filter(user=usr)
         ukupno = 0
         for termin in broj_termina:
-            ukupno += termin.usluga.cena
+            ukupno += termin.cena_termina
         print(ukupno)
         usr.refresh_from_db()
         print(f"SQL Value: {usr.dugovanje} (Type: {type(usr.dugovanje)})")
@@ -512,8 +419,37 @@ def opcije_izvestaj(request):
         earnings_data[f'zarada_{key}'] = list(earnings_per_day)
         earnings_data[f'total_{key}'] = total_earnings
         earnings_data[f'sve_{key}'] = earnings_data.get(f'sve_{key}', 0) + total_earnings
-    
-
-    print(list(earnings_data['zarada_30']))  # Debugging output
 
     return render(request, 'appointment/opcije/izvestaj.html', earnings_data)
+
+
+@login_required
+def opcije_istorija(request):
+    termini_list = Termin.objects.filter(user=request.user)
+    paginator = Paginator(termini_list, 50)  # Show 10 images per page
+
+    page_number = request.GET.get('page')
+    termini = paginator.get_page(page_number)
+
+    return render(request, 'appointment/opcije/istorija.html', {'termini': termini})
+
+def obrisi_duznika(request, duznik_id):
+    try:
+        duznik = Duznik.objects.get(pk=duznik_id)
+        if duznik.duguje:
+            duznik.delete()
+        else:
+            kor = Korisnik.objects.get(pk=duznik.user.id)
+            kor.dugovanje = 0
+            kor.save()
+            duznik.delete()
+    except Duznik.DoesNotExist:
+        try:
+            kor = Korisnik.objects.get(pk=duznik_id)
+            kor.dugovanje = 0
+            kor.save()
+        except Korisnik.DoesNotExist:
+            print(f"No Duznik or Korisnik found with id {duznik_id}")
+    except Exception as e:
+        print(e)
+    return redirect(opcije_izvestaj)

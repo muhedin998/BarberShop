@@ -100,7 +100,11 @@
 <nav class=" d-flex justify-content-center bg-light py-3 opcije_nav">
   <div class="nav">
       <a class="nav-link h4" id="opcije_termini" href="{% url 'opcije_termini' %}" onclick="toggleTermins()">Termini</a>
-      <a class="nav-link h4" id="opcije_klijenti" href="{% url 'opcije_klijenti' %}">Klijenti</a>
+      {% if user.is_superuser %}
+        <a class="nav-link h4" id="opcije_klijenti" href="{% url 'opcije_klijenti' %}">Klijenti</a>
+      {% endif %}
+      <a class="nav-link h4" id="opcije_istorija" href="{% url 'opcije_istorija' %}">Istorija</a>
+
       <a class="nav-link h4" id="opcije_izvestaj" href="{% url 'opcije_izvestaj' %}">Izvestaj</a>
   </div>
 </nav>

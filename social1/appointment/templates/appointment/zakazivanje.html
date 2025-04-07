@@ -12,12 +12,15 @@
     {% endfor %}
 
 {% endif %}
-  
-  
-<div class="mb-3 row justify-content-center ">
+
+    <h2 class="w3-center bg-danger text-white my-3 px-3">{{ termin_counter   }}</h2>
+
+    <div class="mb-3 row justify-content-center ">
     <br>
+
     <br>
     <div class="col-md-auto col-sm-auto col-lg-4 shadow-lg p-3 mb-5 bg-body rounded {% if viewname != "termin" %}w3-hide{% endif %}" id="prva-forma" >
+
         <form method="post" class="w3-margin">
             {% csrf_token %}
             <label>Izaberite uslugu: </label>
@@ -88,27 +91,24 @@
 
 <script>
     const picker = document.getElementById('datum');
-    picker.addEventListener('input', function(e){
-      var day = new Date(this.value).getUTCDay();
-      if([5].includes(day)){
-        e.preventDefault();
+    let alertShown = false;
 
-	
-	picker.value = getNextMonday().toISOString().substring(0,10);
-        alert('Petkom ne radimo ! \n');
-      }
+    picker.addEventListener('change', function () {
+        const selectedDate = new Date(this.value);
+
+        if (selectedDate.getUTCDay() === 5) { // Friday
+            if (!alertShown) {
+                alert('Petkom ne radimo!\n');
+                alertShown = true;
+            }
+            // Move to Saturday
+            selectedDate.setDate(selectedDate.getDate() + 1);
+            this.value = selectedDate.toISOString().split('T')[0];
+            setTimeout({
+                alertShown = false;
+            }, 200)
+        }
     });
-
-  function getNextMonday(date = new Date()) {
-  const dateCopy = new Date(date.getTime());
-
-  const nextMonday = new Date(
-    dateCopy.setDate(
-      dateCopy.getDate() + ((7 - dateCopy.getDay() + 1) % 7 || 7),
-    ),
-  );
-  return nextMonday;
-}
 </script>
 
 {% endblock %}

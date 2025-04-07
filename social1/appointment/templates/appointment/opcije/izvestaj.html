@@ -45,36 +45,10 @@
 <div class="mb-4">
     <label for="viewSelector" class="form-label">Izaberite prikaz:</label>
     <select id="viewSelector" class="form-select">
-        <option value="appointments" selected>Neplaćeni termini</option>
-        <option value="earnings">Praćenje zarade</option>
-        <option value="duznici">Dužnici</option>
+        <option value="appointments" selected>Lista Dužnika</option>
+        <option value="earnings" >Praćenje zarade</option>
     </select>
 </div>
-
-<div id="appointments-section" class="card p-3">
-    <h2>Neplaćeni termini</h2>
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Korisnik</th>
-                <th>Termin datum</th>
-                <th>Duguje</th>
-            </tr>
-        <tbody>
-            <tr>
-                <td>John Doe</td>
-                <td>2025-03-01</td>
-                <td>$100</td>
-            </tr>
-            <tr>
-                <td>Jane Smith</td>
-                <td>2025-02-28</td>
-                <td>$150</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
 <div id="earnings-section" class="card p-3" style="display: none;">
     <h2>Pracenje zarade</h2>
     <div class="mb-3">
@@ -121,6 +95,10 @@
                 <td>{{ z.total_earnings }}</td>
             </tr>
         {% endfor %}
+            <tr class="bg-success">
+                <td>Ukupno: </td>
+                <td>{{sve_7}} RSD</td>
+            </tr>
         </tbody>
     </table>
 
@@ -139,33 +117,29 @@
                 <td>{{ z.total_earnings }}</td>
             </tr>
         {% endfor %}
+            <tr class="bg-success">
+                <td>Ukupno: </td>
+                <td>{{sve_1}} RSD</td>
+            </tr>
         </tbody>
     </table>
 </div>
 
-<div id="duzniciSection" class="container mt-5" style="display:none">
+<div id="appointments-section" class="container mt-5">
     <h1 class="text-center mb-4">Lista Dužnika</h1>
     <div class="list-group">
-        <!-- Primjer dužnika -->
-        <div class="list-group-item list-group-item-action flex-column align-items-start" style="border-bottom: 1px solid gray">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">Ivan Horvat</h5>
-                <small class="text-muted">Dug: 500 RSD</small>
-                <button class="btn btn-danger btn-sm" onclick="deleteDebtor(this)">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            <p class="mb-1">Broj: 062525252</p>
-        </div>
         <!-- Dodajte više dužnika po potrebi -->
+        {% if not duznici and not duznici_kor %}
+            <h3>Nema Dužnika</h3>
+        {% endif %}
         {% for duz in duznici %}
         <div class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">{{ duz.name }}</h5>
-                <small class="text-muted">Dug: {{duz.duguje}} RSD</small>
-                <button class="btn btn-danger btn-sm" onclick="deleteDebtor(this)">
+                <h5 class="text-muted">Dug: {{duz.duguje}} RSD</h5>
+                <a class="btn btn-danger btn-sm" href="{% url 'obrisi_duznika' duz.id %}">
                     <i class="fas fa-trash"></i>
-                </button>
+                </a>
             </div>
             <p class="mb-1">Broj: {{duz.broj_telefona}}</p>
         </div>
@@ -174,10 +148,10 @@
         <div class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">{{ duz.ime_prezime }}</h5>
-                <small class="text-muted">Dug: {{duz.dugovanje}} RSD</small>
-                <button class="btn btn-danger btn-sm" onclick="deleteDebtor(this)">
+                <h5 class="text-muted">Dug: {{duz.dugovanje}} RSD</h5>
+                <a class="btn btn-danger btn-sm" href="{% url 'obrisi_duznika' duz.id %}">
                     <i class="fas fa-trash"></i>
-                </button>
+                </a>
             </div>
             <p class="mb-1">Broj: {{duz.broj_telefona}}</p>
         </div>
