@@ -91,24 +91,22 @@
 
 <script>
     const picker = document.getElementById('datum');
-    let alertShown = false;
-
-    picker.addEventListener('change', function () {
-        const selectedDate = new Date(this.value);
-
-        if (selectedDate.getUTCDay() === 5) { // Friday
-            if (!alertShown) {
-                alert('Petkom ne radimo!\n');
-                alertShown = true;
-            }
-            // Move to Saturday
-            selectedDate.setDate(selectedDate.getDate() + 1);
-            this.value = selectedDate.toISOString().split('T')[0];
-            setTimeout({
-                alertShown = false;
-            }, 200)
+    picker.addEventListener('input', function(e){
+        var day = new Date(this.value).getUTCDay();
+        if([5].includes(day)){
+            e.preventDefault();
+            picker.value = getNextMonday(this.value).toISOString().substring(0,10);
+            alert('Petkom ne radimo ! \n');
         }
     });
+
+    function getNextMonday(value) {
+        date = new Date(value)
+        const dateCopy = new Date(date.getTime());
+
+        const nextMonday = new Date(dateCopy.setDate(dateCopy.getDate() + 1));
+        return nextMonday;
+    }
 </script>
 
 {% endblock %}
