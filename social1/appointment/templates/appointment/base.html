@@ -77,6 +77,25 @@
 </head>
 <body>
 
+<div class="fixed-bottom-nav">
+    <div class="nav-item active" onclick="showPage('home-page')">
+        <i class="fa fa-home"></i>
+        <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="showPage('profile-page')">
+        <i class="fa fa-user"></i>
+        <span>Profile</span>
+    </div>
+    <div class="nav-item" onclick="showPage('notifications-page')">
+        <i class="fa fa-bell"></i>
+        <span>Notifications</span>
+    </div>
+    <div class="nav-item" onclick="showPage('appointments-page')">
+        <i class="fa fa-calendar"></i>
+        <span>Appointments</span>
+    </div>
+</div>
+
 <!-- Navbar (sit on top) -->
 <div class="w3-top">
   <div class="w3-bar w3-white w3-card" id="myNavbar">
@@ -298,6 +317,33 @@
     potvrdi_form.remove();
     document.getElementById("nema-termina").style.display = "block"
   }
+</script>
+<script>
+    function showPage(pageId) {
+        // Hide all pages
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => {
+            page.classList.remove('active');
+        });
+
+        // Show selected page
+        document.getElementById(pageId).classList.add('active');
+
+        // Update active nav item
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Find the clicked nav item and make it active
+        const clickedItem = Array.from(navItems).find(item => {
+            return item.getAttribute('onclick').includes(pageId);
+        });
+
+        if (clickedItem) {
+            clickedItem.classList.add('active');
+        }
+    }
 </script>
   </body>
   </html>
