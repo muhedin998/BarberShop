@@ -210,8 +210,8 @@ def zafrizera(request):
         frizer = Frizer.objects.get(name="Hasredin Bećirović")
     if request.user.username == "Muvehid":
         frizer = Frizer.objects.get(name="Muvehid Bećirović")
-    if request.user.username == "emil123":
-        frizer = Frizer.objects.get(name="Emil Aljković")
+    if request.user.username == "admin":
+        frizer = Frizer.objects.get(name="(bez imena)")
 
     za_otkazivanje = Usluge.objects.get(pk=15)
     print(za_otkazivanje.name)
