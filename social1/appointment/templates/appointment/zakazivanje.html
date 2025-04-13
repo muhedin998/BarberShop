@@ -35,7 +35,13 @@
                     <option selected disabled value=""></option>
                     {% with value=form.frizer.value %}
                     {% for value in form.frizer.field.choices.queryset %}
-                    <option title="{{value}}" value="{{ value.id }}">{{ value }}</option>
+                        {% if value.id == 4 %}
+                            {% if user.is_superuser %}
+                                <option title="{{ value }}" value="{{ value.id }}">{{ value }}</option>
+                            {% endif %}
+                        {% else %}
+                            <option title="{{ value }}" value="{{ value.id }}">{{ value }}</option>
+                        {% endif %}
                     {% endfor %}
                     {% endwith %}
                 </select>
