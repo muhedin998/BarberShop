@@ -295,8 +295,8 @@ def opcije_termini(request):
         frizer = Frizer.objects.get(name="Hasredin Bećirović")
     if request.user.username == "Muvehid":
         frizer = Frizer.objects.get(name="Muvehid Bećirović")
-    if request.user.username == "emil123":
-        frizer = Frizer.objects.get(name="Emil Aljković")
+    if request.user.username == "admin":
+        frizer = Frizer.objects.get(name="(bez imena)")
 
     za_otkazivanje = Usluge.objects.get(pk=15)
     if request.method =='POST':
@@ -345,7 +345,7 @@ def opcije_termini(request):
                 else:
                     duznik.duguje += int(request.POST['duguje'])  # Convert to int before adding
                     duznik.save()
-                
+
                     print("Dužnik već postoji! Povećano duguje!")
 
     if request.user.is_authenticated:
@@ -366,10 +366,10 @@ def opcije_klijenti(request):
 
     users = Korisnik.objects.all()
     count = Korisnik.objects.count()
-    
+
     if (user_id):
         usr = Korisnik.objects.filter(id=user_id).first()
-        usr = Korisnik.objects.get(id=usr.id)  # Forces re-fetch 
+        usr = Korisnik.objects.get(id=usr.id)  # Forces re-fetch
         broj_termina = Termin.objects.filter(user=usr)
         ukupno = 0
         for termin in broj_termina:
@@ -380,22 +380,22 @@ def opcije_klijenti(request):
         print(usr.id)
         print(f"Dugovanje in other view: {usr.dugovanje}")  # Check value
         context = {
-            'users': users, 
-            'count': count, 
-            'user_view': usr, 
+            'users': users,
+            'count': count,
+            'user_view': usr,
             'broj_termina': broj_termina.count(),
             'ukupno': ukupno }
         return render(request, 'appointment/opcije/klijenti.html',context)
 
-        
-    
+
+
     return render(request, 'appointment/opcije/klijenti.html',{'users': users, 'count': count})
 
 def opcije_izvestaj(request):
     today = datetime.now().date()
     duznici = Duznik.objects.all()
     duznici_kor = Korisnik.objects.filter(dugovanje__gt=0)
-    
+
     periods = {
         '30': today - timedelta(days=30),
         '7': today - timedelta(days=7),
@@ -413,9 +413,9 @@ def opcije_izvestaj(request):
             .annotate(total_earnings=Sum('usluga__cena'))
             .order_by('datum')
         )
-        
+
         total_earnings = sum(entry['total_earnings'] for entry in earnings_per_day if entry['total_earnings'])
-        
+
         earnings_data[f'zarada_{key}'] = list(earnings_per_day)
         earnings_data[f'total_{key}'] = total_earnings
         earnings_data[f'sve_{key}'] = earnings_data.get(f'sve_{key}', 0) + total_earnings

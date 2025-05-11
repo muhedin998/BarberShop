@@ -71,7 +71,7 @@ ul.leaders span:first-child {
 ul.leaders span + span {
     float: right;
     padding-left: 0.33em;
-    background: white; 
+    background: white;
   }
 
 .containerr {
@@ -217,6 +217,7 @@ transform: translateY(0px);
 }
 .fixed-bottom-nav {
     position: fixed !important;
+    height: 65px !important;
     bottom: 0 !important;
     width: 100%;
     background-color: white;
@@ -228,6 +229,7 @@ transform: translateY(0px);
 
 .nav-item {
     padding: 15px 0;
+    color: #181818;
     text-align: center;
     flex: 1;
     cursor: pointer;
@@ -251,4 +253,15 @@ transform: translateY(0px);
 
 .nav-item span {
     font-size: 12px;
+}
+
+.fixed-bottom-nav .nav-item {
+    text-decoration: none;
+}
+
+.fixed-bottom-nav .nav-item:focus,
+.fixed-bottom-nav .nav-item:active,
+.fixed-bottom-nav .nav-item:hover {
+    text-decoration: none;
+    outline: none;
 }
