@@ -174,7 +174,6 @@ def termin(request):
     return render(request, 'appointment/zakazivanje.html', context)
 
 def zakazi(request):
-    print("ZAKAZI")
     viewname = "zakazi"
     sada = datetime.now()
 
