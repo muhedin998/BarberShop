@@ -78,22 +78,22 @@
 <body>
 
 <div class="fixed-bottom-nav">
-    <div class="nav-item active" onclick="showPage('home-page')">
+    <a class="nav-item active" href="{% url 'zakazi' %}" id="home-page" onclick="showPage('home-page')">
         <i class="fa fa-home"></i>
         <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="showPage('profile-page')">
+    </a>
+    <a class="nav-item" id="profile-page" onclick="showPage('profile-page')">
         <i class="fa fa-user"></i>
         <span>Profile</span>
-    </div>
-    <div class="nav-item" onclick="showPage('notifications-page')">
+    </a>
+    <a class="nav-item" id="notifications-page" onclick="showPage('notifications-page')">
         <i class="fa fa-bell"></i>
         <span>Notifications</span>
-    </div>
-    <div class="nav-item" onclick="showPage('appointments-page')">
+    </a>
+    <a class="nav-item" href="{% url 'opcije_termini' %}" id="opcije_termini" onclick="showPage('opcije_termini')">
         <i class="fa fa-calendar"></i>
         <span>Appointments</span>
-    </div>
+    </a>
 </div>
 
 <!-- Navbar (sit on top) -->
@@ -320,29 +320,13 @@
 </script>
 <script>
     function showPage(pageId) {
-        // Hide all pages
-        const pages = document.querySelectorAll('.page');
+        const pages = document.querySelectorAll('.nav-item');
         pages.forEach(page => {
-            page.classList.remove('active');
-        });
-
-        // Show selected page
+            if (page.classList.contains('active')) {
+                page.classList.remove('active');
+            }});
         document.getElementById(pageId).classList.add('active');
 
-        // Update active nav item
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            item.classList.remove('active');
-        });
-
-        // Find the clicked nav item and make it active
-        const clickedItem = Array.from(navItems).find(item => {
-            return item.getAttribute('onclick').includes(pageId);
-        });
-
-        if (clickedItem) {
-            clickedItem.classList.add('active');
-        }
     }
 </script>
   </body>
