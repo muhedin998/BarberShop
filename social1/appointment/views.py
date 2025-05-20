@@ -452,3 +452,9 @@ def obrisi_duznika(request, duznik_id):
     except Exception as e:
         print(e)
     return redirect(opcije_izvestaj)
+
+def profile_page(request):
+    return render(request, 'appointment/profil-page.html')
+
+def notifications_page(request):
+    return render(request, 'appointment/notifications_page.html')

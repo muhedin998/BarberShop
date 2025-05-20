@@ -26,6 +26,8 @@ urlpatterns =[
     path('opcije_izvestaj/', views.opcije_izvestaj, name='opcije_izvestaj'),
     path('opcije_istorija/', views.opcije_istorija, name='opcije_istorija'),
     path('obrisi_duznika/<duznik_id>', views.obrisi_duznika, name='obrisi_duznika'),
+    path('profile-page/', views.profile_page, name='profile_page'),
+    path('notifications-page/', views.notifications_page, name='notifications_page'),
 
   
 ]
