@@ -78,21 +78,25 @@
 <body>
 
 <div class="fixed-bottom-nav">
-    <a class="nav-item active" href="{% url 'zakazi' %}" id="home-page" onclick="showPage('home-page')">
+    <a class="nav-item {% if request.path == '/' %}active{% endif %}" href="{% url 'zakazi' %}" id="home-page">
         <i class="fa fa-home"></i>
-        <span>Home</span>
+        <span>Početna</span>
     </a>
-    <a class="nav-item" id="profile-page" onclick="showPage('profile-page')">
+    <a class="nav-item {% if request.path == '/profile-page/' %}active{% endif %}"
+       href="{% url 'profile_page' %}"
+       id="profile-page">
         <i class="fa fa-user"></i>
-        <span>Profile</span>
+        <span>Profil</span>
     </a>
-    <a class="nav-item" id="notifications-page" onclick="showPage('notifications-page')">
+    <a class="nav-item {% if request.path == '/notifications-page/' %}active{% endif %}"
+       id="notifications-page"
+       href="{% url 'notifications_page' %}">
         <i class="fa fa-bell"></i>
-        <span>Notifications</span>
+        <span>Obaveštenja</span>
     </a>
-    <a class="nav-item" href="{% url 'opcije_termini' %}" id="opcije_termini" onclick="showPage('opcije_termini')">
+    <a class="nav-item {% if request.path == '/opcije_termini/' %}active{% endif %}" href="{% url 'opcije_termini' %}" id="opcije_termini">
         <i class="fa fa-calendar"></i>
-        <span>Appointments</span>
+        <span>Termini</span>
     </a>
 </div>
 
@@ -317,17 +321,6 @@
     potvrdi_form.remove();
     document.getElementById("nema-termina").style.display = "block"
   }
-</script>
-<script>
-    function showPage(pageId) {
-        const pages = document.querySelectorAll('.nav-item');
-        pages.forEach(page => {
-            if (page.classList.contains('active')) {
-                page.classList.remove('active');
-            }});
-        document.getElementById(pageId).classList.add('active');
-
-    }
 </script>
   </body>
   </html>

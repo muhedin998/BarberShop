@@ -1,0 +1,184 @@
+{% extends 'appointment/base.html' %}
+{% load static %}
+
+{% block content %}
+<br>
+        <style>
+
+            .profile-container {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                width: 350px;
+                padding: 30px;
+                margin: 50px;
+                text-align: center;
+            }
+
+            .avatar {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin: 0 auto 15px;
+                border: 3px solid #4a90e2;
+            }
+
+            .name {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 30px;
+                color: #2c3e50;
+            }
+
+            .profile-field {
+                margin-bottom: 20px;
+                text-align: left;
+            }
+
+            .profile-field label {
+                display: block;
+                font-size: 14px;
+                color: #7f8c8d;
+                margin-bottom: 5px;
+            }
+
+            .profile-field input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 16px;
+                box-sizing: border-box;
+            }
+
+            .profile-field input:focus {
+                outline: none;
+                border-color: #4a90e2;
+                box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+            }
+
+            .logout-btn {
+                background-color: #e74c3c;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-top: 20px;
+                width: 100%;
+                transition: background-color 0.3s;
+            }
+
+            .logout-btn:hover {
+                background-color: #c0392b;
+            }
+
+            .edit-icon {
+                color: #4a90e2;
+                cursor: pointer;
+                margin-left: 10px;
+                font-size: 16px;
+            }
+
+            .save-btn {
+                background-color: #4a90e2;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 10px;
+                display: none;
+            }
+
+            .save-btn:hover {
+                background-color: #357abd;
+            }
+        </style>
+<div class="d-flex justify-content-center">
+    <div class="profile-container ">
+
+            <i class="fa fa-user-circle-o fa-5x" aria-hidden="true" style="color: #4a90e2;"></i>
+
+        <div class="name" id="fullname">John Doe</div>
+
+        <div class="profile-field">
+            <label for="email">Email</label>
+            <div style="display: flex; align-items: center;">
+                <input type="email" id="email" value="john.doe@example.com" readonly>
+                <span class="edit-icon" onclick="enableEdit('email')">✏️</span>
+            </div>
+            <button class="save-btn" id="save-email" onclick="saveField('email')">Save</button>
+        </div>
+
+        <div class="profile-field">
+            <label for="phone">Phone</label>
+            <div style="display: flex; align-items: center;">
+                <input type="tel" id="phone" value="+1 (555) 123-4567" readonly>
+                <span class="edit-icon" onclick="enableEdit('phone')">✏️</span>
+            </div>
+            <button class="save-btn" id="save-phone" onclick="saveField('phone')">Save</button>
+        </div>
+
+        <div class="profile-field">
+            <label for="name">Full Name</label>
+            <div style="display: flex; align-items: center;">
+                <input type="text" id="name" value="John Doe" readonly>
+                <span class="edit-icon" onclick="enableEdit('name')">✏️</span>
+            </div>
+            <button class="save-btn" id="save-name" onclick="saveField('name')">Save</button>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // Enable editing for a field
+        function enableEdit(fieldId) {
+            const input = document.getElementById(fieldId);
+            const saveBtn = document.getElementById(`save-${fieldId}`);
+
+            input.removeAttribute('readonly');
+            input.focus();
+            saveBtn.style.display = 'inline-block';
+        }
+
+        // Save field value
+        function saveField(fieldId) {
+            const input = document.getElementById(fieldId);
+            const saveBtn = document.getElementById(`save-${fieldId}`);
+
+            input.setAttribute('readonly', true);
+            saveBtn.style.display = 'none';
+
+            // Update full name if name field was edited
+            if (fieldId === 'name') {
+                document.getElementById('fullname').textContent = input.value;
+            }
+
+            // Here you would typically send the updated value to a server
+            console.log(`Saved ${fieldId}:`, input.value);
+        }
+
+        // Logout function
+        function logout() {
+            alert('Logging out...');
+            // Here you would typically redirect to a logout page or clear session
+            // window.location.href = '/logout';
+        }
+
+        // Allow saving by pressing Enter key
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const fieldId = e.target.id;
+                    document.getElementById(`save-${fieldId}`).click();
+                }
+            });
+        });
+    </script>
+</div>
+{% endblock %}
