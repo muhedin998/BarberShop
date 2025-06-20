@@ -97,6 +97,27 @@ class KorisnikForm(forms.ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'w3-select'
 
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Korisnik
+        fields = ['ime_prezime', 'broj_telefona']
+        
+        labels = {
+            'ime_prezime': 'Ime i Prezime',
+            'broj_telefona': 'Broj Telefona'
+        }
+        
+        widgets = {
+            'ime_prezime': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Unesite vaše ime i prezime'
+            }),
+            'broj_telefona': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Unesite vaš broj telefona'
+            })
+        }
+
 class TestForm(forms.ModelForm):
     class Meta:
         model = Termin

@@ -2,7 +2,7 @@ from math import fabs
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-from .forms import KorisnikForm, TestForm, FilterForm
+from .forms import KorisnikForm, TestForm, FilterForm, ProfileUpdateForm
 from django.contrib import messages
 from datetime import datetime, timedelta
 from .models import Korisnik, Usluge, Frizer, Termin, Duznik
@@ -453,8 +453,26 @@ def obrisi_duznika(request, duznik_id):
         print(e)
     return redirect(opcije_izvestaj)
 
+@login_required
 def profile_page(request):
-    return render(request, 'appointment/profil-page.html')
+    user = request.user
+    
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profil je uspešno ažuriran!')
+            return redirect('profile_page')
+        else:
+            messages.error(request, 'Greška pri ažuriranju profila. Molimo pokušajte ponovo.', extra_tags='danger')
+    else:
+        form = ProfileUpdateForm(instance=user)
+    
+    context = {
+        'form': form,
+        'user': user
+    }
+    return render(request, 'appointment/profil-page.html', context)
 
 def notifications_page(request):
     return render(request, 'appointment/notifications_page.html')
