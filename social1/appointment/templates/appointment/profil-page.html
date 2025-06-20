@@ -2,183 +2,596 @@
 {% load static %}
 
 {% block content %}
-<br>
-        <style>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="profile-card">
+                <!-- Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h2 class="profile-name">{{ user.ime_prezime|default:"Vaš Profil" }}</h2>
+                    <p class="profile-username">@{{ user.username }}</p>
+                    <p class="profile-email">{{ user.email }}</p>
+                </div>
 
-            .profile-container {
-                background-color: white;
-                border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                width: 350px;
-                padding: 30px;
-                margin: 50px;
-                text-align: center;
-            }
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
 
-            .avatar {
-                width: 100px;
-                height: 100px;
-                border-radius: 50%;
-                object-fit: cover;
-                margin: 0 auto 15px;
-                border: 3px solid #4a90e2;
-            }
+                <!-- Profile Form -->
+                <div class="profile-form">
+                    <form method="post" id="profileForm">
+                        {% csrf_token %}
+                        
+                        <!-- Full Name Field -->
+                        <div class="form-group">
+                            <label for="id_ime_prezime" class="form-label">
+                                <i class="fas fa-user me-2"></i>Ime i Prezime
+                            </label>
+                            <div class="editable-field" data-field="ime_prezime">
+                                {{ form.ime_prezime }}
+                                <div class="field-hint">Kliknite za izmenu</div>
+                            </div>
+                            {% if form.ime_prezime.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.ime_prezime.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
 
-            .name {
-                font-size: 24px;
-                font-weight: bold;
-                margin-bottom: 30px;
-                color: #2c3e50;
-            }
+                        <!-- Phone Field -->
+                        <div class="form-group">
+                            <label for="id_broj_telefona" class="form-label">
+                                <i class="fas fa-phone me-2"></i>Broj Telefona
+                            </label>
+                            <div class="editable-field" data-field="broj_telefona">
+                                {{ form.broj_telefona }}
+                                <div class="field-hint">Kliknite za izmenu</div>
+                            </div>
+                            {% if form.broj_telefona.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.broj_telefona.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
 
-            .profile-field {
-                margin-bottom: 20px;
-                text-align: left;
-            }
+                        <!-- Username Field (Read-only) -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-at me-2"></i>Korisničko ime
+                            </label>
+                            <input type="text" class="form-control" value="{{ user.username }}" readonly disabled>
+                            <small class="text-muted">Korisničko ime se ne može menjati</small>
+                        </div>
 
-            .profile-field label {
-                display: block;
-                font-size: 14px;
-                color: #7f8c8d;
-                margin-bottom: 5px;
-            }
+                        <!-- Email Field (Read-only) -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly disabled>
+                            <small class="text-muted">Email adresa se ne može menjati</small>
+                        </div>
 
-            .profile-field input {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                font-size: 16px;
-                box-sizing: border-box;
-            }
+                        <!-- Action Buttons -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-success btn-lg" id="saveBtn" style="display: none;">
+                                <i class="fas fa-save me-2"></i>Sačuvaj Promene
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg" id="cancelBtn" style="display: none;">
+                                <i class="fas fa-times me-2"></i>Otkaži
+                            </button>
+                        </div>
+                    </form>
 
-            .profile-field input:focus {
-                outline: none;
-                border-color: #4a90e2;
-                box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-            }
+                    <!-- Profile Stats -->
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <div>
+                                <span class="stat-number">{{ user.termin_set.count }}</span>
+                                <span class="stat-label">Ukupno Termina</span>
+                            </div>
+                        </div>
+                        {% if user.dugovanje > 0 %}
+                        <div class="stat-item debt">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div>
+                                <span class="stat-number">{{ user.dugovanje }} RSD</span>
+                                <span class="stat-label">Dugovanje</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
 
-            .logout-btn {
-                background-color: #e74c3c;
-                color: white;
-                border: none;
-                padding: 12px 20px;
-                border-radius: 5px;
-                font-size: 16px;
-                cursor: pointer;
-                margin-top: 20px;
-                width: 100%;
-                transition: background-color 0.3s;
-            }
-
-            .logout-btn:hover {
-                background-color: #c0392b;
-            }
-
-            .edit-icon {
-                color: #4a90e2;
-                cursor: pointer;
-                margin-left: 10px;
-                font-size: 16px;
-            }
-
-            .save-btn {
-                background-color: #4a90e2;
-                color: white;
-                border: none;
-                padding: 8px 15px;
-                border-radius: 5px;
-                font-size: 14px;
-                cursor: pointer;
-                margin-top: 10px;
-                display: none;
-            }
-
-            .save-btn:hover {
-                background-color: #357abd;
-            }
-        </style>
-<div class="d-flex justify-content-center">
-    <div class="profile-container ">
-
-            <i class="fa fa-user-circle-o fa-5x" aria-hidden="true" style="color: #4a90e2;"></i>
-
-        <div class="name" id="fullname">John Doe</div>
-
-        <div class="profile-field">
-            <label for="email">Email</label>
-            <div style="display: flex; align-items: center;">
-                <input type="email" id="email" value="john.doe@example.com" readonly>
-                <span class="edit-icon" onclick="enableEdit('email')">✏️</span>
+                    <!-- Logout Button -->
+                    <div class="logout-section">
+                        <a href="{% url 'user_logout' %}" class="btn btn-danger btn-lg w-100">
+                            <i class="fas fa-sign-out-alt me-2"></i>Odjavi se
+                        </a>
+                    </div>
+                </div>
             </div>
-            <button class="save-btn" id="save-email" onclick="saveField('email')">Save</button>
         </div>
-
-        <div class="profile-field">
-            <label for="phone">Phone</label>
-            <div style="display: flex; align-items: center;">
-                <input type="tel" id="phone" value="+1 (555) 123-4567" readonly>
-                <span class="edit-icon" onclick="enableEdit('phone')">✏️</span>
-            </div>
-            <button class="save-btn" id="save-phone" onclick="saveField('phone')">Save</button>
-        </div>
-
-        <div class="profile-field">
-            <label for="name">Full Name</label>
-            <div style="display: flex; align-items: center;">
-                <input type="text" id="name" value="John Doe" readonly>
-                <span class="edit-icon" onclick="enableEdit('name')">✏️</span>
-            </div>
-            <button class="save-btn" id="save-name" onclick="saveField('name')">Save</button>
-        </div>
-
-        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
-
-    <script>
-        // Enable editing for a field
-        function enableEdit(fieldId) {
-            const input = document.getElementById(fieldId);
-            const saveBtn = document.getElementById(`save-${fieldId}`);
-
-            input.removeAttribute('readonly');
-            input.focus();
-            saveBtn.style.display = 'inline-block';
-        }
-
-        // Save field value
-        function saveField(fieldId) {
-            const input = document.getElementById(fieldId);
-            const saveBtn = document.getElementById(`save-${fieldId}`);
-
-            input.setAttribute('readonly', true);
-            saveBtn.style.display = 'none';
-
-            // Update full name if name field was edited
-            if (fieldId === 'name') {
-                document.getElementById('fullname').textContent = input.value;
-            }
-
-            // Here you would typically send the updated value to a server
-            console.log(`Saved ${fieldId}:`, input.value);
-        }
-
-        // Logout function
-        function logout() {
-            alert('Logging out...');
-            // Here you would typically redirect to a logout page or clear session
-            // window.location.href = '/logout';
-        }
-
-        // Allow saving by pressing Enter key
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const fieldId = e.target.id;
-                    document.getElementById(`save-${fieldId}`).click();
-                }
-            });
-        });
-    </script>
 </div>
+
+<style>
+/* Profile Card Styles - Dark Theme */
+.profile-card {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    position: relative;
+    margin: 20px 0;
+    border: 1px solid #4a5568;
+}
+
+.profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    pointer-events: none;
+}
+
+/* Header Section */
+.profile-header {
+    background: rgba(45, 55, 72, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    text-align: center;
+    border-bottom: 1px solid #4a5568;
+}
+
+.profile-avatar {
+    margin-bottom: 1rem;
+}
+
+.profile-avatar i {
+    font-size: 4rem;
+    color: #718096;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 0.5rem;
+}
+
+.profile-username {
+    color: #a0aec0;
+    font-size: 1rem;
+    margin: 0.25rem 0;
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+}
+
+.profile-email {
+    color: #718096;
+    font-size: 0.9rem;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Form Section */
+.profile-form {
+    background: rgba(26, 32, 44, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    position: relative;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.form-label i {
+    color: #718096;
+    width: 20px;
+}
+
+.form-control {
+    border: 2px solid #4a5568;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(45, 55, 72, 0.8);
+    color: #e2e8f0;
+    backdrop-filter: blur(5px);
+}
+
+.form-control:focus {
+    border-color: #718096;
+    box-shadow: 0 0 0 3px rgba(113, 128, 150, 0.2);
+    background: rgba(45, 55, 72, 1);
+    outline: none;
+}
+
+.form-control[readonly] {
+    background: rgba(26, 32, 44, 0.6);
+    color: #a0aec0;
+    cursor: pointer;
+    border-color: #2d3748;
+}
+
+.form-control[disabled] {
+    background: rgba(26, 32, 44, 0.4);
+    color: #718096;
+    cursor: not-allowed;
+    border-color: #2d3748;
+}
+
+.form-control::placeholder {
+    color: #718096;
+}
+
+/* Editable Field Styling */
+.editable-field {
+    position: relative;
+    cursor: pointer;
+}
+
+.editable-field:hover .form-control[readonly] {
+    border-color: #718096;
+    background: rgba(45, 55, 72, 0.9);
+}
+
+.field-hint {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: #718096;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    background: rgba(26, 32, 44, 0.9);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.editable-field:hover .field-hint {
+    opacity: 1;
+}
+
+.editable-field.editing .field-hint {
+    display: none;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    border: none;
+    color: white;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 161, 105, 0.4);
+    background: linear-gradient(135deg, #48bb78, #38a169);
+}
+
+.btn-secondary {
+    background: #4a5568;
+    border: none;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #2d3748;
+    transform: translateY(-2px);
+}
+
+/* Profile Stats */
+.profile-stats {
+    padding: 1.5rem;
+    background: rgba(45, 55, 72, 0.6);
+    backdrop-filter: blur(10px);
+    margin: 1.5rem 0;
+    border-radius: 15px;
+    border: 1px solid #4a5568;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+}
+
+.stat-item + .stat-item {
+    border-top: 1px solid #4a5568;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+}
+
+.stat-item i {
+    font-size: 1.5rem;
+    color: #718096;
+    width: 30px;
+    text-align: center;
+}
+
+.stat-item.debt i {
+    color: #f56565;
+}
+
+.stat-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #a0aec0;
+    display: block;
+}
+
+/* Logout Section */
+.logout-section {
+    padding-top: 1rem;
+    border-top: 1px solid #4a5568;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+    border: none;
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 12px;
+    border: none;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    color: white;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+    color: white;
+}
+
+.text-muted {
+    color: #718096 !important;
+    font-size: 0.85rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-card {
+        margin: 10px;
+        border-radius: 15px;
+    }
+    
+    .profile-header {
+        padding: 1.5rem;
+    }
+    
+    .profile-form {
+        padding: 1.5rem;
+    }
+    
+    .profile-name {
+        font-size: 1.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+    }
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-card {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Enhanced focus effects for dark theme */
+.form-control:focus {
+    color: #f7fafc;
+}
+
+/* Better visibility for placeholder text */
+.form-control::-webkit-input-placeholder {
+    color: #718096;
+}
+.form-control::-moz-placeholder {
+    color: #718096;
+}
+.form-control:-ms-input-placeholder {
+    color: #718096;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editableFields = document.querySelectorAll('.editable-field');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const form = document.getElementById('profileForm');
+    
+    let originalValues = {};
+    let isEditing = false;
+    
+    // Store original values
+    function storeOriginalValues() {
+        const inputs = form.querySelectorAll('input[type="text"]:not([disabled])');
+        inputs.forEach(input => {
+            if (!input.hasAttribute('disabled')) {
+                originalValues[input.id] = input.value;
+            }
+        });
+    }
+    
+    // Enable edit mode
+    function enableEditMode(fieldName) {
+        const input = document.getElementById('id_' + fieldName);
+        const fieldContainer = document.querySelector('[data-field="' + fieldName + '"]');
+        
+        if (!isEditing) {
+            storeOriginalValues();
+            isEditing = true;
+        }
+        
+        input.removeAttribute('readonly');
+        input.focus();
+        input.select();
+        
+        fieldContainer.classList.add('editing');
+        
+        saveBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        
+        // Disable other editable fields
+        editableFields.forEach(field => {
+            if (field !== fieldContainer) {
+                field.style.pointerEvents = 'none';
+                field.style.opacity = '0.6';
+            }
+        });
+    }
+    
+    // Disable edit mode
+    function disableEditMode() {
+        const inputs = form.querySelectorAll('input[type="text"]:not([disabled])');
+        inputs.forEach(input => {
+            if (!input.hasAttribute('disabled')) {
+                input.setAttribute('readonly', true);
+            }
+        });
+        
+        editableFields.forEach(field => {
+            field.classList.remove('editing');
+            field.style.pointerEvents = 'auto';
+            field.style.opacity = '1';
+        });
+        
+        saveBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
+        isEditing = false;
+    }
+    
+    // Cancel changes
+    function cancelChanges() {
+        for (let id in originalValues) {
+            document.getElementById(id).value = originalValues[id];
+        }
+        disableEditMode();
+    }
+    
+    // Event listeners for editable fields
+    editableFields.forEach(field => {
+        field.addEventListener('click', function(e) {
+            if (isEditing) return; // Prevent multiple edit modes
+            
+            const fieldName = this.getAttribute('data-field');
+            const input = this.querySelector('input');
+            
+            // Only enable editing if the input is not disabled
+            if (!input.hasAttribute('disabled')) {
+                enableEditMode(fieldName);
+            }
+        });
+    });
+    
+    cancelBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        cancelChanges();
+    });
+    
+    // Handle Enter key press
+    form.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && isEditing) {
+            e.preventDefault();
+            saveBtn.click();
+        }
+    });
+    
+    // Handle Escape key press
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isEditing) {
+            e.preventDefault();
+            cancelChanges();
+        }
+    });
+    
+    // Initialize readonly state for all editable fields
+    const editableInputs = form.querySelectorAll('input[type="text"]:not([disabled])');
+    editableInputs.forEach(input => {
+        if (!input.hasAttribute('disabled')) {
+            input.setAttribute('readonly', true);
+        }
+    });
+});
+</script>
 {% endblock %}
