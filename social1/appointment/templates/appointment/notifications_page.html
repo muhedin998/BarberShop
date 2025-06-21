@@ -2,7 +2,620 @@
 {% load static %}
 
 {% block content %}
+    <br>
+    <br>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <h1>Hello world ! :)</h1>
 
+        .container-notifications {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 80vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #494949 0%, #000000 100%);
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tab.active {
+            color: #667eea;
+            background: white;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #000000 0%, #1e1625 100%);
+        }
+
+        .tab-content {
+            min-height: 400px;
+            padding: 1rem;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .notification {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notification:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .notification.unread {
+            border-left: 0px solid #000000;
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        }
+
+        .notification.archived {
+            opacity: 0.7;
+            background: #f8f9fa;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 0.75rem;
+        }
+
+        .notification-icon.info {
+            background: linear-gradient(135deg, #656565 0%, #050305 100%);
+            color: white;
+        }
+
+        .notification-icon.success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+
+        .notification-icon.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .notification-icon.error {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .notification-body {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            color: #212529;
+        }
+
+        .notification-message {
+            font-size: 0.85rem;
+            color: #6c757d;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: #adb5bd;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #000000 0%, #000000 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #495057;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #707070 0%, #120f15 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container-notifications {
+                border-radius: 15px;
+                min-height: 90vh;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .tab {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .notification {
+                padding: 0.75rem;
+            }
+
+            .notification-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+    <div class="container-notifications">
+        <div class="header">
+            <h1>📱 Notifikacije</h1>
+            <p class="subtitle">Ostanite uvek informisani !</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="unread">
+                🔔 Unread
+                <span class="badge" id="unread-count">3</span>
+            </button>
+            <button class="tab" data-tab="archived">
+                📁 Archive
+                <span class="badge" id="archived-count">5</span>
+            </button>
+        </div>
+
+        <div class="tab-content">
+            <div id="unread" class="tab-pane active">
+                <div class="notification unread" data-id="1">
+                    <div class="notification-content">
+                        <div class="notification-icon info">
+                            💬
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">New Message</div>
+                            <div class="notification-message">John sent you a message: "Hey, are we still meeting for coffee tomorrow?"</div>
+                            <div class="notification-time">2 minutes ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-primary" onclick="markAsRead(1)">Mark as Read</button>
+                                <button class="btn btn-secondary" onclick="archiveNotification(1)">Archive</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification unread" data-id="2">
+                    <div class="notification-content">
+                        <div class="notification-icon success">
+                            ✅
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">Task Completed</div>
+                            <div class="notification-message">Your backup has been successfully completed. All files are now safely stored.</div>
+                            <div class="notification-time">15 minutes ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-primary" onclick="markAsRead(2)">Mark as Read</button>
+                                <button class="btn btn-secondary" onclick="archiveNotification(2)">Archive</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification unread" data-id="3">
+                    <div class="notification-content">
+                        <div class="notification-icon warning">
+                            ⚠️
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">Security Alert</div>
+                            <div class="notification-message">New login detected from Chrome on Windows. If this wasn't you, please secure your account.</div>
+                            <div class="notification-time">1 hour ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-primary" onclick="markAsRead(3)">Mark as Read</button>
+                                <button class="btn btn-secondary" onclick="archiveNotification(3)">Archive</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="archived" class="tab-pane">
+                <div class="notification archived" data-id="4">
+                    <div class="notification-content">
+                        <div class="notification-icon success">
+                            🎉
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">Welcome!</div>
+                            <div class="notification-message">Thanks for joining our platform. Explore all the amazing features we have to offer.</div>
+                            <div class="notification-time">2 days ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-secondary" onclick="unarchiveNotification(4)">Unarchive</button>
+                                <button class="btn btn-secondary" onclick="deleteNotification(4)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification archived" data-id="5">
+                    <div class="notification-content">
+                        <div class="notification-icon info">
+                            📊
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">Weekly Report</div>
+                            <div class="notification-message">Your weekly activity report is ready. You've completed 12 tasks this week!</div>
+                            <div class="notification-time">3 days ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-secondary" onclick="unarchiveNotification(5)">Unarchive</button>
+                                <button class="btn btn-secondary" onclick="deleteNotification(5)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification archived" data-id="6">
+                    <div class="notification-content">
+                        <div class="notification-icon error">
+                            🚨
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">System Update</div>
+                            <div class="notification-message">System maintenance completed. All services are now running normally.</div>
+                            <div class="notification-time">1 week ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-secondary" onclick="unarchiveNotification(6)">Unarchive</button>
+                                <button class="btn btn-secondary" onclick="deleteNotification(6)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification archived" data-id="7">
+                    <div class="notification-content">
+                        <div class="notification-icon success">
+                            💰
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">Payment Received</div>
+                            <div class="notification-message">Your payment of $299.99 has been successfully processed.</div>
+                            <div class="notification-time">2 weeks ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-secondary" onclick="unarchiveNotification(7)">Unarchive</button>
+                                <button class="btn btn-secondary" onclick="deleteNotification(7)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification archived" data-id="8">
+                    <div class="notification-content">
+                        <div class="notification-icon info">
+                            🔄
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">App Updated</div>
+                            <div class="notification-message">Your app has been updated to version 2.1.0 with new features and bug fixes.</div>
+                            <div class="notification-time">3 weeks ago</div>
+                            <div class="notification-actions">
+                                <button class="btn btn-secondary" onclick="unarchiveNotification(8)">Unarchive</button>
+                                <button class="btn btn-secondary" onclick="deleteNotification(8)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+
+                // Remove active class from all tabs and panes
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding pane
+                this.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // Notification management functions
+        function markAsRead(id) {
+            const notification = document.querySelector(`[data-id="${id}"]`);
+            if (notification) {
+                notification.classList.remove('unread');
+                notification.classList.add('archived');
+
+                // Move to archived tab
+                document.getElementById('archived').appendChild(notification);
+
+                // Update notification actions
+                const actions = notification.querySelector('.notification-actions');
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="unarchiveNotification(${id})">Unarchive</button>
+                    <button class="btn btn-secondary" onclick="deleteNotification(${id})">Delete</button>
+                `;
+
+                updateCounts();
+                showToast('Notification marked as read');
+            }
+        }
+
+        function archiveNotification(id) {
+            const notification = document.querySelector(`[data-id="${id}"]`);
+            if (notification) {
+                notification.classList.remove('unread');
+                notification.classList.add('archived');
+
+                // Move to archived tab
+                document.getElementById('archived').appendChild(notification);
+
+                // Update notification actions
+                const actions = notification.querySelector('.notification-actions');
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="unarchiveNotification(${id})">Unarchive</button>
+                    <button class="btn btn-secondary" onclick="deleteNotification(${id})">Delete</button>
+                `;
+
+                updateCounts();
+                showToast('Notification archived');
+            }
+        }
+
+        function unarchiveNotification(id) {
+            const notification = document.querySelector(`[data-id="${id}"]`);
+            if (notification) {
+                notification.classList.remove('archived');
+                notification.classList.add('unread');
+
+                // Move to unread tab
+                document.getElementById('unread').appendChild(notification);
+
+                // Update notification actions
+                const actions = notification.querySelector('.notification-actions');
+                actions.innerHTML = `
+                    <button class="btn btn-primary" onclick="markAsRead(${id})">Mark as Read</button>
+                    <button class="btn btn-secondary" onclick="archiveNotification(${id})">Archive</button>
+                `;
+
+                updateCounts();
+                showToast('Notification unarchived');
+            }
+        }
+
+        function deleteNotification(id) {
+            const notification = document.querySelector(`[data-id="${id}"]`);
+            if (notification) {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => {
+                    notification.remove();
+                    updateCounts();
+                    checkEmptyStates();
+                }, 300);
+                showToast('Notification deleted');
+            }
+        }
+
+        function updateCounts() {
+            const unreadCount = document.querySelectorAll('#unread .notification').length;
+            const archivedCount = document.querySelectorAll('#archived .notification').length;
+
+            document.getElementById('unread-count').textContent = unreadCount;
+            document.getElementById('archived-count').textContent = archivedCount;
+        }
+
+        function checkEmptyStates() {
+            const unreadTab = document.getElementById('unread');
+            const archivedTab = document.getElementById('archived');
+
+            if (!unreadTab.querySelector('.notification')) {
+                unreadTab.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✨</div>
+                        <h3>All caught up!</h3>
+                        <p>You have no unread notifications. Great job staying on top of things!</p>
+                    </div>
+                `;
+            }
+
+            if (!archivedTab.querySelector('.notification')) {
+                archivedTab.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📁</div>
+                        <h3>No archived notifications</h3>
+                        <p>Archived notifications will appear here when you mark them as read or archive them.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function showToast(message) {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 1000;
+                animation: slideUp 0.3s ease-out;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            `;
+            toast.textContent = message;
+
+            // Add animation keyframes
+            if (!document.querySelector('#toast-styles')) {
+                const style = document.createElement('style');
+                style.id = 'toast-styles';
+                style.textContent = `
+                    @keyframes slideUp {
+                        from { transform: translateX(-50%) translateY(100%); opacity: 0; }
+                        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(-100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            document.body.appendChild(toast);
+
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideUp 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize counts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCounts();
+        });
+    </script>
 {% endblock %}

@@ -28,6 +28,17 @@ class Usluge(models.Model):
     def __str__(self):
         return F"{self.name} - {self.cena}"
 
+class Notification(models.Model):
+    user = models.ForeignKey("Korisnik", on_delete=models.CASCADE)  # recipient
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.title} to {self.user.username}, created at {self.created_at}"
+
 
 class Termin(models.Model):
     user  = models.ForeignKey(Korisnik, on_delete=models.CASCADE)
