@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from ..forms import TestForm
 from datetime import datetime, timedelta
-from ..models import Korisnik, Usluge, Frizer, Termin, Duznik
+from ..models import Korisnik, Usluge, Frizer, Termin, Duznik, Notification
 from django.db.models import Sum
 
 
@@ -43,14 +43,22 @@ def opcije_termini(request):
                 print(e)
                 user = None
             if user:
+                debt_amount = int(request.POST['duguje'])
                 if user.dugovanje is not None:
-                    user.dugovanje += int(request.POST['duguje'])
+                    user.dugovanje += debt_amount
                     user.save()
                     user.refresh_from_db()  # Reload from DB
                 else:
-                    user.dugovanje = int(request.POST['duguje'])
+                    user.dugovanje = debt_amount
                     user.save()
                     user.refresh_from_db()  # Reload from DB
+                
+                # Create notification for the user about the new debt
+                Notification.objects.create(
+                    user=user,
+                    title="Novo dugovanje dodano",
+                    message=f"Dodano je novo dugovanje u iznosu od {debt_amount} RSD. Ukupno dugovanje: {user.dugovanje} RSD."
+                )
             else:
                 duznik, created = Duznik.objects.get_or_create(
                 name=request.POST['ime_prezime'],
@@ -65,6 +73,10 @@ def opcije_termini(request):
                     duznik.save()
 
                     print("Dužnik već postoji! Povećano duguje!")
+                
+                # Note: For guest users (Duznik), we cannot create notifications
+                # since they don't have user accounts. The notification will be
+                # created when/if they register and their debt is transferred.
 
     if request.user.is_authenticated:
         if request.user.is_superuser:
@@ -75,6 +87,14 @@ def opcije_termini(request):
             termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(user=frizer)
     else:
         return redirect('zakazi')
+    
+    # Dodaj dodatne usluge objekti za svaki termin
+    for termin in termini:
+        if termin.dodatne_usluge:
+            termin.dodatne_usluge_objekti = Usluge.objects.filter(id__in=termin.dodatne_usluge)
+        else:
+            termin.dodatne_usluge_objekti = []
+    
     context = {'termini':termini}
 
     return render(request, 'appointment/opcije/termini.html', context)
@@ -148,6 +168,13 @@ def opcije_istorija(request):
 
     page_number = request.GET.get('page')
     termini = paginator.get_page(page_number)
+    
+    # Dodaj dodatne usluge objekti za svaki termin
+    for termin in termini:
+        if termin.dodatne_usluge:
+            termin.dodatne_usluge_objekti = Usluge.objects.filter(id__in=termin.dodatne_usluge)
+        else:
+            termin.dodatne_usluge_objekti = []
 
     return render(request, 'appointment/opcije/istorija.html', {'termini': termini})
 

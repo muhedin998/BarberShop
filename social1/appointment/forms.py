@@ -121,7 +121,7 @@ class ProfileUpdateForm(forms.ModelForm):
 class TestForm(forms.ModelForm):
     class Meta:
         model = Termin
-        fields = ['user','usluga','frizer','name','broj_telefona','datum','vreme', 'poruka']
+        fields = ['user','usluga','frizer','name','broj_telefona','datum','vreme', 'poruka', 'dodatne_usluge']
         widgets = {'vreme': forms.Select(choices=ODABIR_TERMINA,attrs={'class':'w3-select'}),
                    'poruka': forms.Textarea(attrs={'class': 'w-100 mt-1', 'placeholder': 'Ovde unesite poruku za vaseg frizera...'})}
 

@@ -60,7 +60,17 @@
             <!-- <td class="bg-danger text-light w3-center" colspan="2"> &nbsp {{ usl.datum }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>          -->
         {% else %}
             <td>{{ usl.poruka|default:"" }}</td>
-            <td>{{ usl.usluga.name }}</td>
+            <td>
+                {{ usl.usluga.name }}
+                {% if usl.dodatne_usluge %}
+                    <br><small class="text-muted">Dodatne usluge:</small>
+                    <ul style="margin: 5px 0; padding-left: 20px;">
+                    {% for dodatna_usluga in usl.dodatne_usluge_objekti %}
+                        <li style="font-size: 0.9em;">{{ dodatna_usluga.name }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </td>
             <td>
                 {{ usl.datum }}, {{ usl.vreme|time:"H:i" }} &nbsp
             </td>

@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",  
     "127.0.0.1", 
-    "192.168.0.29",
+    "192.168.1.108",
     "https://frizerskisalonhasko.com",
     "http://frizerskisalonhasko.com",
     "www.frizerskisalonhasko.com",
