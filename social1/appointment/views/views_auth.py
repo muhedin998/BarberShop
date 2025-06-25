@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from ..forms import KorisnikForm
 from django.contrib import messages
-from ..models import Korisnik
+from ..models import Korisnik, Duznik, Notification
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -14,6 +14,47 @@ from ..utils import generate_token
 from allauth.account.signals import user_logged_in
 from allauth.socialaccount.models import SocialAccount
 from django.dispatch import receiver
+
+
+def check_and_notify_existing_debt(user):
+    """
+    Check if there are existing debt records for this user and create notifications.
+    This function looks for debt records that match the user's phone number or name.
+    """
+    try:
+        # Look for existing debt records by phone number
+        existing_debts = Duznik.objects.filter(broj_telefona=user.broj_telefona)
+        
+        if existing_debts.exists():
+            total_debt = 0
+            debt_records_count = existing_debts.count()
+            
+            # Calculate total debt and optionally link records to user
+            for debt in existing_debts:
+                total_debt += debt.duguje or 0
+                # Link the debt record to the newly registered user
+                debt.user = user
+                debt.save()
+            
+            # Add debt to user's profile if they have existing debt
+            if total_debt > 0:
+                if user.dugovanje:
+                    user.dugovanje += total_debt
+                else:
+                    user.dugovanje = total_debt
+                user.save()
+                
+                # Create notification about existing debt
+                Notification.objects.create(
+                    user=user,
+                    title="Postojeće dugovanje pronađeno",
+                    message=f"Dobrodošli! Pronašli smo vaše postojeće dugovanje u iznosu od {total_debt} RSD. "
+                            f"Molimo vas da se obratite salonu za regulisanje dugovanja."
+                )
+    
+    except Exception as e:
+        # Log the error but don't break the registration process
+        print(f"Error checking existing debt for user {user.username}: {e}")
 
 
 @receiver(user_logged_in)
@@ -44,6 +85,10 @@ def complete_profile(request):
         if broj_telefona:
             request.user.broj_telefona = broj_telefona
             request.user.save()
+            
+            # Check for existing debt when completing profile (social auth users)
+            check_and_notify_existing_debt(request.user)
+            
             return redirect('/')
     return render(request, 'complete_profile.html')
 
@@ -79,6 +124,9 @@ def user_register(request):
             user.set_password(request.POST['password'])
             user.save()
             form.save()
+
+            # Check for existing debt records and create notifications
+            check_and_notify_existing_debt(user)
 
             send_action_email(request, user)
             

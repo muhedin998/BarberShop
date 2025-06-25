@@ -2,8 +2,6 @@
 {% load static %}
 
 {% block content %}
-    <br>
-    <br>
     <style>
         * {
             margin: 0;
@@ -13,50 +11,67 @@
 
 
         .container-notifications {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
+            max-width: 800px;
+            margin: 50px auto 0;
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             overflow: hidden;
             min-height: 80vh;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #494949 0%, #000000 100%);
-            color: white;
-            padding: 1.5rem 1rem;
-            text-align: center;
+            border: 1px solid #4a5568;
             position: relative;
         }
 
+        .container-notifications::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #718096, transparent);
+        }
+
+        .header {
+            background: rgba(26, 32, 44, 0.95);
+            backdrop-filter: blur(10px);
+            color: #e2e8f0;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid #4a5568;
+        }
+
         .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
+            color: #e2e8f0;
         }
 
         .header .subtitle {
             opacity: 0.9;
-            font-size: 0.9rem;
+            font-size: 1.4rem;
+            color: #a0aec0;
         }
 
         .tabs {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            background: rgba(45, 55, 72, 0.8);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid #4a5568;
         }
 
         .tab {
             flex: 1;
-            padding: 1rem;
+            padding: 1.5rem;
             text-align: center;
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #6c757d;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #a0aec0;
             transition: all 0.3s ease;
             position: relative;
             display: flex;
@@ -66,8 +81,8 @@
         }
 
         .tab.active {
-            color: #667eea;
-            background: white;
+            color: #e2e8f0;
+            background: rgba(26, 32, 44, 0.9);
         }
 
         .tab.active::after {
@@ -77,12 +92,13 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(135deg, #000000 0%, #1e1625 100%);
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
         }
 
         .tab-content {
             min-height: 400px;
-            padding: 1rem;
+            padding: 2rem;
+            background: rgba(26, 32, 44, 0.5);
         }
 
         .tab-pane {
@@ -94,11 +110,12 @@
         }
 
         .notification {
-            background: white;
-            border: 1px solid #e9ecef;
+            background: rgba(45, 55, 72, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #4a5568;
             border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
@@ -106,17 +123,18 @@
 
         .notification:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: #718096;
         }
 
         .notification.unread {
-            border-left: 0px solid #000000;
-            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border-left: 4px solid #718096;
+            background: rgba(45, 55, 72, 0.9);
         }
 
         .notification.archived {
             opacity: 0.7;
-            background: #f8f9fa;
+            background: rgba(45, 55, 72, 0.6);
         }
 
         .notification-header {
@@ -167,22 +185,22 @@
         }
 
         .notification-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.25rem;
-            color: #212529;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
         }
 
         .notification-message {
-            font-size: 0.85rem;
-            color: #6c757d;
-            line-height: 1.4;
-            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            color: #a0aec0;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
         }
 
         .notification-time {
-            font-size: 0.75rem;
-            color: #adb5bd;
+            font-size: 1rem;
+            color: #718096;
         }
 
         .notification-actions {
@@ -192,24 +210,25 @@
         }
 
         .btn {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 1.1rem;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #000000 0%, #000000 100%);
-            color: white;
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
         }
 
         .btn-secondary {
-            background: #f8f9fa;
-            color: #6c757d;
-            border: 1px solid #e9ecef;
+            background: rgba(45, 55, 72, 0.8);
+            color: #a0aec0;
+            border: 1px solid #4a5568;
         }
 
         .btn:hover {
@@ -219,35 +238,37 @@
 
         .empty-state {
             text-align: center;
-            padding: 3rem 1rem;
-            color: #6c757d;
+            padding: 4rem 2rem;
+            color: #a0aec0;
         }
 
         .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
         }
 
         .empty-state h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: #495057;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+            font-weight: 600;
         }
 
         .empty-state p {
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #a0aec0;
         }
 
         .badge {
-            background: linear-gradient(135deg, #707070 0%, #120f15 100%);
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            min-width: 20px;
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+            color: #e2e8f0;
+            font-size: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-weight: 700;
+            min-width: 25px;
             text-align: center;
         }
 
@@ -289,154 +310,79 @@
 
         <div class="tabs">
             <button class="tab active" data-tab="unread">
-                🔔 Unread
-                <span class="badge" id="unread-count">3</span>
+                🔔 Nepročitane
+                <span class="badge" id="unread-count">{{ unread_count }}</span>
             </button>
             <button class="tab" data-tab="archived">
-                📁 Archive
-                <span class="badge" id="archived-count">5</span>
+                📁 Arhiva
+                <span class="badge" id="archived-count">{{ archived_count }}</span>
             </button>
         </div>
 
         <div class="tab-content">
             <div id="unread" class="tab-pane active">
-                <div class="notification unread" data-id="1">
-                    <div class="notification-content">
-                        <div class="notification-icon info">
-                            💬
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">New Message</div>
-                            <div class="notification-message">John sent you a message: "Hey, are we still meeting for coffee tomorrow?"</div>
-                            <div class="notification-time">2 minutes ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-primary" onclick="markAsRead(1)">Mark as Read</button>
-                                <button class="btn btn-secondary" onclick="archiveNotification(1)">Archive</button>
+                {% if unread_notifications %}
+                    {% if unread_count > 0 %}
+                    <div style="text-align: right; margin-bottom: 1.5rem;">
+                        <button class="btn btn-primary" onclick="markAllAsRead()" style="font-size: 1rem; padding: 0.6rem 1.2rem;">
+                            ✓ Označi sve kao pročitane
+                        </button>
+                    </div>
+                    {% endif %}
+                    {% for notification in unread_notifications %}
+                    <div class="notification unread" data-id="{{ notification.id }}">
+                        <div class="notification-content">
+                            <div class="notification-icon info">
+                                📬
+                            </div>
+                            <div class="notification-body">
+                                <div class="notification-title">{{ notification.title }}</div>
+                                <div class="notification-message">{{ notification.message }}</div>
+                                <div class="notification-time">Pre {{ notification.created_at|timesince }}</div>
+                                <div class="notification-actions">
+                                    <button class="btn btn-primary" onclick="markAsRead({{ notification.id }})">Označi kao pročitano</button>
+                                    <button class="btn btn-secondary" onclick="deleteNotification({{ notification.id }})">Obriši</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="notification unread" data-id="2">
-                    <div class="notification-content">
-                        <div class="notification-icon success">
-                            ✅
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">Task Completed</div>
-                            <div class="notification-message">Your backup has been successfully completed. All files are now safely stored.</div>
-                            <div class="notification-time">15 minutes ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-primary" onclick="markAsRead(2)">Mark as Read</button>
-                                <button class="btn btn-secondary" onclick="archiveNotification(2)">Archive</button>
-                            </div>
-                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📪</div>
+                        <div class="empty-title">Nema nepročitanih notifikacija</div>
+                        <div class="empty-message">Sve ste pročitali! Nove notifikacije će se pojaviti ovde.</div>
                     </div>
-                </div>
-
-                <div class="notification unread" data-id="3">
-                    <div class="notification-content">
-                        <div class="notification-icon warning">
-                            ⚠️
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">Security Alert</div>
-                            <div class="notification-message">New login detected from Chrome on Windows. If this wasn't you, please secure your account.</div>
-                            <div class="notification-time">1 hour ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-primary" onclick="markAsRead(3)">Mark as Read</button>
-                                <button class="btn btn-secondary" onclick="archiveNotification(3)">Archive</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endif %}
             </div>
 
             <div id="archived" class="tab-pane">
-                <div class="notification archived" data-id="4">
-                    <div class="notification-content">
-                        <div class="notification-icon success">
-                            🎉
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">Welcome!</div>
-                            <div class="notification-message">Thanks for joining our platform. Explore all the amazing features we have to offer.</div>
-                            <div class="notification-time">2 days ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-secondary" onclick="unarchiveNotification(4)">Unarchive</button>
-                                <button class="btn btn-secondary" onclick="deleteNotification(4)">Delete</button>
+                {% if archived_notifications %}
+                    {% for notification in archived_notifications %}
+                    <div class="notification archived" data-id="{{ notification.id }}">
+                        <div class="notification-content">
+                            <div class="notification-icon success">
+                                📂
+                            </div>
+                            <div class="notification-body">
+                                <div class="notification-title">{{ notification.title }}</div>
+                                <div class="notification-message">{{ notification.message }}</div>
+                                <div class="notification-time">Pročitano pre {{ notification.read_at|timesince }}</div>
+                                <div class="notification-actions">
+                                    <button class="btn btn-secondary" onclick="markAsUnread({{ notification.id }})">Označi kao nepročitano</button>
+                                    <button class="btn btn-secondary" onclick="deleteNotification({{ notification.id }})">Obriši</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="notification archived" data-id="5">
-                    <div class="notification-content">
-                        <div class="notification-icon info">
-                            📊
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">Weekly Report</div>
-                            <div class="notification-message">Your weekly activity report is ready. You've completed 12 tasks this week!</div>
-                            <div class="notification-time">3 days ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-secondary" onclick="unarchiveNotification(5)">Unarchive</button>
-                                <button class="btn btn-secondary" onclick="deleteNotification(5)">Delete</button>
-                            </div>
-                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📂</div>
+                        <div class="empty-title">Nema arhiviranih notifikacija</div>
+                        <div class="empty-message">Pročitane notifikacije će se pojaviti ovde za lakši pristup.</div>
                     </div>
-                </div>
-
-                <div class="notification archived" data-id="6">
-                    <div class="notification-content">
-                        <div class="notification-icon error">
-                            🚨
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">System Update</div>
-                            <div class="notification-message">System maintenance completed. All services are now running normally.</div>
-                            <div class="notification-time">1 week ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-secondary" onclick="unarchiveNotification(6)">Unarchive</button>
-                                <button class="btn btn-secondary" onclick="deleteNotification(6)">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="notification archived" data-id="7">
-                    <div class="notification-content">
-                        <div class="notification-icon success">
-                            💰
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">Payment Received</div>
-                            <div class="notification-message">Your payment of $299.99 has been successfully processed.</div>
-                            <div class="notification-time">2 weeks ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-secondary" onclick="unarchiveNotification(7)">Unarchive</button>
-                                <button class="btn btn-secondary" onclick="deleteNotification(7)">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="notification archived" data-id="8">
-                    <div class="notification-content">
-                        <div class="notification-icon info">
-                            🔄
-                        </div>
-                        <div class="notification-body">
-                            <div class="notification-title">App Updated</div>
-                            <div class="notification-message">Your app has been updated to version 2.1.0 with new features and bug fixes.</div>
-                            <div class="notification-time">3 weeks ago</div>
-                            <div class="notification-actions">
-                                <button class="btn btn-secondary" onclick="unarchiveNotification(8)">Unarchive</button>
-                                <button class="btn btn-secondary" onclick="deleteNotification(8)">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -459,113 +405,107 @@
 
         // Notification management functions
         function markAsRead(id) {
-            const notification = document.querySelector(`[data-id="${id}"]`);
-            if (notification) {
-                notification.classList.remove('unread');
-                notification.classList.add('archived');
-
-                // Move to archived tab
-                document.getElementById('archived').appendChild(notification);
-
-                // Update notification actions
-                const actions = notification.querySelector('.notification-actions');
-                actions.innerHTML = `
-                    <button class="btn btn-secondary" onclick="unarchiveNotification(${id})">Unarchive</button>
-                    <button class="btn btn-secondary" onclick="deleteNotification(${id})">Delete</button>
-                `;
-
-                updateCounts();
-                showToast('Notification marked as read');
-            }
+            fetch(`/notifications/mark-read/${id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh to show updated notifications
+                    showToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Greška pri označavanju notifikacije kao pročitane');
+            });
         }
 
-        function archiveNotification(id) {
-            const notification = document.querySelector(`[data-id="${id}"]`);
-            if (notification) {
-                notification.classList.remove('unread');
-                notification.classList.add('archived');
-
-                // Move to archived tab
-                document.getElementById('archived').appendChild(notification);
-
-                // Update notification actions
-                const actions = notification.querySelector('.notification-actions');
-                actions.innerHTML = `
-                    <button class="btn btn-secondary" onclick="unarchiveNotification(${id})">Unarchive</button>
-                    <button class="btn btn-secondary" onclick="deleteNotification(${id})">Delete</button>
-                `;
-
-                updateCounts();
-                showToast('Notification archived');
-            }
-        }
-
-        function unarchiveNotification(id) {
-            const notification = document.querySelector(`[data-id="${id}"]`);
-            if (notification) {
-                notification.classList.remove('archived');
-                notification.classList.add('unread');
-
-                // Move to unread tab
-                document.getElementById('unread').appendChild(notification);
-
-                // Update notification actions
-                const actions = notification.querySelector('.notification-actions');
-                actions.innerHTML = `
-                    <button class="btn btn-primary" onclick="markAsRead(${id})">Mark as Read</button>
-                    <button class="btn btn-secondary" onclick="archiveNotification(${id})">Archive</button>
-                `;
-
-                updateCounts();
-                showToast('Notification unarchived');
-            }
+        function markAsUnread(id) {
+            fetch(`/notifications/mark-unread/${id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh to show updated notifications
+                    showToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Greška pri označavanju notifikacije kao nepročitane');
+            });
         }
 
         function deleteNotification(id) {
-            const notification = document.querySelector(`[data-id="${id}"]`);
-            if (notification) {
-                notification.style.animation = 'slideOut 0.3s ease-out forwards';
-                setTimeout(() => {
-                    notification.remove();
-                    updateCounts();
-                    checkEmptyStates();
-                }, 300);
-                showToast('Notification deleted');
+            if (confirm('Da li ste sigurni da želite da obrišete ovu notifikaciju?')) {
+                fetch(`/notifications/delete/${id}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload(); // Refresh to show updated notifications
+                        showToast(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Greška pri brisanju notifikacije');
+                });
             }
         }
 
-        function updateCounts() {
-            const unreadCount = document.querySelectorAll('#unread .notification').length;
-            const archivedCount = document.querySelectorAll('#archived .notification').length;
-
-            document.getElementById('unread-count').textContent = unreadCount;
-            document.getElementById('archived-count').textContent = archivedCount;
+        function markAllAsRead() {
+            fetch('/notifications/mark-all-read/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh to show updated notifications
+                    showToast(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Greška pri označavanju svih notifikacija kao pročitane');
+            });
         }
 
-        function checkEmptyStates() {
-            const unreadTab = document.getElementById('unread');
-            const archivedTab = document.getElementById('archived');
-
-            if (!unreadTab.querySelector('.notification')) {
-                unreadTab.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">✨</div>
-                        <h3>All caught up!</h3>
-                        <p>You have no unread notifications. Great job staying on top of things!</p>
-                    </div>
-                `;
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
             }
-
-            if (!archivedTab.querySelector('.notification')) {
-                archivedTab.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📁</div>
-                        <h3>No archived notifications</h3>
-                        <p>Archived notifications will appear here when you mark them as read or archive them.</p>
-                    </div>
-                `;
-            }
+            return cookieValue;
         }
+
 
         function showToast(message) {
             // Create toast element

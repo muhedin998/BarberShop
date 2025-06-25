@@ -23,8 +23,8 @@
 
         <form method="post" class="w3-margin">
             {% csrf_token %}
-            <label>Izaberite uslugu: </label>
-            <select class='w3-select' name="usluga" required="required" id="id_usluga" style="-webkit-appearance: none;">
+            <label>Glavna usluga: </label>
+            <select class='w3-select' name="usluga" required="required" id="id_usluga" style="-webkit-appearance: none;" onchange="pokaziDodajUsluguDugme()">
                 <option selected disabled value=""></option>
                 {% with value=form.usluga.value %}
                 {% for value in form.usluga.field.choices.queryset %}
@@ -32,6 +32,16 @@
                 {% endfor %}
                 {% endwith %}
                 </select>
+                
+                <div id="dodaj-uslugu-section" style="display: none; margin-top: 15px;">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="dodaj-uslugu-btn" onclick="dodajUsluguSelect()">
+                        <i class="fa fa-plus"></i> Dodaj dodatnu uslugu
+                    </button>
+                </div>
+                
+                <div id="dodatne-usluge-container">
+                    <!-- Dodatni select-ovi za usluge će se dodavati ovde -->
+                </div>
                 <br>
                 <label><br>Izaberite frizera: </label>
                 <select class='w3-select' name="frizer" required="required" id="id_frizer" style="-webkit-appearance: none;">
@@ -71,6 +81,18 @@
                 <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="broj_telefona" > 
             {% endif %}
 
+            {% if dodatne_usluge_nazivi %}
+            <div class="alert alert-info">
+                <strong>Dodatne usluge:</strong>
+                <ul style="margin-bottom: 0;">
+                {% for naziv in dodatne_usluge_nazivi %}
+                    <li>{{ naziv }}</li>
+                {% endfor %}
+                </ul>
+                <small class="text-muted">Vreme termina se računa samo za glavnu uslugu.</small>
+            </div>
+            {% endif %}
+            
             <label>Izaberite termin: </label><br>
             {{ form.vreme }}
             <label class="mt-2">Ostavite poruku: <span style="opacity: 0.5;">(opciono)</span></label><br>
@@ -112,6 +134,102 @@
 
         const nextMonday = new Date(dateCopy.setDate(dateCopy.getDate() + 1));
         return nextMonday;
+    }
+
+    let dodatneUslugeCount = 0;
+    const MAX_DODATNE_USLUGE = 3;
+
+    function pokaziDodajUsluguDugme() {
+        const glavnaUsluga = document.getElementById('id_usluga').value;
+        const dugmeSection = document.getElementById('dodaj-uslugu-section');
+        
+        if (glavnaUsluga) {
+            dugmeSection.style.display = 'block';
+        } else {
+            dugmeSection.style.display = 'none';
+            // Ukloni sve dodatne usluge ako se glavna usluga promeni
+            const container = document.getElementById('dodatne-usluge-container');
+            container.innerHTML = '';
+            dodatneUslugeCount = 0;
+            azurirajDugme();
+        }
+    }
+
+    function dodajUsluguSelect() {
+        if (dodatneUslugeCount >= MAX_DODATNE_USLUGE) {
+            alert('Možete dodati maksimalno 3 dodatne usluge.');
+            return;
+        }
+
+        dodatneUslugeCount++;
+        
+        const container = document.getElementById('dodatne-usluge-container');
+        const glavniSelect = document.getElementById('id_usluga');
+        
+        // Kreiraj div wrapper za dodatnu uslugu
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'dodatna-usluga-wrapper';
+        wrapperDiv.style.marginTop = '10px';
+        wrapperDiv.id = `dodatna-usluga-${dodatneUslugeCount}`;
+        
+        // Kreiraj label
+        const label = document.createElement('label');
+        label.textContent = `Dodatna usluga ${dodatneUslugeCount}:`;
+        
+        // Kreiraj row div za select i dugme
+        const rowDiv = document.createElement('div');
+        rowDiv.style.display = 'flex';
+        rowDiv.style.alignItems = 'center';
+        rowDiv.style.gap = '10px';
+        
+        // Kreiraj select element
+        const select = document.createElement('select');
+        select.className = 'w3-select';
+        select.name = `dodatna_usluga_${dodatneUslugeCount}`;
+        select.id = `dodatna_usluga_${dodatneUslugeCount}`;
+        select.style.webkitAppearance = 'none';
+        select.style.flex = '1';
+        
+        // Dodaj opcije iz glavnog select-a
+        select.innerHTML = glavniSelect.innerHTML;
+        
+        // Kreiraj dugme za uklanjanje
+        const ukloniBtn = document.createElement('button');
+        ukloniBtn.type = 'button';
+        ukloniBtn.className = 'btn btn-outline-danger btn-sm';
+        ukloniBtn.innerHTML = '<i class="fa fa-minus"></i>';
+        ukloniBtn.onclick = function() {
+            ukloniDodatnuUslugu(dodatneUslugeCount);
+        };
+        
+        // Sastavi elemente
+        rowDiv.appendChild(select);
+        rowDiv.appendChild(ukloniBtn);
+        wrapperDiv.appendChild(label);
+        wrapperDiv.appendChild(rowDiv);
+        container.appendChild(wrapperDiv);
+        
+        azurirajDugme();
+    }
+
+    function ukloniDodatnuUslugu(id) {
+        const element = document.getElementById(`dodatna-usluga-${id}`);
+        if (element) {
+            element.remove();
+            // Prebroji postojeće dodatne usluge
+            const postojece = document.querySelectorAll('.dodatna-usluga-wrapper');
+            dodatneUslugeCount = postojece.length;
+            azurirajDugme();
+        }
+    }
+
+    function azurirajDugme() {
+        const dugme = document.getElementById('dodaj-uslugu-btn');
+        if (dodatneUslugeCount >= MAX_DODATNE_USLUGE) {
+            dugme.style.display = 'none';
+        } else {
+            dugme.style.display = 'inline-block';
+        }
     }
 </script>
 

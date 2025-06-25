@@ -44,6 +44,7 @@ class Termin(models.Model):
     user  = models.ForeignKey(Korisnik, on_delete=models.CASCADE)
     frizer = models.ForeignKey(Frizer, on_delete=models.CASCADE, null=True)
     usluga = models.ForeignKey(Usluge, on_delete=models.CASCADE, null=True)
+    dodatne_usluge = models.JSONField(default=list, blank=True, null=True)  # Lista ID-jeva dodatnih usluga
     name = models.CharField(max_length=250, blank=True, null=True)
     broj_telefona = models.CharField(max_length=20, blank=True, null=True)
     datum = models.DateField(blank=True, null=True)
@@ -51,22 +52,33 @@ class Termin(models.Model):
     poruka = models.CharField(max_length=250, blank=True, null=True)
     cena_termina = models.IntegerField(blank=True, null=True)
 
-def save(self, *args, **kwargs):
-    if self.cena_termina is None:
-        if self.usluga:
-            self.cena_termina = self.usluga.cena
+    def save(self, *args, **kwargs):
+        if self.cena_termina is None:
+            total_cena = 0
+            
+            # Dodaj cenu glavne usluge
+            if self.usluga:
+                total_cena += self.usluga.cena
+            
+            # Dodaj cene dodatnih usluga
+            if self.dodatne_usluge:
+                dodatne_usluge_objects = Usluge.objects.filter(id__in=self.dodatne_usluge)
+                for dodatna_usluga in dodatne_usluge_objects:
+                    total_cena += dodatna_usluga.cena
+            
+            self.cena_termina = total_cena
 
-        if self.user and not self.user.is_superuser:
-            # Count *existing* appointments (excluding the one we're about to save)
-            previous_appointments = Termin.objects.filter(user=self.user).count()
+            if self.user and not self.user.is_superuser:
+                # Count *existing* appointments (excluding the one we're about to save)
+                previous_appointments = Termin.objects.filter(user=self.user).count()
 
-            # This one will be the (previous + 1)th
-            next_number = previous_appointments + 1
+                # This one will be the (previous + 1)th
+                next_number = previous_appointments + 1
 
-            if next_number % 15 == 0:
-                self.cena_termina = 0
+                if next_number % 15 == 0:
+                    self.cena_termina = 0
 
-    super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ['datum','vreme','frizer']

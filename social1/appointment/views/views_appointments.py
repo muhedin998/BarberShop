@@ -18,6 +18,7 @@ def potvrdi(request):
     usluga = request.session.get('usluga')
     frizer = request.session.get('frizer')
     datum = request.session.get('datum')
+    dodatne_usluge = request.session.get('dodatne_usluge', [])
     duration = Usluge.objects.get(pk=usluga).duzina.total_seconds()
     termini = Termin.objects.filter(frizer=frizer,datum=datum)
     termini_2 = []
@@ -56,7 +57,8 @@ def potvrdi(request):
                 'godina': sada.year,
                 'mesec': format(sada.month, "02d"),
                 'dan': format(sada.day, "02d"),                
-                'broj_telefona':broj_telefona
+                'broj_telefona':broj_telefona,
+                'dodatne_usluge': dodatne_usluge
             }
             data = TestForm(params)
             if data.is_valid():              
@@ -73,11 +75,18 @@ def potvrdi(request):
             else:
                 messages.error(request, "Greska na serveru, pokusajte ponovo", extra_tags='danger')
 
+    # Pripremi podatke o dodatnim uslugama za prikaz
+    dodatne_usluge_nazivi = []
+    if dodatne_usluge:
+        dodatne_usluge_objekti = Usluge.objects.filter(id__in=dodatne_usluge)
+        dodatne_usluge_nazivi = [usluga.name for usluga in dodatne_usluge_objekti]
+
     context = {
         'filtered_list': json.dumps(list(termini_2)),
         'viewname': viewname,
         'form':form,
-        'duration':duration
+        'duration':duration,
+        'dodatne_usluge_nazivi': dodatne_usluge_nazivi
 
     }
     return render(request, 'appointment/zakazivanje.html',context)
@@ -110,6 +119,18 @@ def termin(request):
             request.session['frizer'] = request.POST['frizer']
             request.session['datum'] = request.POST['datum']
             request.session['usluga'] = request.POST['usluga']
+            
+            # Prikupi dodatne usluge
+            dodatne_usluge = []
+            for key, value in request.POST.items():
+                if key.startswith('dodatna_usluga_') and value:
+                    dodatne_usluge.append(int(value))
+            
+            # Ograniči na maksimalno 3 dodatne usluge
+            if len(dodatne_usluge) > 3:
+                dodatne_usluge = dodatne_usluge[:3]
+                
+            request.session['dodatne_usluge'] = dodatne_usluge
             # - Sortiranje zauzetih termina -
             return redirect(potvrdi)
 
