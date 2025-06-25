@@ -91,7 +91,12 @@
     <a class="nav-item {% if request.path == '/notifications-page/' %}active{% endif %}"
        id="notifications-page"
        href="{% url 'notifications_page' %}">
-        <i class="fa fa-bell"></i>
+        <div class="notification-icon-container">
+            <i class="fa fa-bell"></i>
+            {% if unread_notification_count > 0 %}
+                <span class="notification-badge">{{ unread_notification_count }}</span>
+            {% endif %}
+        </div>
         <span>Obaveštenja</span>
     </a>
     <a class="nav-item {% if request.path == '/opcije_termini/' %}active{% endif %}" href="{% url 'opcije_termini' %}" id="opcije_termini">
