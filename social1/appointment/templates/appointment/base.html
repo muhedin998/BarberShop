@@ -82,11 +82,9 @@
         <i class="fa fa-home"></i>
         <span>Početna</span>
     </a>
-    <a class="nav-item {% if request.path == '/profile-page/' %}active{% endif %}"
-       href="{% url 'profile_page' %}"
-       id="profile-page">
-        <i class="fa fa-user"></i>
-        <span>Profil</span>
+    <a class="nav-item" href="/#pricing" id="usluge-page">
+        <i class="fa fa-cut"></i>
+        <span>Usluge</span>
     </a>
     <a class="nav-item {% if request.path == '/notifications-page/' %}active{% endif %}"
        id="notifications-page"
@@ -102,6 +100,12 @@
     <a class="nav-item {% if request.path == '/opcije_termini/' %}active{% endif %}" href="{% url 'opcije_termini' %}" id="opcije_termini">
         <i class="fa fa-calendar"></i>
         <span>Termini</span>
+    </a>
+    <a class="nav-item {% if request.path == '/profile-page/' %}active{% endif %}"
+       href="{% url 'profile_page' %}"
+       id="profile-page">
+        <i class="fa fa-user"></i>
+        <span>Profil</span>
     </a>
 </div>
 
