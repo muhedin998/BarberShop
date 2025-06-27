@@ -115,3 +115,9 @@ def mark_all_read(request):
         'success': True, 
         'message': f'{updated_count} obaveštenja su označena kao pročitana'
     })
+
+
+@login_required
+def fcm_debug_page(request):
+    """Debug page for FCM token registration"""
+    return render(request, 'appointment/fcm_debug.html')

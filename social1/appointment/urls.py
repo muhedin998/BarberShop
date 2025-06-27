@@ -1,6 +1,8 @@
 
 from django.urls import path, reverse_lazy
 from . import views
+from . import fcm_views
+from . import test_views
 from django.contrib.auth import views as auth_views
 
 urlpatterns =[
@@ -32,6 +34,17 @@ urlpatterns =[
     path('notifications/mark-unread/<int:notification_id>/', views.mark_notification_unread, name='mark_notification_unread'),
     path('notifications/delete/<int:notification_id>/', views.delete_notification, name='delete_notification'),
     path('notifications/mark-all-read/', views.mark_all_read, name='mark_all_read'),
+    
+    # FCM endpoints
+    path('fcm/register-token/', fcm_views.register_fcm_token, name='register_fcm_token'),
+    path('fcm/unregister-token/', fcm_views.unregister_fcm_token, name='unregister_fcm_token'),
+    path('fcm/token-status/', fcm_views.fcm_token_status, name='fcm_token_status'),
+    
+    # Test endpoints (admin only)
+    path('admin/create-test-notification/', test_views.create_test_notification, name='create_test_notification'),
+    
+    # Debug endpoints
+    path('debug/fcm/', views.fcm_debug_page, name='fcm_debug_page'),
 
   
 ]

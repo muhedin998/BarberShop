@@ -74,8 +74,17 @@
 
 	</script>
 	<meta name="google-site-verification" content="bWB3iu8-2a7X6XY7XdOSpxpak00vazWInrkizNydAss" />
+	
+	<!-- Firebase Configuration -->
+	{% if user.is_authenticated %}
+	<meta name="user-authenticated" content="true">
+	{% endif %}
+	{% if user.is_staff %}
+	<meta name="user-is-admin" content="true">
+	{% endif %}
+	<meta name="csrf-token" content="{{ csrf_token }}">
 </head>
-<body>
+<body {% if user.is_authenticated %}class="authenticated"{% endif %}>
 
 <div class="fixed-bottom-nav">
     <a class="nav-item {% if request.path == '/' %}active{% endif %}" href="{% url 'zakazi' %}" id="home-page">
@@ -331,6 +340,16 @@
     document.getElementById("nema-termina").style.display = "block"
   }
 </script>
+
+<!-- Firebase and Push Notification Scripts -->
+{% if user.is_authenticated %}
+<script src="{% static 'appointment/js/firebase-config.js' %}"></script>
+<script src="{% static 'appointment/js/notification-permission.js' %}"></script>
+{% if user.is_staff %}
+<script src="{% static 'appointment/js/test-notification.js' %}"></script>
+{% endif %}
+{% endif %}
+
   </body>
   </html>
   

@@ -28,14 +28,23 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",  
     "127.0.0.1", 
-    "192.168.1.108",
+    "192.168.0.34",
     "https://frizerskisalonhasko.com",
     "http://frizerskisalonhasko.com",
     "www.frizerskisalonhasko.com",
     "frizerskisalonhasko.com",
-    "https://www.frizerskisalonhasko.com"
+    "https://www.frizerskisalonhasko.com",
+    "c624-89-216-152-130.ngrok-free.app"
 ]
-CSRF_TRUSTED_ORIGINS = ['https://a7df-178-149-237-173.eu.ngrok.io']
+CSRF_TRUSTED_ORIGINS = [
+    "https://c624-89-216-152-130.ngrok-free.app",
+    'https://a7df-178-149-237-173.eu.ngrok.io',
+    'http://192.168.0.34:8000',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000'
+    # Add your new ngrok URL here when you get it
+    # 'https://your-new-ngrok-url.ngrok.io'
+]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
@@ -58,6 +67,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
+    'django_extensions',
 
 ]
 
@@ -195,3 +205,50 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+# Firebase Configuration
+FIREBASE_CONFIG = {
+    'type': os.environ.get('FIREBASE_TYPE', 'service_account'),
+    'project_id': os.environ.get('FIREBASE_PROJECT_ID', 'push-notify-4ffd3'),
+    'private_key_id': os.environ.get('FIREBASE_PRIVATE_KEY_ID'),
+    'private_key': os.environ.get('FIREBASE_PRIVATE_KEY', '').replace('\\n', '\n'),
+    'client_email': os.environ.get('FIREBASE_CLIENT_EMAIL'),
+    'client_id': os.environ.get('FIREBASE_CLIENT_ID'),
+    'auth_uri': os.environ.get('FIREBASE_AUTH_URI', 'https://accounts.google.com/o/oauth2/auth'),
+    'token_uri': os.environ.get('FIREBASE_TOKEN_URI', 'https://oauth2.googleapis.com/token'),
+    'auth_provider_x509_cert_url': os.environ.get('FIREBASE_AUTH_PROVIDER_CERT_URL'),
+    'client_x509_cert_url': os.environ.get('FIREBASE_CLIENT_CERT_URL'),
+    'universe_domain': os.environ.get('FIREBASE_UNIVERSE_DOMAIN', 'googleapis.com')
+}
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'push_notifications.log'),
+        },
+    },
+    'loggers': {
+        'appointment.models': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'appointment.push_notifications': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'appointment.fcm_views': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
