@@ -17,9 +17,11 @@ from django.contrib import admin
 from django.urls import path, include   
 from django.conf import settings
 from django.conf.urls.static import static
+from appointment.sw_views import firebase_messaging_sw
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('firebase-messaging-sw.js', firebase_messaging_sw, name='firebase_messaging_sw'),
     path('', include('appointment.urls')),
     path('', include('galerija.urls')),
     path('accounts/', include('allauth.urls')),

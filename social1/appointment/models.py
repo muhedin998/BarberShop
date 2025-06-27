@@ -28,6 +28,20 @@ class Usluge(models.Model):
     def __str__(self):
         return F"{self.name} - {self.cena}"
 
+class FCMToken(models.Model):
+    user = models.ForeignKey("Korisnik", on_delete=models.CASCADE)
+    token = models.TextField(unique=True)
+    device_id = models.CharField(max_length=255, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user', 'device_id']
+
+    def __str__(self):
+        return f"FCM Token for {self.user.username} - {self.device_id}"
+
 class Notification(models.Model):
     user = models.ForeignKey("Korisnik", on_delete=models.CASCADE)  # recipient
     title = models.CharField(max_length=255)
@@ -35,9 +49,51 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     read_at = models.DateTimeField(null=True, blank=True)
+    push_sent = models.BooleanField(default=False)  # Track if push notification was sent
 
     def __str__(self):
         return f"{self.title} to {self.user.username}, created at {self.created_at}"
+    
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        
+        # Send push notification for new notifications
+        if is_new and not self.push_sent:
+            self.send_push_notification()
+    
+    def send_push_notification(self):
+        """Send push notification to user when notification is created"""
+        try:
+            from .push_notifications import send_push_notification_to_user
+            import logging
+            logger = logging.getLogger(__name__)
+            
+            logger.info(f'Attempting to send push notification for notification {self.id} to user {self.user.username}')
+            
+            result = send_push_notification_to_user(
+                user=self.user,
+                title=self.title,
+                body=self.message,
+                data={
+                    'notification_id': str(self.id),
+                    'type': 'appointment_notification'
+                }
+            )
+            
+            logger.info(f'Push notification result for notification {self.id}: {result}')
+            
+            if result:
+                # Use update() to avoid triggering save() again and prevent infinite loop
+                Notification.objects.filter(id=self.id).update(push_sent=True)
+                logger.info(f'Push notification sent successfully for notification {self.id}')
+            else:
+                logger.warning(f'Push notification failed for notification {self.id} - no FCM tokens or send failed')
+                
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f'Failed to send push notification for notification {self.id}: {str(e)}', exc_info=True)
 
 
 class Termin(models.Model):
