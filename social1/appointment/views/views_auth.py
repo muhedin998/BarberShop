@@ -99,10 +99,12 @@ def send_action_email(request, user):
     email_body = render_to_string('appointment/account/activate.html',{
         'user': user,
         'domain': current_site,
+        'protocol': 'https' if request.is_secure() else 'http',
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token' : generate_token().make_token(user)
     })
     email = EmailMessage(subject=email_sibject, body=email_body,from_email=settings.EMAIL_HOST_USER, to=[user.email])
+    email.content_subtype = 'html'  # Enable HTML content
     email.send()
 
 

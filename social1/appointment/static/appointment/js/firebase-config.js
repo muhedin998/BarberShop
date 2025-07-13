@@ -253,7 +253,7 @@ class FCMManager {
         
         // Navigate to notifications page if needed
         if (payload.data?.notification_id) {
-          window.location.href = '/notifications/';
+          window.location.href = '/notifications-page/';
         }
       };
     }

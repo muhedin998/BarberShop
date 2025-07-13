@@ -8,6 +8,8 @@ from django.core.serializers import serialize
 import json
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils import timezone
 
 
 @login_required(redirect_field_name='user_login/')
@@ -159,7 +161,22 @@ def zakazi(request):
 
     if request.method == 'POST':
         if 'kontakt_mail' in request.POST:
-            poruka = EmailMessage(subject=request.POST['Subject'], body=f"{request.POST['Name']}\n{request.POST['Email']}\n\n{request.POST['Message']}", from_email=settings.EMAIL_HOST_USER, to=['hasko83@gmail.com'])
+            # Render professional email template
+            email_body = render_to_string('appointment/emails/contact_email.html', {
+                'name': request.POST.get('Name', ''),
+                'email': request.POST.get('Email', ''),
+                'subject': request.POST.get('Subject', ''),
+                'message': request.POST.get('Message', ''),
+                'timestamp': timezone.now()
+            })
+            
+            poruka = EmailMessage(
+                subject=f"Nova poruka sa sajta: {request.POST.get('Subject', 'Bez teme')}",
+                body=email_body,
+                from_email=settings.EMAIL_HOST_USER,
+                to=['hasko83@gmail.com']
+            )
+            poruka.content_subtype = 'html'  # Enable HTML content
             poruka.send()
 
     context = {

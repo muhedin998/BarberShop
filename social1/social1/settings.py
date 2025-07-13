@@ -34,9 +34,11 @@ ALLOWED_HOSTS = [
     "www.frizerskisalonhasko.com",
     "frizerskisalonhasko.com",
     "https://www.frizerskisalonhasko.com",
-    "c624-89-216-152-130.ngrok-free.app"
+    "c624-89-216-152-130.ngrok-free.app",
+    "cd88-89-216-152-130.ngrok-free.app"
 ]
 CSRF_TRUSTED_ORIGINS = [
+    "https://cd88-89-216-152-130.ngrok-free.app",
     "https://c624-89-216-152-130.ngrok-free.app",
     'https://a7df-178-149-237-173.eu.ngrok.io',
     'http://192.168.0.34:8000',
@@ -49,7 +51,8 @@ CSRF_TRUSTED_ORIGINS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
 
-SITE_ID = 5
+# Use localhost for development, production site for deployed environment
+SITE_ID = 7 if DEBUG else 5
 
 INSTALLED_APPS = [
     'appointment',
