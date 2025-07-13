@@ -40,6 +40,22 @@ def potvrdi(request):
 
     if request.method == 'POST':
         if 'zakazi_termin' in request.POST:
+            # Validate booking date is within 30 days
+            try:
+                booking_date = datetime.strptime(datum, '%Y-%m-%d').date()
+                today = sada.date()
+                max_booking_date = today + timezone.timedelta(days=30)
+                
+                if booking_date < today:
+                    messages.error(request, "Ne možete zakazati termin u prošlosti", extra_tags='danger')
+                    return redirect('potvrdi')
+                elif booking_date > max_booking_date:
+                    messages.error(request, "Možete zakazati termin maksimalno 30 dana unapred", extra_tags='danger')
+                    return redirect('potvrdi')
+            except ValueError:
+                messages.error(request, "Neispravno unet datum", extra_tags='danger')
+                return redirect('potvrdi')
+            
             name = ""
             broj_telefona = ""
             if request.user.is_superuser:
@@ -179,6 +195,10 @@ def zakazi(request):
             poruka.content_subtype = 'html'  # Enable HTML content
             poruka.send()
 
+    # Calculate max booking date (30 days from today)
+    max_date = (sada + timezone.timedelta(days=30)).strftime('%Y-%m-%d')
+    min_date = sada.strftime('%Y-%m-%d')
+    
     context = {
         'viewname': viewname,
         'godina': sada.year,
@@ -189,6 +209,8 @@ def zakazi(request):
         'ls1':ls1,
         'ls2':ls2,
         "ls3":ls3,
+        'max_date': max_date,
+        'min_date': min_date,
     }
     return render(request, 'appointment/jqr.html', context)
 
