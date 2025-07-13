@@ -22,7 +22,7 @@ class Frizer(models.Model):
 
 class Usluge(models.Model):
     name = models.CharField(max_length=250, default="Izaberite Uslugu")
-    cena = models.IntegerField(max_length=15)
+    cena = models.IntegerField()
     duzina = models.DurationField(default=timedelta)
 
     def __str__(self):

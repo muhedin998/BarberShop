@@ -1,9 +1,113 @@
-{% autoescape off %}
-
-Zdravo {{user.username}}
-
-Molimo vas iskoristite link ispod da aktivirate vaš nalog.
-
-https://www.{{domain}}{% url 'activate' uidb64=uid token=token %}
-
-{% endautoescape %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktivacija naloga - Frizerski salon Hasko</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .greeting {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">✂️ Frizerski salon Hasko</div>
+            <p>Vaš partner za savršen izgled</p>
+        </div>
+        
+        <div class="greeting">
+            Zdravo {{user.username}}! 👋
+        </div>
+        
+        <div class="message">
+            <p>Dobrodošli u Frizerski salon Hasko! Hvala vam što ste se registrovali.</p>
+            <p>Da biste počeli da koristite svoj nalog i zakazujete termine, potrebno je da aktivirate vaš nalog klikom na dugme ispod:</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="{{protocol|default:'https'}}://{{domain}}{% url 'activate' uidb64=uid token=token %}" class="btn">
+                🔓 Aktiviraj nalog
+            </a>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Napomena:</strong> Ovaj link je valjan 24 sata. Ako ne aktivirate nalog u tom periodu, moraćete ponovo da se registrujete.
+        </div>
+        
+        <div class="footer">
+            <p>Ukoliko imate pitanja, kontaktirajte nas:</p>
+            <p>📧 Email: frizerskisalonhasko@gmail.com</p>
+            <p>📱 Telefon: +381 XX XXX XXXX</p>
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+                Ako niste tražili registraciju naloga, molimo vas ignorišite ovaj email.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

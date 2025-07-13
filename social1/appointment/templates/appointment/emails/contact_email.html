@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poruka sa sajta - Frizerski salon Hasko</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #28a745;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        .greeting {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .contact-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .contact-field {
+            margin-bottom: 15px;
+        }
+        .contact-label {
+            font-weight: bold;
+            color: #495057;
+            display: inline-block;
+            width: 100px;
+        }
+        .contact-value {
+            color: #333;
+        }
+        .message-box {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">✂️ Frizerski salon Hasko</div>
+            <p>Nova poruka sa sajta</p>
+        </div>
+        
+        <div class="greeting">
+            📧 Nova kontakt poruka
+        </div>
+        
+        <div class="contact-info">
+            <div class="contact-field">
+                <span class="contact-label">👤 Ime:</span>
+                <span class="contact-value">{{ name }}</span>
+            </div>
+            <div class="contact-field">
+                <span class="contact-label">📧 Email:</span>
+                <span class="contact-value">{{ email }}</span>
+            </div>
+            <div class="contact-field">
+                <span class="contact-label">📋 Tema:</span>
+                <span class="contact-value">{{ subject }}</span>
+            </div>
+        </div>
+        
+        <div class="message-box">
+            <strong>💬 Poruka:</strong><br><br>
+            {{ message|linebreaks }}
+        </div>
+        
+        <div class="footer">
+            <p>🕒 Poruka poslata: {{ timestamp|date:"d.m.Y H:i" }}</p>
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+                Ova poruka je automatski generisana sa sajta frizerskisalonhasko.com
+            </p>
+        </div>
+    </div>
+</body>
+</html>
