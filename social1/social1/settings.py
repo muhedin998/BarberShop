@@ -52,7 +52,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
 
 # Use localhost for development, production site for deployed environment
-SITE_ID = 7 if DEBUG else 5
+SITE_ID = 5 #7 if DEBUG else 5
 
 INSTALLED_APPS = [
     'appointment',

@@ -59,7 +59,8 @@
                     {% endwith %}
                 </select>
                 <label><br>Izaberite datum: </label><br>
-                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="date" name="datum" id="datum" style="border: none; "><br><br>
+                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="date" name="datum" id="datum" min="{{ min_date }}" max="{{ max_date }}" style="border: none; "><br>
+                <small class="text-muted">Možete zakazati termin maksimalno 30 dana unapred</small><br><br>
                 
                 
             <button class="btn btn-secondary"  name="form_filter_button"  id="first_form_button" style="-webkit-appearance: none;">Izaberite termin <i class="fa fa-arrow-right"></i></button>
@@ -231,6 +232,24 @@
             dugme.style.display = 'inline-block';
         }
     }
+
+    // Add date validation for 30-day limit
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('datum');
+        
+        dateInput.addEventListener('input', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(today.getDate() + 30);
+            
+            if (selectedDate > maxDate) {
+                alert('Možete zakazati termin maksimalno 30 dana unapred. Molimo izaberite raniji datum.');
+                this.value = '';
+            }
+        });
+    });
+
 </script>
 
 {% endblock %}
