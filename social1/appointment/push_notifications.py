@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, messaging
 import os
 from django.conf import settings
+from django.contrib.sites.models import Site
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,23 @@ def initialize_firebase():
                 raise Exception("Firebase configuration not found. Please set environment variables or provide firebase-config.json")
         firebase_admin.initialize_app(cred)
 
+def get_site_url():
+    """
+    Get the current site URL for notifications
+    """
+    try:
+        # Try to get from settings first (for ngrok/development)
+        if hasattr(settings, 'SITE_URL'):
+            return settings.SITE_URL
+        
+        # Try to get current site
+        current_site = Site.objects.get_current()
+        protocol = 'https' if settings.DEBUG else 'https'  # Always HTTPS for push notifications
+        return f'{protocol}://{current_site.domain}'
+    except Exception:
+        # Fallback
+        return 'https://frizerskisalonhasko.com'
+
 def send_push_notification(fcm_token, title, body, data=None):
     """
     Send a push notification to a specific FCM token
@@ -37,6 +55,10 @@ def send_push_notification(fcm_token, title, body, data=None):
     try:
         initialize_firebase()
         
+        # Get current site URL
+        site_url = get_site_url()
+        icon_url = f'{site_url}/static/images/icon.png'
+        
         # Create the notification
         notification = messaging.Notification(
             title=title,
@@ -52,14 +74,14 @@ def send_push_notification(fcm_token, title, body, data=None):
                 notification=messaging.WebpushNotification(
                     title=title,
                     body=body,
-                    icon='https://frizerskisalonhasko.com/static/images/icon.png',
-                    badge='https://frizerskisalonhasko.com/static/images/icon.png',
+                    icon=icon_url,
+                    badge=icon_url,
                     require_interaction=True,
                     renotify=True,
                     tag='appointment-notification'
                 ),
                 fcm_options=messaging.WebpushFCMOptions(
-                    link='https://frizerskisalonhasko.com/'
+                    link=site_url
                 )
             )
         )

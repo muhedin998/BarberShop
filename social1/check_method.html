@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Method Exists</title>
+    <meta name="user-authenticated" content="true">
+</head>
+<body class="authenticated">
+    <h1>Method Existence Check</h1>
+    
+    <script src="/static/appointment/js/firebase-config.js?v=20250722"></script>
+    <script src="/static/appointment/js/notification-permission.js?v=20250722"></script>
+    
+    <script>
+    setTimeout(() => {
+        console.log('=== METHOD CHECK ===');
+        console.log('NotificationPermissionHandler class exists:', typeof NotificationPermissionHandler !== 'undefined');
+        
+        if (typeof NotificationPermissionHandler !== 'undefined') {
+            const handler = new NotificationPermissionHandler();
+            console.log('generateTokenForGrantedPermission method exists:', typeof handler.generateTokenForGrantedPermission === 'function');
+            
+            if (typeof handler.generateTokenForGrantedPermission === 'function') {
+                console.log('✅ Method exists! Cache refresh worked.');
+                document.body.innerHTML += '<h2 style="color: green;">✅ Method exists! Cache refresh worked.</h2>';
+            } else {
+                console.log('❌ Method missing. Cache still old.');
+                document.body.innerHTML += '<h2 style="color: red;">❌ Method missing. Cache still old.</h2>';
+            }
+        } else {
+            console.log('❌ NotificationPermissionHandler class not found');
+            document.body.innerHTML += '<h2 style="color: red;">❌ NotificationPermissionHandler class not found</h2>';
+        }
+    }, 2000);
+    </script>
+</body>
+</html>

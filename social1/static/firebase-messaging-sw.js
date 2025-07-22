@@ -1,8 +1,12 @@
 // Firebase Messaging Service Worker
 
+console.log('Firebase Messaging Service Worker loading...');
+
 // Import Firebase scripts
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js');
+
+console.log('Firebase scripts imported');
 
 // Firebase configuration
 const firebaseConfig = {
@@ -17,19 +21,35 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+console.log('Firebase initialized in service worker');
+
+// Force service worker activation
+self.addEventListener('install', function(event) {
+  console.log('Firebase service worker installing');
+  // Force the waiting service worker to become the active service worker
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', function(event) {
+  console.log('Firebase service worker activated');
+  // Take control of all pages immediately
+  event.waitUntil(self.clients.claim());
+});
 
 // Retrieve Firebase Messaging object
 const messaging = firebase.messaging();
+console.log('Firebase messaging object created');
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
   
   const notificationTitle = payload.notification.title || 'New Notification';
+  const iconUrl = payload.notification.icon || `${self.location.origin}/static/images/icon.png`;
   const notificationOptions = {
     body: payload.notification.body || 'You have a new message',
-    icon: payload.notification.icon || '/static/images/icon.png',
-    badge: '/static/images/icon.png',
+    icon: iconUrl,
+    badge: `${self.location.origin}/static/images/icon.png`,
     tag: payload.notification.tag || 'appointment-notification',
     requireInteraction: true,
     renotify: true,
@@ -37,7 +57,7 @@ messaging.onBackgroundMessage((payload) => {
       {
         action: 'view',
         title: 'View',
-        icon: '/static/images/icon.png'
+        icon: `${self.location.origin}/static/images/icon.png`
       },
       {
         action: 'dismiss',
@@ -97,10 +117,11 @@ self.addEventListener('push', (event) => {
       
       if (payload.notification) {
         const notificationTitle = payload.notification.title || 'New Notification';
+        const iconUrl = payload.notification.icon || `${self.location.origin}/static/images/icon.png`;
         const notificationOptions = {
           body: payload.notification.body || 'You have a new message',
-          icon: payload.notification.icon || '/static/images/icon.png',
-          badge: '/static/images/icon.png',
+          icon: iconUrl,
+          badge: `${self.location.origin}/static/images/icon.png`,
           tag: 'appointment-notification',
           requireInteraction: true,
           renotify: true,

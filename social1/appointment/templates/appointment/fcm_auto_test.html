@@ -1,0 +1,179 @@
+{% extends 'appointment/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Automatic FCM Token Generation Test</h2>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Current Permission:</strong> <span id="permission-status">Checking...</span></p>
+            <p><strong>FCM Manager:</strong> <span id="fcm-status">Checking...</span></p>
+            <p><strong>Notification Handler:</strong> <span id="handler-status">Checking...</span></p>
+            <p><strong>Current Token:</strong> <span id="token-status">None</span></p>
+            
+            <div class="mt-3">
+                <button onclick="runTest()" class="btn btn-primary">Run Full Test</button>
+                <button onclick="checkStatus()" class="btn btn-info">Check Status</button>
+                <button onclick="clearToken()" class="btn btn-warning">Clear Token</button>
+                <button onclick="clearLog()" class="btn btn-secondary">Clear Log</button>
+            </div>
+            
+            <div class="mt-3">
+                <h5>Test Log:</h5>
+                <div id="log" style="background: #f8f9fa; padding: 10px; border-radius: 5px; height: 400px; overflow-y: auto; font-family: monospace; font-size: 12px; white-space: pre-wrap;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function log(message) {
+    const logDiv = document.getElementById('log');
+    const timestamp = new Date().toLocaleTimeString();
+    logDiv.textContent += `[${timestamp}] ${message}\n`;
+    logDiv.scrollTop = logDiv.scrollHeight;
+    console.log(`[FCM Test] ${message}`);
+}
+
+function clearLog() {
+    document.getElementById('log').textContent = '';
+}
+
+function updateStatus() {
+    document.getElementById('permission-status').textContent = Notification.permission;
+    
+    const fcmText = window.fcmManager ? 
+        `Loaded (Init: ${window.fcmManager.isInitialized})` : 'Not loaded';
+    document.getElementById('fcm-status').textContent = fcmText;
+    
+    const handlerText = window.notificationPermissionHandler ? 'Loaded' : 'Not loaded';
+    document.getElementById('handler-status').textContent = handlerText;
+    
+    const tokenText = (window.fcmManager && window.fcmManager.currentToken) ? 
+        window.fcmManager.currentToken.substring(0, 30) + '...' : 'None';
+    document.getElementById('token-status').textContent = tokenText;
+}
+
+function checkStatus() {
+    log('=== STATUS CHECK ===');
+    updateStatus();
+    log(`Permission: ${Notification.permission}`);
+    log(`FCM Manager exists: ${!!window.fcmManager}`);
+    log(`FCM Manager initialized: ${window.fcmManager ? window.fcmManager.isInitialized : 'N/A'}`);
+    log(`Notification handler exists: ${!!window.notificationPermissionHandler}`);
+    log(`Current token exists: ${window.fcmManager && window.fcmManager.currentToken ? 'YES' : 'NO'}`);
+}
+
+function clearToken() {
+    if (window.fcmManager) {
+        window.fcmManager.currentToken = null;
+        log('Token cleared for testing');
+        updateStatus();
+    }
+}
+
+async function runTest() {
+    log('=== STARTING AUTOMATIC TOKEN GENERATION TEST ===');
+    
+    // Step 1: Check permission
+    log(`Step 1: Notification permission = ${Notification.permission}`);
+    if (Notification.permission !== 'granted') {
+        log('ERROR: Notifications not granted. Please allow notifications first.');
+        return;
+    }
+    
+    // Step 2: Check FCM Manager
+    log(`Step 2: FCM Manager exists = ${!!window.fcmManager}`);
+    if (!window.fcmManager) {
+        log('ERROR: FCM Manager not loaded');
+        return;
+    }
+    
+    // Step 3: Wait for initialization
+    if (!window.fcmManager.isInitialized) {
+        log('Step 3: Waiting for FCM Manager initialization...');
+        await new Promise(resolve => {
+            const check = () => {
+                if (window.fcmManager.isInitialized) {
+                    log('Step 3: FCM Manager initialized');
+                    resolve();
+                } else {
+                    setTimeout(check, 100);
+                }
+            };
+            check();
+            setTimeout(() => {
+                log('Step 3: Timeout waiting for FCM Manager');
+                resolve();
+            }, 10000);
+        });
+    } else {
+        log('Step 3: FCM Manager already initialized');
+    }
+    
+    // Step 4: Clear existing token
+    if (window.fcmManager.currentToken) {
+        log('Step 4: Clearing existing token for test...');
+        window.fcmManager.currentToken = null;
+    }
+    
+    // Step 5: Test direct token generation
+    log('Step 5: Testing direct token generation...');
+    try {
+        const token = await window.fcmManager.generateToken();
+        if (token) {
+            log(`Step 5: SUCCESS! Direct token generated: ${token.substring(0, 50)}...`);
+        } else {
+            log('Step 5: FAILED! No token returned from direct generation');
+        }
+    } catch (error) {
+        log(`Step 5: ERROR! ${error.message}`);
+    }
+    
+    // Step 6: Test via notification handler
+    log('Step 6: Testing automatic generation via NotificationPermissionHandler...');
+    if (window.notificationPermissionHandler) {
+        // Clear token again
+        if (window.fcmManager.currentToken) {
+            window.fcmManager.currentToken = null;
+        }
+        
+        try {
+            const result = await window.notificationPermissionHandler.generateTokenForGrantedPermission();
+            log(`Step 6: Notification handler result: ${result}`);
+        } catch (error) {
+            log(`Step 6: Notification handler error: ${error.message}`);
+        }
+    } else {
+        log('Step 6: NotificationPermissionHandler not available');
+        
+        // Try to create it manually
+        log('Step 6b: Creating NotificationPermissionHandler manually...');
+        try {
+            window.notificationPermissionHandler = new NotificationPermissionHandler();
+            log('Step 6b: Handler created successfully');
+        } catch (error) {
+            log(`Step 6b: Error creating handler: ${error.message}`);
+        }
+    }
+    
+    log('=== TEST COMPLETE ===');
+    updateStatus();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    log('FCM Auto Test page loaded');
+    updateStatus();
+    
+    // Auto-run test after delay
+    setTimeout(() => {
+        log('Auto-running test in 2 seconds...');
+        setTimeout(runTest, 2000);
+    }, 1000);
+});
+
+// Update status periodically
+setInterval(updateStatus, 1000);
+</script>
+{% endblock %}
