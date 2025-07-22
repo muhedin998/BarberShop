@@ -28,12 +28,12 @@ def get_site_url():
     """
     try:
         # Try to get from settings first (for ngrok/development)
-        if hasattr(settings, 'SITE_URL'):
+        if hasattr(settings, 'SITE_URL') and settings.SITE_URL:
             return settings.SITE_URL
         
         # Try to get current site
         current_site = Site.objects.get_current()
-        protocol = 'https' if settings.DEBUG else 'https'  # Always HTTPS for push notifications
+        protocol = 'https'  # Always HTTPS for push notifications
         return f'{protocol}://{current_site.domain}'
     except Exception:
         # Fallback
