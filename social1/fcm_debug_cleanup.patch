@@ -1,0 +1,345 @@
+FCM Debugging and Testing Code Cleanup Patch
+============================================
+
+This patch contains all FCM debugging and testing related code that was removed for production deployment.
+The code can be reapplied for future debugging if needed.
+
+Date: July 22, 2025
+Reason: Production cleanup - removing debugging/testing code
+
+Files included in this patch:
+1. appointment/test_views.py (complete file)
+2. appointment/static/appointment/js/test-notification.js (complete file)
+3. appointment/templates/appointment/fcm_debug.html (complete file)
+4. appointment/management/commands/test_push_notifications.py (complete file)
+5. appointment/management/commands/reactivate_fcm_tokens.py (complete file)
+6. Debug view functions and URL patterns
+7. Console.log statements from JavaScript files
+
+========================================
+FILE: appointment/test_views.py
+========================================
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import Notification
+import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@staff_member_required
+def create_test_notification(request):
+    """
+    Create a test notification for the current admin user
+    """
+    try:
+        data = json.loads(request.body)
+        title = data.get('title', 'Test Notification')
+        message = data.get('message', 'This is a test notification')
+        
+        # Create notification for the current user
+        notification = Notification.objects.create(
+            user=request.user,
+            title=title,
+            message=message
+        )
+        
+        logger.info(f'Test notification created for admin user {request.user.username}')
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Test notification created successfully',
+            'notification_id': notification.id
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        logger.error(f'Error creating test notification: {str(e)}')
+        return JsonResponse({'error': 'Internal server error'}, status=500)
+
+========================================
+FILE: appointment/static/appointment/js/test-notification.js
+========================================
+// Test Notification Button for Admin Testing
+
+function createTestNotificationButton() {
+  // Only show for superusers (you can customize this condition)
+  const isAdmin = document.querySelector('meta[name="user-is-admin"]')?.content === 'true';
+  
+  if (!isAdmin) {
+    return;
+  }
+
+  const button = document.createElement('button');
+  button.id = 'test-push-notification';
+  button.className = 'btn btn-info btn-sm';
+  button.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1000;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background: #17a2b8;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  `;
+  button.innerHTML = '🔔 Test Push';
+  button.title = 'Test push notification (Admin only)';
+
+  button.addEventListener('click', async () => {
+    try {
+      // Test if FCM is working
+      if (!window.fcmManager || !window.fcmManager.currentToken) {
+        alert('FCM not initialized or no token available. Please enable notifications first.');
+        return;
+      }
+
+      // Create a test notification via the backend
+      const response = await fetch('/admin/create-test-notification/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+          title: 'Test Notification',
+          message: 'This is a test push notification from your appointment system!'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        showToast('Test notification sent successfully!', 'success');
+      } else {
+        showToast('Failed to send test notification', 'error');
+      }
+    } catch (error) {
+      console.error('Error sending test notification:', error);
+      showToast('Error sending test notification', 'error');
+    }
+  });
+
+  document.body.appendChild(button);
+}
+
+function getCSRFToken() {
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'csrftoken') {
+      return value;
+    }
+  }
+  
+  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  return csrfMeta ? csrfMeta.getAttribute('content') : '';
+}
+
+function showToast(message, type = 'info') {
+  // Use the existing toast function if available, otherwise create a simple alert
+  if (window.notificationPermissionHandler && typeof window.notificationPermissionHandler.showToast === 'function') {
+    window.notificationPermissionHandler.showToast(message, type);
+  } else {
+    alert(message);
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  // Add a small delay to ensure other scripts are loaded
+  setTimeout(createTestNotificationButton, 1000);
+});
+
+========================================
+FILE: appointment/templates/appointment/fcm_debug.html
+========================================
+{% extends 'appointment/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>FCM Debug Page</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5>Firebase FCM Token Debug</h5>
+            
+            <div id="debug-info">
+                <p><strong>Current Permission:</strong> <span id="permission-status">Checking...</span></p>
+                <p><strong>FCM Manager Status:</strong> <span id="fcm-status">Checking...</span></p>
+                <p><strong>Service Worker:</strong> <span id="sw-status">Checking...</span></p>
+                <p><strong>Current Token:</strong> <span id="current-token">None</span></p>
+            </div>
+            
+            <div class="mt-3">
+                <button id="check-status" class="btn btn-info">Check Status</button>
+                <button id="request-permission" class="btn btn-warning">Request Permission</button>
+                <button id="get-token" class="btn btn-success">Get FCM Token</button>
+            </div>
+            
+            <div class="mt-3">
+                <h6>Debug Log:</h6>
+                <div id="debug-log" style="background: #f8f9fa; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+                    <!-- Debug messages will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Debug logging function
+function debugLog(message) {
+    const logDiv = document.getElementById('debug-log');
+    const timestamp = new Date().toLocaleTimeString();
+    logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+    logDiv.scrollTop = logDiv.scrollHeight;
+    console.log(`[FCM Debug] ${message}`);
+}
+
+// Update status display
+function updateStatus() {
+    // Permission status
+    document.getElementById('permission-status').textContent = Notification.permission;
+    
+    // FCM Manager status
+    if (window.fcmManager) {
+        document.getElementById('fcm-status').textContent = `Initialized: ${window.fcmManager.isInitialized}, Supported: ${window.fcmManager.isSupported}`;
+        document.getElementById('current-token').textContent = window.fcmManager.currentToken || 'None';
+    } else {
+        document.getElementById('fcm-status').textContent = 'Not available';
+    }
+    
+    // Service Worker status
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            document.getElementById('sw-status').textContent = `${registrations.length} registered`;
+        });
+    } else {
+        document.getElementById('sw-status').textContent = 'Not supported';
+    }
+}
+
+// Event handlers
+document.getElementById('check-status').addEventListener('click', () => {
+    debugLog('=== Checking Status ===');
+    updateStatus();
+    debugLog(`Notification permission: ${Notification.permission}`);
+    debugLog(`FCM Manager available: ${!!window.fcmManager}`);
+    if (window.fcmManager) {
+        debugLog(`FCM Manager initialized: ${window.fcmManager.isInitialized}`);
+        debugLog(`FCM Manager supported: ${window.fcmManager.isSupported}`);
+        debugLog(`Current token: ${window.fcmManager.currentToken || 'None'}`);
+    }
+});
+
+document.getElementById('request-permission').addEventListener('click', async () => {
+    debugLog('=== Requesting Permission ===');
+    
+    if (!window.fcmManager) {
+        debugLog('ERROR: FCM Manager not available');
+        return;
+    }
+    
+    try {
+        const token = await window.fcmManager.requestPermission();
+        debugLog(`Permission request result: ${token ? 'SUCCESS' : 'FAILED'}`);
+        if (token) {
+            debugLog(`Token: ${token.substring(0, 50)}...`);
+        }
+        updateStatus();
+    } catch (error) {
+        debugLog(`ERROR requesting permission: ${error.message}`);
+    }
+});
+
+document.getElementById('get-token').addEventListener('click', async () => {
+    debugLog('=== Getting FCM Token ===');
+    
+    if (!window.fcmManager) {
+        debugLog('ERROR: FCM Manager not available');
+        return;
+    }
+    
+    try {
+        const token = await window.fcmManager.generateToken();
+        debugLog(`Token generation result: ${token ? 'SUCCESS' : 'FAILED'}`);
+        if (token) {
+            debugLog(`Token: ${token.substring(0, 50)}...`);
+        }
+        updateStatus();
+    } catch (error) {
+        debugLog(`ERROR getting token: ${error.message}`);
+    }
+});
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    debugLog('FCM Debug page loaded');
+    updateStatus();
+    
+    // Wait a bit for FCM Manager to initialize
+    setTimeout(() => {
+        debugLog('Checking FCM Manager after delay...');
+        updateStatus();
+    }, 2000);
+});
+</script>
+{% endblock %}
+
+========================================
+CHANGES TO EXISTING FILES
+========================================
+
+FILE: appointment/views/views_profile.py
+REMOVED FUNCTION (lines 121-123):
+def fcm_debug_page(request):
+    return render(request, 'appointment/fcm_debug.html')
+
+FILE: appointment/views/__init__.py  
+REMOVED IMPORT (line 22):
+from .views_profile import fcm_debug_page
+
+FILE: appointment/urls.py
+REMOVED URL PATTERNS (lines 44, 47):
+path('admin/create-test-notification/', test_views.create_test_notification, name='create_test_notification'),
+path('debug/fcm/', views.fcm_debug_page, name='fcm_debug_page'),
+
+FILE: appointment/templates/appointment/base.html
+REMOVED SCRIPT INCLUDE (line 349):
+<script src="{% static 'appointment/js/test-notification.js' %}"></script>
+
+========================================
+CONSOLE.LOG STATEMENTS TO BE CLEANED
+========================================
+
+FILE: appointment/static/appointment/js/firebase-config.js
+Lines to clean: 25, 33, 36, 40, 44, 48, 56, 59, 62, 76, 81, 85, 88, 97, 122, 129, 132, 134, 137, 145, 154, 159, 163, 166, 176, 177, 189, 192, 195, 207, 215, 226, 231, 236, 239, 240, 249, 256, 286, 313, 335, 341
+
+FILE: appointment/static/appointment/js/notification-permission.js  
+Line 29: console.log('Current notification permission:', Notification.permission);
+
+========================================
+MANAGEMENT COMMANDS TO BE ARCHIVED
+========================================
+
+NOTE: The following management commands exist and should be backed up:
+- appointment/management/commands/test_push_notifications.py (for testing push notification system)
+- appointment/management/commands/reactivate_fcm_tokens.py (for reactivating FCM tokens)
+
+These files contain test functionality and should be preserved in this patch for future debugging needs.
+
+========================================
+END OF PATCH
+========================================
+
+To restore debugging functionality, apply the files in this patch back to their respective locations and update the URL patterns and imports as indicated.
