@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCM Debug Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { padding: 10px; margin: 5px; }
+        #log { background: #f5f5f5; padding: 10px; height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>FCM Debug Tool</h1>
+    
+    <div class="section">
+        <h3>Browser Support Check</h3>
+        <div id="support-check"></div>
+    </div>
+    
+    <div class="section">
+        <h3>Controls</h3>
+        <button onclick="checkPermissions()">Check Permissions</button>
+        <button onclick="requestPermissions()">Request Permissions</button>
+        <button onclick="initializeFCM()">Initialize FCM</button>
+        <button onclick="generateToken()">Generate Token</button>
+        <button onclick="testServiceWorker()">Test Service Worker</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div class="section">
+        <h3>Status</h3>
+        <div id="status"></div>
+    </div>
+    
+    <div class="section">
+        <h3>Debug Log</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        let messaging = null;
+        let currentToken = null;
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function updateStatus(html) {
+            document.getElementById('status').innerHTML = html;
+        }
+
+        // Check browser support
+        function checkBrowserSupport() {
+            const supportDiv = document.getElementById('support-check');
+            let html = '';
+            
+            if ('serviceWorker' in navigator) {
+                html += '<div class="success">✓ Service Worker supported</div>';
+            } else {
+                html += '<div class="error">✗ Service Worker NOT supported</div>';
+            }
+            
+            if ('PushManager' in window) {
+                html += '<div class="success">✓ Push Manager supported</div>';
+            } else {
+                html += '<div class="error">✗ Push Manager NOT supported</div>';
+            }
+            
+            if ('Notification' in window) {
+                html += '<div class="success">✓ Notifications supported</div>';
+            } else {
+                html += '<div class="error">✗ Notifications NOT supported</div>';
+            }
+            
+            supportDiv.innerHTML = html;
+        }
+
+        async function checkPermissions() {
+            log('Checking notification permissions...');
+            
+            if ('Notification' in window) {
+                const permission = Notification.permission;
+                log(`Current permission: ${permission}`, permission === 'granted' ? 'success' : 'error');
+                updateStatus(`Notification Permission: ${permission}`);
+            } else {
+                log('Notifications not supported', 'error');
+            }
+        }
+
+        async function requestPermissions() {
+            log('Requesting notification permissions...');
+            
+            try {
+                const permission = await Notification.requestPermission();
+                log(`Permission result: ${permission}`, permission === 'granted' ? 'success' : 'error');
+                updateStatus(`Permission: ${permission}`);
+                return permission === 'granted';
+            } catch (error) {
+                log(`Permission request failed: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testServiceWorker() {
+            log('Testing service worker registration...');
+            log(`Current origin: ${window.location.origin}`, 'info');
+            
+            try {
+                const swUrl = `${window.location.origin}/firebase-messaging-sw.js`;
+                log(`Registering service worker at: ${swUrl}`, 'info');
+                
+                const registration = await navigator.serviceWorker.register(swUrl, {
+                    scope: '/'
+                });
+                log('Service worker registered successfully', 'success');
+                log(`Service worker scope: ${registration.scope}`, 'info');
+                
+                // Check if it's active
+                if (registration.active) {
+                    log('Service worker is active', 'success');
+                } else if (registration.installing) {
+                    log('Service worker is installing...', 'info');
+                } else if (registration.waiting) {
+                    log('Service worker is waiting', 'info');
+                }
+                
+                return registration;
+            } catch (error) {
+                log(`Service worker registration failed: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        async function initializeFCM() {
+            log('Initializing FCM...');
+            
+            try {
+                // Firebase configuration
+                const firebaseConfig = {
+                    apiKey: "AIzaSyC6FWY3qwRD8s0NfwI7LEAAA3ByHTHtIRE",
+                    authDomain: "push-notify-4ffd3.firebaseapp.com",
+                    projectId: "push-notify-4ffd3",
+                    storageBucket: "push-notify-4ffd3.firebasestorage.app",
+                    messagingSenderId: "470008617640",
+                    appId: "1:470008617640:web:3e7fff66b4865f5276809d",
+                    measurementId: "G-YWVQ328VDH"
+                };
+
+                log('Loading Firebase modules...');
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js');
+                const { getMessaging, isSupported } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
+                
+                log('Checking if messaging is supported...');
+                const supported = await isSupported();
+                if (!supported) {
+                    throw new Error('Firebase messaging not supported in this browser');
+                }
+                log('Firebase messaging is supported', 'success');
+                
+                log('Initializing Firebase app...');
+                const app = initializeApp(firebaseConfig);
+                messaging = getMessaging(app);
+                
+                log('FCM initialized successfully', 'success');
+                updateStatus('FCM: Initialized');
+                return true;
+                
+            } catch (error) {
+                log(`FCM initialization failed: ${error.message}`, 'error');
+                log(`Stack: ${error.stack}`, 'error');
+                return false;
+            }
+        }
+
+        async function generateToken() {
+            log('Generating FCM token...');
+            
+            if (!messaging) {
+                log('FCM not initialized. Please initialize first.', 'error');
+                return;
+            }
+            
+            try {
+                const { getToken } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
+                
+                // Try without VAPID first
+                log('Attempting token generation without VAPID...');
+                let token;
+                try {
+                    token = await getToken(messaging);
+                } catch (vapidError) {
+                    log(`Token generation without VAPID failed: ${vapidError.message}`, 'error');
+                    log('Trying with VAPID key...', 'info');
+                    
+                    token = await getToken(messaging, {
+                        vapidKey: 'BKAhiDB3rapdGVKIyzRrNb2EJlIkvDcV4ujdy_lz7dWN5wD_9uI6spViYbpwC_ckZ1md0Nn-Ara2E2wSdaCNNw4'
+                    });
+                }
+                
+                if (token) {
+                    currentToken = token;
+                    log('FCM token generated successfully', 'success');
+                    log(`Token: ${token.substring(0, 50)}...`, 'info');
+                    updateStatus(`Token: ${token.substring(0, 30)}...`);
+                    
+                    // Test backend registration
+                    await testTokenRegistration(token);
+                } else {
+                    log('No token received - check Firebase console configuration', 'error');
+                }
+                
+            } catch (error) {
+                log(`Token generation failed: ${error.message}`, 'error');
+                log(`Stack: ${error.stack}`, 'error');
+            }
+        }
+
+        async function testTokenRegistration(token) {
+            log('Testing token registration with backend...');
+            
+            try {
+                const response = await fetch('/fcm/register-token/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        device_id: getDeviceId()
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('Token registered with backend successfully', 'success');
+                    log(`Backend response: ${JSON.stringify(data)}`, 'info');
+                } else {
+                    const errorText = await response.text();
+                    log(`Backend registration failed: ${response.status} ${response.statusText}`, 'error');
+                    log(`Response: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`Backend registration error: ${error.message}`, 'error');
+            }
+        }
+
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            return '';
+        }
+
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('fcm_device_id');
+            if (!deviceId) {
+                deviceId = 'web-debug-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('fcm_device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            log('FCM Debug Tool loaded');
+            checkBrowserSupport();
+            checkPermissions();
+        });
+    </script>
+</body>
+</html>

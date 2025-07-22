@@ -8,14 +8,25 @@ class NotificationPermissionHandler {
   }
 
   init() {
+    console.log('NotificationPermissionHandler.init() called');
+    
     // Check current permission status
     this.checkPermissionStatus();
     
-    // Setup permission request UI
-    this.setupPermissionUI();
+    // If permission is already granted, generate token immediately
+    if (this.permissionGranted) {
+      console.log('Notification permission already granted, generating FCM token automatically...');
+      this.generateTokenForGrantedPermission();
+    } else {
+      console.log('Notification permission not granted, setting up UI...');
+      // Setup permission request UI only if permission not granted
+      this.setupPermissionUI();
+    }
     
     // Auto-request permission for logged in users (optional)
     this.autoRequestPermission();
+    
+    console.log('NotificationPermissionHandler initialization complete');
   }
 
   checkPermissionStatus() {
@@ -36,10 +47,17 @@ class NotificationPermissionHandler {
   }
 
   createPermissionBanner() {
+    console.log('createPermissionBanner() called');
+    console.log('  - Permission granted:', this.permissionGranted);
+    console.log('  - User dismissed banner:', this.hasUserDismissedBanner());
+    
     // Only show banner if permission is not granted and not already requested
     if (this.permissionGranted || this.hasUserDismissedBanner()) {
+      console.log('Banner creation skipped - permission granted or user dismissed');
       return;
     }
+    
+    console.log('Creating notification permission banner...');
 
     const banner = document.createElement('div');
     banner.id = 'notification-permission-banner';
@@ -155,28 +173,52 @@ class NotificationPermissionHandler {
   }
 
   setupButtonHandlers() {
+    console.log('Setting up banner button handlers...');
+    
     // Enable notifications button
     const enableBtn = document.getElementById('enable-notifications-btn');
     if (enableBtn) {
+      console.log('Enable notifications button found, adding click handler');
       enableBtn.addEventListener('click', () => {
+        console.log('Enable notifications button clicked');
         this.requestPermission();
       });
+    } else {
+      console.log('Enable notifications button not found');
     }
 
     // Dismiss banner button
     const dismissBtn = document.getElementById('dismiss-notification-banner');
     if (dismissBtn) {
+      console.log('Dismiss banner button found, adding click handler');
       dismissBtn.addEventListener('click', () => {
+        console.log('Dismiss banner button clicked');
         this.dismissBanner();
       });
+    } else {
+      console.log('Dismiss banner button not found');
     }
   }
 
   async requestPermission() {
     try {
+      console.log('NotificationPermissionHandler.requestPermission() called');
+      
       if (!window.fcmManager) {
         console.error('FCM Manager not available');
         this.showErrorMessage('Notification system not available. Please refresh the page and try again.');
+        return false;
+      }
+
+      console.log('FCM Manager status:', {
+        isInitialized: window.fcmManager.isInitialized,
+        isSupported: window.fcmManager.isSupported,
+        currentToken: !!window.fcmManager.currentToken
+      });
+
+      if (!window.fcmManager.isInitialized) {
+        console.error('FCM Manager not initialized');
+        this.showErrorMessage('Notification system not ready. Please wait a moment and try again.');
         return false;
       }
 
@@ -189,8 +231,10 @@ class NotificationPermissionHandler {
         return false;
       }
 
+      console.log('Calling fcmManager.requestPermission()...');
       // Request notification permission and get FCM token
       const token = await window.fcmManager.requestPermission();
+      console.log('fcmManager.requestPermission() returned:', !!token);
       
       if (token) {
         this.permissionGranted = true;
@@ -202,12 +246,18 @@ class NotificationPermissionHandler {
         // Show success message
         this.showSuccessMessage();
         
-        console.log('Notification permission granted and FCM token registered');
+        console.log('Notification permission granted and FCM token registered successfully');
         return true;
       } else {
         // Check if permission was denied
-        if (Notification.permission === 'denied') {
+        const newPermission = Notification.permission;
+        console.log('Permission after request:', newPermission);
+        
+        if (newPermission === 'denied') {
           this.showPermissionBlockedMessage();
+        } else if (newPermission === 'granted') {
+          console.error('Permission granted but token generation failed');
+          this.showErrorMessage('Notifications enabled but token registration failed. Please try again.');
         } else {
           this.showErrorMessage('Failed to enable notifications. Please try again.');
         }
@@ -215,6 +265,7 @@ class NotificationPermissionHandler {
       }
     } catch (error) {
       console.error('Error requesting notification permission:', error);
+      console.error('Error stack:', error.stack);
       this.showErrorMessage('An error occurred while enabling notifications.');
       return false;
     }
@@ -398,18 +449,143 @@ class NotificationPermissionHandler {
     }
     */
   }
+
+  async generateTokenForGrantedPermission() {
+    try {
+      console.log('generateTokenForGrantedPermission() called');
+      
+      // Check if we already have a token
+      if (window.fcmManager && window.fcmManager.currentToken) {
+        console.log('FCM token already exists, skipping generation');
+        return true;
+      }
+      
+      if (!window.fcmManager) {
+        console.error('FCM Manager not available for automatic token generation');
+        return false;
+      }
+
+      if (!window.fcmManager.isInitialized) {
+        console.log('FCM Manager not initialized yet, waiting...');
+        // Wait a bit for FCM Manager to initialize
+        await new Promise(resolve => {
+          const checkInitialized = () => {
+            if (window.fcmManager.isInitialized) {
+              console.log('FCM Manager is now initialized');
+              resolve();
+            } else {
+              setTimeout(checkInitialized, 500);
+            }
+          };
+          checkInitialized();
+          
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            console.warn('FCM Manager initialization timeout');
+            resolve();
+          }, 10000);
+        });
+      }
+
+      if (!window.fcmManager.isInitialized) {
+        console.error('FCM Manager failed to initialize for automatic token generation');
+        return false;
+      }
+
+      console.log('Generating FCM token automatically...');
+      const token = await window.fcmManager.generateToken();
+      
+      if (token) {
+        console.log('FCM token generated automatically:', token.substring(0, 50) + '...');
+        
+        // Show a subtle success message (not as prominent as the banner success)
+        this.showToast('Push notifications are ready! You\'ll receive important updates.', 'success', 3000);
+        
+        return true;
+      } else {
+        console.error('Failed to generate FCM token automatically');
+        return false;
+      }
+      
+    } catch (error) {
+      console.error('Error in automatic FCM token generation:', error);
+      return false;
+    }
+  }
 }
 
-// Initialize notification permission handler when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  // Only initialize for authenticated users
-  const isAuthenticated = document.body.classList.contains('authenticated') || 
-                         document.querySelector('meta[name="user-authenticated"]')?.content === 'true';
+// Initialize notification permission handler when DOM is ready AND FCM is ready
+function initializeNotificationHandler() {
+  console.log('=== initializeNotificationHandler() called ===');
+  
+  // Check authentication status with better debugging
+  const bodyHasAuthClass = document.body.classList.contains('authenticated');
+  const metaTag = document.querySelector('meta[name="user-authenticated"]');
+  const metaIsAuth = metaTag && metaTag.content === 'true';
+  const isAuthenticated = bodyHasAuthClass || metaIsAuth;
+  
+  console.log('NotificationPermissionHandler - Authentication check:');
+  console.log('  - Body has authenticated class:', bodyHasAuthClass);
+  console.log('  - Meta tag exists:', !!metaTag);
+  console.log('  - Meta tag content:', metaTag ? metaTag.content : 'none');
+  console.log('  - Final authentication status:', isAuthenticated);
   
   if (isAuthenticated) {
-    window.notificationPermissionHandler = new NotificationPermissionHandler();
+    console.log('User is authenticated, checking FCM Manager status...');
+    console.log('  - FCM Manager exists:', !!window.fcmManager);
+    console.log('  - FCM Manager initialized:', window.fcmManager ? window.fcmManager.isInitialized : 'N/A');
+    
+    // Wait for FCM to be ready before initializing notification handler
+    if (window.fcmManager && window.fcmManager.isInitialized) {
+      console.log('FCM Manager already ready, initializing NotificationPermissionHandler NOW');
+      try {
+        window.notificationPermissionHandler = new NotificationPermissionHandler();
+        console.log('NotificationPermissionHandler created successfully');
+      } catch (error) {
+        console.error('Error creating NotificationPermissionHandler:', error);
+      }
+    } else {
+      console.log('FCM Manager not ready, waiting for fcmReady event...');
+      window.addEventListener('fcmReady', () => {
+        console.log('FCM ready event received, initializing NotificationPermissionHandler NOW');
+        try {
+          window.notificationPermissionHandler = new NotificationPermissionHandler();
+          console.log('NotificationPermissionHandler created successfully after fcmReady');
+        } catch (error) {
+          console.error('Error creating NotificationPermissionHandler after fcmReady:', error);
+        }
+      });
+      
+      // Fallback timeout in case FCM fails to initialize
+      setTimeout(() => {
+        if (!window.notificationPermissionHandler) {
+          console.warn('FCM initialization timeout, checking if we can initialize anyway...');
+          console.log('  - FCM Manager exists:', !!window.fcmManager);
+          console.log('  - FCM Manager initialized:', window.fcmManager ? window.fcmManager.isInitialized : 'N/A');
+          
+          if (window.fcmManager) {
+            console.warn('Trying to initialize NotificationPermissionHandler anyway...');
+            try {
+              window.notificationPermissionHandler = new NotificationPermissionHandler();
+              console.log('NotificationPermissionHandler created via timeout fallback');
+            } catch (error) {
+              console.error('Error creating NotificationPermissionHandler via fallback:', error);
+            }
+          } else {
+            console.error('FCM Manager still not available after timeout');
+          }
+        } else {
+          console.log('NotificationPermissionHandler already exists, timeout fallback not needed');
+        }
+      }, 5000);
+    }
+  } else {
+    console.log('User is not authenticated, skipping notification permission handler');
   }
-});
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeNotificationHandler);
 
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {

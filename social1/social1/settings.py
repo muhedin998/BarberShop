@@ -32,6 +32,9 @@ ALLOWED_HOSTS = [
     "https://frizerskisalonhasko.com",
     "http://frizerskisalonhasko.com",
     "www.frizerskisalonhasko.com",
+    "*.ngrok-free.app",  # Allow all ngrok domains
+    "*.ngrok.io",        # Legacy ngrok domains
+    "testserver",        # For testing
     "frizerskisalonhasko.com",
     "https://www.frizerskisalonhasko.com",
     "c624-89-216-152-130.ngrok-free.app",
@@ -53,6 +56,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Use localhost for development, production site for deployed environment
 SITE_ID = 5 #7 if DEBUG else 5
+
+# Site URL for ngrok/development (set this when using ngrok)
+# Example: SITE_URL = 'https://abc123.ngrok-free.app'
+SITE_URL = os.environ.get('SITE_URL', None)
 
 INSTALLED_APPS = [
     'appointment',

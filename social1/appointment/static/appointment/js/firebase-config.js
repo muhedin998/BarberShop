@@ -32,6 +32,10 @@ class FCMManager {
 
       console.log('Browser supports push messaging');
 
+      // Register service worker FIRST, before Firebase
+      console.log('Registering service worker...');
+      await this.registerServiceWorker();
+
       // Import Firebase modules
       console.log('Importing Firebase modules...');
       const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js');
@@ -54,10 +58,6 @@ class FCMManager {
       this.messaging = getMessaging(app);
       console.log('Firebase messaging initialized');
 
-      // Register service worker
-      console.log('Registering service worker...');
-      await this.registerServiceWorker();
-
       this.isInitialized = true;
       console.log('FCM Manager initialized successfully');
       return true;
@@ -71,15 +71,104 @@ class FCMManager {
 
   async registerServiceWorker() {
     try {
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      // Use absolute URL to handle ngrok subdomains properly
+      const swUrl = `${window.location.origin}/firebase-messaging-sw.js`;
+      console.log('Registering service worker at:', swUrl);
+      
+      // Check if service worker is already registered
+      const existingRegistration = await navigator.serviceWorker.getRegistration('/');
+      if (existingRegistration) {
+        console.log('Service Worker already registered:', existingRegistration);
+        
+        // Wait for it to be active
+        if (existingRegistration.active) {
+          console.log('Service Worker is already active');
+          return existingRegistration;
+        } else {
+          console.log('Waiting for existing service worker to become active...');
+          await this.waitForServiceWorkerActive(existingRegistration);
+          return existingRegistration;
+        }
+      }
+      
+      const registration = await navigator.serviceWorker.register(swUrl, {
         scope: '/'
       });
       console.log('Service Worker registered successfully:', registration);
+      
+      // Wait for the service worker to be active
+      await this.waitForServiceWorkerActive(registration);
+      
       return registration;
     } catch (error) {
       console.error('Service Worker registration failed:', error);
+      console.error('Current origin:', window.location.origin);
       throw error;
     }
+  }
+
+  async waitForServiceWorkerActive(registration) {
+    return new Promise((resolve, reject) => {
+      let resolved = false;
+      
+      const resolveOnce = () => {
+        if (!resolved) {
+          resolved = true;
+          resolve();
+        }
+      };
+      
+      if (registration.active) {
+        console.log('Service Worker is already active');
+        resolveOnce();
+        return;
+      }
+      
+      const serviceWorker = registration.installing || registration.waiting;
+      if (serviceWorker) {
+        console.log(`Waiting for service worker to become active (current state: ${serviceWorker.state})`);
+        
+        serviceWorker.addEventListener('statechange', function() {
+          console.log('Service Worker state changed to:', this.state);
+          if (this.state === 'activated') {
+            console.log('Service Worker is now active');
+            resolveOnce();
+          } else if (this.state === 'redundant') {
+            console.log('Service Worker became redundant');
+            resolveOnce(); // Still resolve, but it might not work
+          }
+        });
+        
+        // Also check periodically in case the event doesn't fire
+        const checkInterval = setInterval(() => {
+          if (registration.active) {
+            console.log('Service Worker became active (detected via polling)');
+            clearInterval(checkInterval);
+            resolveOnce();
+          }
+        }, 500);
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          clearInterval(checkInterval);
+          console.log('Service Worker activation timeout, proceeding anyway');
+          resolveOnce();
+        }, 10000);
+        
+      } else {
+        console.log('No installing or waiting service worker found');
+        // Still wait a bit in case it becomes active
+        setTimeout(() => {
+          if (registration.active) {
+            console.log('Service Worker became active during wait period');
+            resolveOnce();
+          } else {
+            console.log('No active service worker after wait period');
+            resolveOnce();
+          }
+        }, 2000);
+      }
+    });
   }
 
   async requestPermission() {
@@ -115,18 +204,41 @@ class FCMManager {
 
   async generateToken() {
     try {
+      console.log('generateToken() called');
+      
       if (!this.messaging) {
         throw new Error('FCM not initialized');
       }
 
+      // Check service worker status before generating token
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      console.log('Active service worker registrations:', registrations.length);
+      
+      if (registrations.length === 0) {
+        throw new Error('No service worker registrations found');
+      }
+      
+      const activeRegistration = registrations.find(reg => reg.active);
+      if (!activeRegistration) {
+        console.warn('No active service worker found, attempting to register...');
+        await this.registerServiceWorker();
+      } else {
+        console.log('Active service worker found:', activeRegistration.scope);
+      }
+
       const { getToken } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
+      
+      console.log('Attempting to get FCM token...');
       
       // Try to get token without VAPID key first (Firebase will use project default)
       let token;
       try {
+        console.log('Getting token without VAPID key...');
         token = await getToken(this.messaging);
       } catch (vapidError) {
-        console.log('Trying with VAPID key...', vapidError.message);
+        console.log('Token generation without VAPID failed:', vapidError.message);
+        console.log('Trying with VAPID key...');
+        
         // If that fails, try with a VAPID key
         token = await getToken(this.messaging, {
           vapidKey: 'BKAhiDB3rapdGVKIyzRrNb2EJlIkvDcV4ujdy_lz7dWN5wD_9uI6spViYbpwC_ckZ1md0Nn-Ara2E2wSdaCNNw4'
@@ -311,10 +423,21 @@ window.fcmManager = new FCMManager();
 
 // Initialize FCM when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('Starting FCM Manager initialization...');
   const initialized = await window.fcmManager.init();
   if (initialized) {
     await window.fcmManager.setupForegroundMessaging();
     console.log('FCM setup complete');
+    
+    // Dispatch custom event to signal FCM is ready
+    window.dispatchEvent(new CustomEvent('fcmReady', {
+      detail: { fcmManager: window.fcmManager }
+    }));
+  } else {
+    console.error('FCM initialization failed');
+    window.dispatchEvent(new CustomEvent('fcmError', {
+      detail: { error: 'FCM initialization failed' }
+    }));
   }
 });
 

@@ -1,85 +1,154 @@
 #!/usr/bin/env python3
 """
-Simple script to test FCM token registration
-Run this after fixing browser permissions
+FCM Token Registration Test Script
+Run this to test the full FCM token registration flow
 """
 
+import os
+import django
 import requests
 import json
 
-# Configuration
-BASE_URL = "http://127.0.0.1:8000"
-USERNAME = "muhedin89"  # Change this to your username
-PASSWORD = "your_password"  # Change this to your password
+# Setup Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'social1.settings')
+django.setup()
 
-def login_and_get_csrf():
-    """Login and get CSRF token"""
-    session = requests.Session()
+from django.contrib.auth import get_user_model
+from django.test import Client
+from appointment.models import FCMToken
+
+User = get_user_model()
+
+def test_token_registration():
+    print("=== FCM Token Registration Test ===\n")
     
-    # Get login page to get CSRF token
-    login_url = f"{BASE_URL}/user_login/"
-    response = session.get(login_url)
+    # 1. Check current tokens
+    print("1. Current FCM tokens in database:")
+    tokens = FCMToken.objects.all()
+    for token in tokens:
+        print(f"   - User: {token.user.username}, Device: {token.device_id}, Active: {token.is_active}")
+    print(f"   Total: {tokens.count()} tokens\n")
     
-    # Extract CSRF token from cookies
-    csrf_token = session.cookies.get('csrftoken')
+    # 2. Test authentication requirement
+    print("2. Testing authentication requirement...")
+    client = Client()
     
-    # Login
-    login_data = {
-        'username': USERNAME,
-        'password': PASSWORD,
-        'csrfmiddlewaretoken': csrf_token
+    # Try without authentication
+    test_data = {
+        'token': 'test-token-12345',
+        'device_id': 'test-device'
     }
     
-    response = session.post(login_url, data=login_data)
+    response = client.post('/fcm/register-token/', 
+                          data=json.dumps(test_data),
+                          content_type='application/json')
+    print(f"   Without auth: {response.status_code} - {response.reason_phrase}")
     
-    if response.status_code == 200:
-        print("✅ Login successful")
-        return session, csrf_token
-    else:
-        print(f"❌ Login failed: {response.status_code}")
-        return None, None
+    # 3. Test with authentication
+    print("\n3. Testing with authentication...")
+    
+    # Get first user
+    users = User.objects.all()[:3]
+    if not users:
+        print("   ERROR: No users found in database!")
+        return
+    
+    for user in users:
+        print(f"\n   Testing with user: {user.username}")
+        
+        # Login
+        client.force_login(user)
+        
+        # Try to register token
+        test_data = {
+            'token': f'test-token-{user.username}-{len(str(user.id))*10}',
+            'device_id': f'test-device-{user.username}'
+        }
+        
+        response = client.post('/fcm/register-token/',
+                              data=json.dumps(test_data),
+                              content_type='application/json')
+        
+        print(f"   Status: {response.status_code}")
+        if response.status_code == 200:
+            print(f"   Success: {response.json()}")
+        else:
+            print(f"   Error: {response.content.decode()}")
+    
+    # 4. Check tokens after test
+    print("\n4. FCM tokens after test:")
+    tokens = FCMToken.objects.all().order_by('-created_at')
+    for token in tokens[:5]:  # Show last 5
+        print(f"   - User: {token.user.username}, Device: {token.device_id}, Active: {token.is_active}, Created: {token.created_at}")
 
-def test_fcm_registration(session, csrf_token):
-    """Test FCM token registration"""
-    # Test FCM token (this is a dummy token)
-    test_token = "dummy_fcm_token_for_testing_12345678901234567890"
+def test_csrf_token_endpoint():
+    print("\n=== CSRF Token Test ===")
     
-    fcm_url = f"{BASE_URL}/fcm/register-token/"
-    headers = {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrf_token,
-        'Referer': BASE_URL
-    }
+    client = Client()
     
-    data = {
-        'token': test_token,
-        'device_id': 'test-browser-device'
-    }
-    
-    response = session.post(fcm_url, json=data, headers=headers)
-    
-    print(f"FCM Registration Response: {response.status_code}")
-    print(f"Response body: {response.text}")
-    
-    if response.status_code == 200:
-        print("✅ FCM token registration successful")
-        return True
+    # Test getting CSRF token
+    response = client.get('/')
+    if 'csrftoken' in client.cookies:
+        csrf_token = client.cookies['csrftoken'].value
+        print(f"CSRF token available: {csrf_token[:10]}...")
     else:
-        print("❌ FCM token registration failed")
-        return False
+        print("CSRF token NOT found in cookies")
+    
+    # Test token status endpoint
+    response = client.get('/fcm/token-status/')
+    print(f"Token status endpoint (no auth): {response.status_code}")
 
-if __name__ == "__main__":
-    print("Testing FCM token registration...")
-    print("Make sure Django server is running on http://127.0.0.1:8000")
-    print(f"Testing with user: {USERNAME}")
-    print("-" * 50)
+def test_javascript_token_flow():
+    print("\n=== JavaScript Token Flow Test ===")
+    print("To test in browser console:")
+    print("""
+// 1. Check if user is authenticated
+console.log('User authenticated:', document.body.innerHTML.includes('logout') || document.body.innerHTML.includes('Logout'));
+
+// 2. Check CSRF token
+function getCSRFToken() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'csrftoken') {
+            return value;
+        }
+    }
+    return null;
+}
+console.log('CSRF token:', getCSRFToken());
+
+// 3. Test token registration
+async function testTokenRegistration() {
+    const testToken = 'test-browser-token-' + Date.now();
+    const deviceId = 'test-browser-device';
     
-    session, csrf_token = login_and_get_csrf()
-    
-    if session and csrf_token:
-        test_fcm_registration(session, csrf_token)
-    else:
-        print("Cannot proceed without valid session")
-    
-    print("\nNote: This is a test with a dummy token.")
-    print("For real FCM tokens, you need to enable notifications in the browser.")
+    try {
+        const response = await fetch('/fcm/register-token/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                token: testToken,
+                device_id: deviceId
+            })
+        });
+        
+        console.log('Registration response:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+    } catch (error) {
+        console.error('Registration error:', error);
+    }
+}
+
+// Run the test
+testTokenRegistration();
+    """)
+
+if __name__ == '__main__':
+    test_token_registration()
+    test_csrf_token_endpoint() 
+    test_javascript_token_flow()
