@@ -31,6 +31,17 @@ def register_fcm_token(request):
             logger.error('No FCM token provided in request')
             return JsonResponse({'error': 'FCM token is required'}, status=400)
         
+        # First, deactivate any existing tokens for this user/device combination
+        existing_tokens = FCMToken.objects.filter(
+            user=request.user,
+            device_id=device_id,
+            is_active=True
+        ).exclude(token=token)
+        
+        deactivated_count = existing_tokens.update(is_active=False)
+        if deactivated_count > 0:
+            logger.info(f'Deactivated {deactivated_count} old FCM tokens for user {request.user.username}')
+        
         # Create or update the FCM token
         fcm_token, created = FCMToken.objects.update_or_create(
             user=request.user,
