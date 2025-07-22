@@ -122,7 +122,3 @@ def fcm_debug_page(request):
     """Debug page for FCM token registration"""
     return render(request, 'appointment/fcm_debug.html')
 
-@login_required  
-def fcm_auto_test_page(request):
-    """Simple test page for automatic FCM token generation"""
-    return render(request, 'appointment/fcm_auto_test.html')

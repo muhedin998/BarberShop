@@ -423,20 +423,13 @@ window.fcmManager = new FCMManager();
 
 // Initialize FCM when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('Starting FCM Manager initialization...');
   const initialized = await window.fcmManager.init();
   if (initialized) {
     await window.fcmManager.setupForegroundMessaging();
-    console.log('FCM setup complete');
     
     // Dispatch custom event to signal FCM is ready
     window.dispatchEvent(new CustomEvent('fcmReady', {
       detail: { fcmManager: window.fcmManager }
-    }));
-  } else {
-    console.error('FCM initialization failed');
-    window.dispatchEvent(new CustomEvent('fcmError', {
-      detail: { error: 'FCM initialization failed' }
     }));
   }
 });
