@@ -26,7 +26,6 @@ class NotificationPermissionHandler {
   checkPermissionStatus() {
     if ('Notification' in window) {
       this.permissionGranted = Notification.permission === 'granted';
-      console.log('Current notification permission:', Notification.permission);
     } else {
       console.warn('This browser does not support notifications');
     }

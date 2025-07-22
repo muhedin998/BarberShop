@@ -22,7 +22,6 @@ class FCMManager {
 
   async init() {
     try {
-      console.log('Starting FCM Manager initialization...');
       
       // Check if Firebase Messaging is supported
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
@@ -30,22 +29,17 @@ class FCMManager {
         return false;
       }
 
-      console.log('Browser supports push messaging');
 
       // Register service worker FIRST, before Firebase
-      console.log('Registering service worker...');
       await this.registerServiceWorker();
 
       // Import Firebase modules
-      console.log('Importing Firebase modules...');
       const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js');
       const { getMessaging, getToken, onMessage, isSupported } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
 
-      console.log('Firebase modules imported successfully');
 
       // Check if messaging is supported
       this.isSupported = await isSupported();
-      console.log('Firebase messaging supported:', this.isSupported);
       
       if (!this.isSupported) {
         console.warn('Firebase Messaging is not supported in this browser');
@@ -53,13 +47,10 @@ class FCMManager {
       }
 
       // Initialize Firebase
-      console.log('Initializing Firebase app...');
       const app = initializeApp(firebaseConfig);
       this.messaging = getMessaging(app);
-      console.log('Firebase messaging initialized');
 
       this.isInitialized = true;
-      console.log('FCM Manager initialized successfully');
       return true;
 
     } catch (error) {
@@ -73,19 +64,15 @@ class FCMManager {
     try {
       // Use absolute URL to handle ngrok subdomains properly
       const swUrl = `${window.location.origin}/firebase-messaging-sw.js`;
-      console.log('Registering service worker at:', swUrl);
       
       // Check if service worker is already registered
       const existingRegistration = await navigator.serviceWorker.getRegistration('/');
       if (existingRegistration) {
-        console.log('Service Worker already registered:', existingRegistration);
         
         // Wait for it to be active
         if (existingRegistration.active) {
-          console.log('Service Worker is already active');
           return existingRegistration;
         } else {
-          console.log('Waiting for existing service worker to become active...');
           await this.waitForServiceWorkerActive(existingRegistration);
           return existingRegistration;
         }
@@ -94,7 +81,6 @@ class FCMManager {
       const registration = await navigator.serviceWorker.register(swUrl, {
         scope: '/'
       });
-      console.log('Service Worker registered successfully:', registration);
       
       // Wait for the service worker to be active
       await this.waitForServiceWorkerActive(registration);
@@ -119,22 +105,16 @@ class FCMManager {
       };
       
       if (registration.active) {
-        console.log('Service Worker is already active');
         resolveOnce();
         return;
       }
       
       const serviceWorker = registration.installing || registration.waiting;
       if (serviceWorker) {
-        console.log(`Waiting for service worker to become active (current state: ${serviceWorker.state})`);
-        
         serviceWorker.addEventListener('statechange', function() {
-          console.log('Service Worker state changed to:', this.state);
           if (this.state === 'activated') {
-            console.log('Service Worker is now active');
             resolveOnce();
           } else if (this.state === 'redundant') {
-            console.log('Service Worker became redundant');
             resolveOnce(); // Still resolve, but it might not work
           }
         });
@@ -142,7 +122,6 @@ class FCMManager {
         // Also check periodically in case the event doesn't fire
         const checkInterval = setInterval(() => {
           if (registration.active) {
-            console.log('Service Worker became active (detected via polling)');
             clearInterval(checkInterval);
             resolveOnce();
           }
@@ -151,19 +130,15 @@ class FCMManager {
         // Timeout after 10 seconds
         setTimeout(() => {
           clearInterval(checkInterval);
-          console.log('Service Worker activation timeout, proceeding anyway');
           resolveOnce();
         }, 10000);
         
       } else {
-        console.log('No installing or waiting service worker found');
         // Still wait a bit in case it becomes active
         setTimeout(() => {
           if (registration.active) {
-            console.log('Service Worker became active during wait period');
             resolveOnce();
           } else {
-            console.log('No active service worker after wait period');
             resolveOnce();
           }
         }, 2000);
@@ -173,12 +148,6 @@ class FCMManager {
 
   async requestPermission() {
     try {
-      console.log('Requesting notification permission...');
-      console.log('Current FCM Manager state:', {
-        isInitialized: this.isInitialized,
-        isSupported: this.isSupported,
-        messaging: !!this.messaging
-      });
 
       if (!this.isInitialized) {
         console.error('FCM Manager not initialized');
@@ -186,13 +155,10 @@ class FCMManager {
       }
 
       const permission = await Notification.requestPermission();
-      console.log('Notification permission result:', permission);
       
       if (permission === 'granted') {
-        console.log('Notification permission granted, generating token...');
         return await this.generateToken();
       } else {
-        console.log('Notification permission denied or dismissed');
         return null;
       }
     } catch (error) {
@@ -204,7 +170,6 @@ class FCMManager {
 
   async generateToken() {
     try {
-      console.log('generateToken() called');
       
       if (!this.messaging) {
         throw new Error('FCM not initialized');
@@ -212,7 +177,6 @@ class FCMManager {
 
       // Check service worker status before generating token
       const registrations = await navigator.serviceWorker.getRegistrations();
-      console.log('Active service worker registrations:', registrations.length);
       
       if (registrations.length === 0) {
         throw new Error('No service worker registrations found');
@@ -223,21 +187,16 @@ class FCMManager {
         console.warn('No active service worker found, attempting to register...');
         await this.registerServiceWorker();
       } else {
-        console.log('Active service worker found:', activeRegistration.scope);
       }
 
       const { getToken } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
       
-      console.log('Attempting to get FCM token...');
       
       // Try to get token without VAPID key first (Firebase will use project default)
       let token;
       try {
-        console.log('Getting token without VAPID key...');
         token = await getToken(this.messaging);
       } catch (vapidError) {
-        console.log('Token generation without VAPID failed:', vapidError.message);
-        console.log('Trying with VAPID key...');
         
         // If that fails, try with a VAPID key
         token = await getToken(this.messaging, {
@@ -246,14 +205,12 @@ class FCMManager {
       }
 
       if (token) {
-        console.log('FCM token generated:', token);
         this.currentToken = token;
         
         // Register token with backend
         await this.registerTokenWithBackend(token);
         return token;
       } else {
-        console.log('No registration token available. Make sure messaging is enabled in Firebase console.');
         return null;
       }
     } catch (error) {
@@ -283,7 +240,6 @@ class FCMManager {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Token registered successfully:', data);
         return data;
       } else {
         console.error('Failed to register token:', response.statusText);
@@ -310,7 +266,6 @@ class FCMManager {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Token unregistered successfully:', data);
         this.currentToken = null;
         return data;
       } else {
@@ -332,13 +287,10 @@ class FCMManager {
       const { onMessage } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
 
       onMessage(this.messaging, (payload) => {
-        console.log('Message received in foreground:', payload);
-        
         // Show notification when app is in foreground
         this.showForegroundNotification(payload);
       });
 
-      console.log('Foreground messaging setup complete');
     } catch (error) {
       console.error('Error setting up foreground messaging:', error);
     }

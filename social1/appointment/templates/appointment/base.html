@@ -345,9 +345,6 @@
 {% if user.is_authenticated %}
 <script src="{% static 'appointment/js/firebase-config.js' %}?v=20250722b"></script>
 <script src="{% static 'appointment/js/notification-permission.js' %}?v=20250722b"></script>
-{% if user.is_staff %}
-<script src="{% static 'appointment/js/test-notification.js' %}"></script>
-{% endif %}
 {% endif %}
 
   </body>
