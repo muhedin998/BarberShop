@@ -1,12 +1,8 @@
 // Firebase Messaging Service Worker
 
-console.log('Firebase Messaging Service Worker loading...');
-
 // Import Firebase scripts
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js');
-
-console.log('Firebase scripts imported');
 
 // Firebase configuration
 const firebaseConfig = {
@@ -21,24 +17,20 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-console.log('Firebase initialized in service worker');
 
 // Force service worker activation
 self.addEventListener('install', function(event) {
-  console.log('Firebase service worker installing');
   // Force the waiting service worker to become the active service worker
   self.skipWaiting();
 });
 
 self.addEventListener('activate', function(event) {
-  console.log('Firebase service worker activated');
   // Take control of all pages immediately
   event.waitUntil(self.clients.claim());
 });
 
 // Retrieve Firebase Messaging object
 const messaging = firebase.messaging();
-console.log('Firebase messaging object created');
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {

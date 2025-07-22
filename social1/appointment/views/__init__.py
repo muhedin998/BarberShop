@@ -19,5 +19,5 @@ from .views_admin import (
 from .views_profile import (
     profile_page, notifications_page, mark_notification_read,
     mark_notification_unread, delete_notification, mark_all_read,
-    fcm_debug_page, fcm_auto_test_page
+    fcm_debug_page
 )

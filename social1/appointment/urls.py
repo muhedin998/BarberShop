@@ -45,7 +45,6 @@ urlpatterns =[
     
     # Debug endpoints
     path('debug/fcm/', views.fcm_debug_page, name='fcm_debug_page'),
-    path('debug/fcm-auto/', views.fcm_auto_test_page, name='fcm_auto_test_page'),
 
   
 ]
