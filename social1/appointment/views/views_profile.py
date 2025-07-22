@@ -117,8 +117,4 @@ def mark_all_read(request):
     })
 
 
-@login_required
-def fcm_debug_page(request):
-    """Debug page for FCM token registration"""
-    return render(request, 'appointment/fcm_debug.html')
 
