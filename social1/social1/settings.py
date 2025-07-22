@@ -38,7 +38,9 @@ ALLOWED_HOSTS = [
     "frizerskisalonhasko.com",
     "https://www.frizerskisalonhasko.com",
     "c624-89-216-152-130.ngrok-free.app",
-    "cd88-89-216-152-130.ngrok-free.app"
+    "cd88-89-216-152-130.ngrok-free.app",
+    "evoluci4n.online",
+    "www.evoluci4n.online"
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://cd88-89-216-152-130.ngrok-free.app",
