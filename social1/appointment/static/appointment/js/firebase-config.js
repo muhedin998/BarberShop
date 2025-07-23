@@ -192,15 +192,24 @@ class FCMManager {
       const { getToken } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
       
       
+      // Get the service worker registration
+      const swRegistration = await navigator.serviceWorker.getRegistration('/');
+      if (!swRegistration || !swRegistration.active) {
+        throw new Error('Service worker not properly registered or active');
+      }
+
       // Try to get token without VAPID key first (Firebase will use project default)
       let token;
       try {
-        token = await getToken(this.messaging);
+        token = await getToken(this.messaging, {
+          serviceWorkerRegistration: swRegistration
+        });
       } catch (vapidError) {
         
         // If that fails, try with a VAPID key
         token = await getToken(this.messaging, {
-          vapidKey: 'BKAhiDB3rapdGVKIyzRrNb2EJlIkvDcV4ujdy_lz7dWN5wD_9uI6spViYbpwC_ckZ1md0Nn-Ara2E2wSdaCNNw4'
+          vapidKey: 'BKAhiDB3rapdGVKIyzRrNb2EJlIkvDcV4ujdy_lz7dWN5wD_9uI6spViYbpwC_ckZ1md0Nn-Ara2E2wSdaCNNw4',
+          serviceWorkerRegistration: swRegistration
         });
       }
 
