@@ -1,1 +1,51 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+
+# Environment variables
+.env
+.env.local
+.env.production
+/venv/
+/env/
+
+# Firebase credentials
 firebase-config.json
+
+# Static files (collected)
+/static/
+/staticfiles/
+
+# Media files (optional - you might want to track some)
+/media/
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup
+*.backup.*
+
+# Logs
+push_notifications.log
+*.log.*
+
+# Temporary files
+*.tmp
+*.temp
