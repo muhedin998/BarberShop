@@ -20,37 +20,35 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'xgmia2j!q1f+=77*yjc6^axs82dz@kb7c)z%__igt@k0#-b+*&'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'xgmia2j!q1f+=77*yjc6^axs82dz@kb7c)z%__igt@k0#-b+*&')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = [
     "localhost",  
     "127.0.0.1", 
     "192.168.0.34",
-    "https://frizerskisalonhasko.com",
-    "http://frizerskisalonhasko.com",
-    "www.frizerskisalonhasko.com",
-    "*.ngrok-free.app",  # Allow all ngrok domains
-    "*.ngrok.io",        # Legacy ngrok domains
-    "testserver",        # For testing
     "frizerskisalonhasko.com",
-    "https://www.frizerskisalonhasko.com",
-    "c624-89-216-152-130.ngrok-free.app",
-    "cd88-89-216-152-130.ngrok-free.app",
+    "www.frizerskisalonhasko.com",
+    "*.ngrok-free.app",  # Allow all ngrok domains for development
+    "*.ngrok.io",        # Legacy ngrok domains for development
+    "testserver",        # For testing
     "evoluci4n.online",
     "www.evoluci4n.online"
 ]
 CSRF_TRUSTED_ORIGINS = [
+    "https://frizerskisalonhasko.com",
+    "https://www.frizerskisalonhasko.com",
+    "https://evoluci4n.online",
+    "https://www.evoluci4n.online",
+    # Development and testing URLs
     "https://cd88-89-216-152-130.ngrok-free.app",
     "https://c624-89-216-152-130.ngrok-free.app",
     'https://a7df-178-149-237-173.eu.ngrok.io',
     'http://192.168.0.34:8000',
     'http://localhost:8000',
     'http://127.0.0.1:8000'
-    # Add your new ngrok URL here when you get it
-    # 'https://your-new-ngrok-url.ngrok.io'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
