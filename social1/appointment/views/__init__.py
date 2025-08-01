@@ -12,7 +12,7 @@ from .views_appointments import (
 # Admin/Management views
 from .views_admin import (
     opcije_termini, opcije_klijenti, opcije_izvestaj,
-    opcije_istorija, obrisi_duznika
+    opcije_istorija, obrisi_duznika, manage_appointment
 )
 
 # Profile views

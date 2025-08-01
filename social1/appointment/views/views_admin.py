@@ -132,39 +132,58 @@ def opcije_klijenti(request):
 @user_passes_test(lambda u: u.is_superuser)
 def opcije_izvestaj(request):
     today = datetime.now().date()
-    duznici = Duznik.objects.all()
-    duznici_kor = Korisnik.objects.filter(dugovanje__gt=0)
-
-    periods = {
-        '30': today - timedelta(days=30),
-        '7': today - timedelta(days=7),
-        '1': today - timedelta(days=1),
+    
+    # Get period from request, default to 30 days
+    period = request.GET.get('period', '30')
+    view_type = request.GET.get('view', 'earnings')
+    
+    context = {
+        'current_period': period,
+        'current_view': view_type,
+        'today': today
     }
-
-    earnings_data = {"duznici": duznici,
-                     "duznici_kor": duznici_kor}
-
-    for key, start_date in periods.items():
+    
+    if view_type == 'debtors':
+        # Handle debtors view
+        duznici = Duznik.objects.all()
+        duznici_kor = Korisnik.objects.filter(dugovanje__gt=0)
+        total_debt = sum(d.duguje for d in duznici) + sum(d.dugovanje for d in duznici_kor)
+        
+        context.update({
+            'duznici': duznici,
+            'duznici_kor': duznici_kor,
+            'total_debt': total_debt,
+            'total_debtors': len(duznici) + len(duznici_kor)
+        })
+    else:
+        # Handle earnings view
+        days = int(period)
+        start_date = today - timedelta(days=days)
+        
         earnings_per_day = (
             Termin.objects
             .filter(datum__range=[start_date, today])
             .values('datum')
             .annotate(total_earnings=Sum('usluga__cena'))
-            .order_by('datum')
+            .order_by('-datum')
         )
-
-        total_earnings = sum(entry['total_earnings'] for entry in earnings_per_day if entry['total_earnings'])
-
-        earnings_data[f'zarada_{key}'] = list(earnings_per_day)
-        earnings_data[f'total_{key}'] = total_earnings
-        earnings_data[f'sve_{key}'] = earnings_data.get(f'sve_{key}', 0) + total_earnings
-
-    return render(request, 'appointment/opcije/izvestaj.html', earnings_data)
+        
+        total_earnings = sum(entry['total_earnings'] or 0 for entry in earnings_per_day)
+        avg_daily = total_earnings / days if days > 0 else 0
+        
+        context.update({
+            'earnings_data': earnings_per_day,
+            'total_earnings': total_earnings,
+            'avg_daily_earnings': avg_daily,
+            'period_days': days
+        })
+    
+    return render(request, 'appointment/opcije/izvestaj.html', context)
 
 
 @login_required
 def opcije_istorija(request):
-    termini_list = Termin.objects.filter(user=request.user)
+    termini_list = Termin.objects.filter(user=request.user).order_by('-datum', '-vreme')
     paginator = Paginator(termini_list, 50)  # Show 10 images per page
 
     page_number = request.GET.get('page')
@@ -178,6 +197,27 @@ def opcije_istorija(request):
             termin.dodatne_usluge_objekti = []
 
     return render(request, 'appointment/opcije/istorija.html', {'termini': termini})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def manage_appointment(request, termin_id):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        try:
+            termin = Termin.objects.get(id=termin_id)
+            
+            if action == 'delete':
+                # Delete appointment (customer didn't show up)
+                termin.delete()
+                return redirect('opcije_istorija')
+            elif action == 'mark_completed':
+                # Mark as completed - appointment was successfully done
+                return redirect('opcije_istorija')
+                
+        except Termin.DoesNotExist:
+            pass
+    
+    return redirect('opcije_istorija')
 
 
 def obrisi_duznika(request, duznik_id):

@@ -2,210 +2,465 @@
 {% block opcije %}
 
 <style>
-    body {
-        background-color: #f4f7fc;
-        font-family: 'Arial', sans-serif;
+    :root {
+        --primary-color: #1a1a1a;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --dark-color: #000000;
+        --light-gray: #f8fafc;
+        --border-color: #e5e7eb;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
     }
-    .container1 {
-        max-width: 800px;
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        margin-top: 40px;
+
+    .reports-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
     }
-    h2 {
-        color:rgb(18, 132, 35);
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .table thead {
-        background-color:rgb(18, 132, 35);
+
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), #2a2a2a);
         color: white;
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
     }
-    .table thead th {
-        flex: 1;              /* Equal width for columns */
-        text-align: right;    /* Align data to the right */
+
+    .page-title {
+        font-size: 4rem;
+        font-weight: 700;
+        margin: 0;
+        text-align: center;
     }
-    .table tbody td {
-        flex: 1;              /* Equal width for columns */
-        text-align: right;    /* Align data to the right */
+
+    .page-subtitle {
+        text-align: center;
+        opacity: 0.9;
+        margin-top: 0.5rem;
+        font-size: 1.8rem;
     }
-    .form-select {
-        border-radius: 8px;
-    }
-    .card {
+
+    .nav-tabs {
+        border: none;
+        background: white;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 0.5rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-radius: 8px;
+        color: var(--text-secondary);
+        font-weight: 500;
+        padding: 1.5rem 2.5rem;
+        transition: all 0.3s ease;
+        margin: 0 0.25rem;
+        font-size: 1.8rem;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow);
+    }
+
+    .nav-tabs .nav-link:hover:not(.active) {
+        background: var(--light-gray);
+        color: var(--text-primary);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .stat-card.success { border-left-color: var(--success-color); }
+    .stat-card.warning { border-left-color: var(--warning-color); }
+    .stat-card.danger { border-left-color: var(--danger-color); }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 1.3rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        background: var(--light-gray);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .period-selector {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .period-btn {
+        padding: 1rem 1.5rem;
+        border: 1px solid var(--border-color);
+        background: white;
+        color: var(--text-secondary);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+    .period-btn.active,
+    .period-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .modern-table th {
+        background: var(--light-gray);
+        padding: 1.5rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--border-color);
+        font-size: 1.4rem;
+    }
+
+    .modern-table td {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 1.3rem;
+    }
+
+    .modern-table tbody tr:hover {
+        background: var(--light-gray);
+    }
+
+    .debtor-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 0;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .debtor-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-3px);
+        border-color: var(--primary-color);
+    }
+
+    .debtor-content {
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .debtor-info {
+        flex: 1;
+    }
+
+    .debtor-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .debtor-phone {
+        color: var(--text-secondary);
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+    }
+
+    .debtor-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .debt-amount {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--danger-color);
+        background: rgba(239, 68, 68, 0.1);
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        border: 2px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .delete-btn {
+        background: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        font-size: 1.3rem;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+    }
+
+    .delete-btn:hover {
+        background: #dc2626;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+        font-size: 1.4rem;
+    }
+
+    .empty-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .reports-container {
+            padding: 1rem;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .period-selector {
+            width: 100%;
+        }
+        
+        .debtor-content {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+        
+        .debtor-actions {
+            justify-content: space-between;
+            width: 100%;
+        }
     }
 </style>
 
-
-<div class="mb-4">
-    <label for="viewSelector" class="form-label">Izaberite prikaz:</label>
-    <select id="viewSelector" class="form-select">
-        <option value="appointments" selected>Lista Dužnika</option>
-        <option value="earnings" >Praćenje zarade</option>
-    </select>
-</div>
-<div id="earnings-section" class="card p-3" style="display: none;">
-    <h2>Pracenje zarade</h2>
-    <div class="mb-3">
-        <label for="selectPeriod" class="form-label">Prikazi za:</label>
-        <select id="selectPeriod" class="form-select">
-            <option value="zarada_1">Dan</option>
-            <option value="zarada_7">Nedelja</option>
-            <option value="zarada_30" selected>Mesec</option>
-        </select>
+<div class="reports-container">
+    <div class="page-header">
+        <h1 class="page-title">Izveštaji</h1>
+        <p class="page-subtitle">Pregled zarade i dužnika</p>
     </div>
-    <!-- Zarada 30 -->
-    <table class="table table-hover" id="zarada_30">
-        <thead>
-            <tr>
-                <th>Datum</th>
-                <th>Zarada</th>
-            </tr>
-        </thead>
-        <tbody id="earnings">
-            {% for z in zarada_30 %}
-            <tr>
-                <td>{{ z.datum|date:"Y-m-d" }}</td>
-                <td>{{ z.total_earnings }} RSD</td>
-            </tr>
-        {% endfor %}
-        <tr class="bg-success">
-            <td>Ukupno: </td>
-            <td>{{sve_30}} RSD</td>
-        </tr>
-        </tbody>
-    </table>
-    <!-- Zarada 7 -->
-    <table class="table table-hover" id="zarada_7" style="display: none">
-        <thead>
-            <tr>
-                <th>Datum</th>
-                <th>Zarada</th>
-            </tr>
-        </thead>
-        <tbody id="earnings">
-            {% for z in zarada_7 %}
-            <tr>
-                <td>{{ z.datum|date:"Y-m-d" }}</td>
-                <td>{{ z.total_earnings }}</td>
-            </tr>
-        {% endfor %}
-            <tr class="bg-success">
-                <td>Ukupno: </td>
-                <td>{{sve_7}} RSD</td>
-            </tr>
-        </tbody>
-    </table>
 
-    <!-- zarada_1 -->
-    <table class="table table-hover" id="zarada_1" style="display: none">
-        <thead>
-            <tr>
-                <th>Datum</th>
-                <th>Zarada</th>
-            </tr>
-        </thead>
-        <tbody id="earnings">
-            {% for z in zarada_1 %}
-            <tr>
-                <td>{{ z.datum|date:"Y-m-d" }}</td>
-                <td>{{ z.total_earnings }}</td>
-            </tr>
-        {% endfor %}
-            <tr class="bg-success">
-                <td>Ukupno: </td>
-                <td>{{sve_1}} RSD</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if current_view == 'earnings' %}active{% endif %}" 
+               href="?view=earnings&period={{ current_period }}">
+                📊 Zarada
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if current_view == 'debtors' %}active{% endif %}" 
+               href="?view=debtors">
+                💳 Dužnici
+            </a>
+        </li>
+    </ul>
 
-<div id="appointments-section" class="container mt-5">
-    <h1 class="text-center mb-4">Lista Dužnika</h1>
-    <div class="list-group">
-        <!-- Dodajte više dužnika po potrebi -->
-        {% if not duznici and not duznici_kor %}
-            <h3>Nema Dužnika</h3>
+    {% if current_view == 'earnings' %}
+    <!-- Earnings View -->
+    <div class="stats-grid">
+        <div class="stat-card success">
+            <div class="stat-number">{{ total_earnings|floatformat:0 }}</div>
+            <div class="stat-label">Ukupna zarada ({{ period_days }} dana)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ avg_daily_earnings|floatformat:0 }}</div>
+            <div class="stat-label">Prosečna dnevna zarada</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-number">{{ earnings_data|length }}</div>
+            <div class="stat-label">Aktivnih dana</div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <div class="card-header">
+            <h2 class="card-title">Dnevna zarada</h2>
+            <div class="period-selector">
+                <a href="?view=earnings&period=1" class="period-btn {% if current_period == '1' %}active{% endif %}">1 dan</a>
+                <a href="?view=earnings&period=7" class="period-btn {% if current_period == '7' %}active{% endif %}">7 dana</a>
+                <a href="?view=earnings&period=30" class="period-btn {% if current_period == '30' %}active{% endif %}">30 dana</a>
+                <a href="?view=earnings&period=90" class="period-btn {% if current_period == '90' %}active{% endif %}">90 dana</a>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            {% if earnings_data %}
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th style="text-align: right;">Zarada (RSD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in earnings_data %}
+                    <tr>
+                        <td>{{ entry.datum|date:"d.m.Y" }}</td>
+                        <td style="text-align: right; font-weight: 600;">
+                            {{ entry.total_earnings|floatformat:0 }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <h3>Nema podataka o zaradi</h3>
+                <p>Za izabrani period nema evidentirane zarade.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Debtors View -->
+    <div class="stats-grid">
+        <div class="stat-card danger">
+            <div class="stat-number">{{ total_debt|floatformat:0 }}</div>
+            <div class="stat-label">Ukupan dug (RSD)</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-number">{{ total_debtors }}</div>
+            <div class="stat-label">Broj dužnika</div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <div class="card-header">
+            <h2 class="card-title">Lista dužnika</h2>
+        </div>
+        
+        {% if duznici or duznici_kor %}
+        <div style="padding: 1.5rem;">
+            {% for duznik in duznici %}
+            <div class="debtor-card">
+                <div class="debtor-content">
+                    <div class="debtor-info">
+                        <h3 class="debtor-name">{{ duznik.name }}</h3>
+                        <div class="debtor-phone">📞 {{ duznik.broj_telefona }}</div>
+                    </div>
+                    <div class="debtor-actions">
+                        <div class="debt-amount">{{ duznik.duguje }} RSD</div>
+                        <a href="{% url 'obrisi_duznika' duznik.id %}" class="delete-btn">
+                            🗑️ Obriši
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% for duznik in duznici_kor %}
+            <div class="debtor-card">
+                <div class="debtor-content">
+                    <div class="debtor-info">
+                        <h3 class="debtor-name">{{ duznik.ime_prezime }}</h3>
+                        <div class="debtor-phone">📞 {{ duznik.broj_telefona }}</div>
+                    </div>
+                    <div class="debtor-actions">
+                        <div class="debt-amount">{{ duznik.dugovanje }} RSD</div>
+                        <a href="{% url 'obrisi_duznika' duznik.id %}" class="delete-btn">
+                            🗑️ Obriši
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>Nema dužnika</h3>
+            <p>Trenutno nema registrovanih dužnika u sistemu.</p>
+        </div>
         {% endif %}
-        {% for duz in duznici %}
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{ duz.name }}</h5>
-                <h5 class="text-muted">Dug: {{duz.duguje}} RSD</h5>
-                <a class="btn btn-danger btn-sm" href="{% url 'obrisi_duznika' duz.id %}">
-                    <i class="fas fa-trash"></i>
-                </a>
-            </div>
-            <p class="mb-1">Broj: {{duz.broj_telefona}}</p>
-        </div>
-        {% endfor %}
-        {% for duz in duznici_kor %}
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{ duz.ime_prezime }}</h5>
-                <h5 class="text-muted">Dug: {{duz.dugovanje}} RSD</h5>
-                <a class="btn btn-danger btn-sm" href="{% url 'obrisi_duznika' duz.id %}">
-                    <i class="fas fa-trash"></i>
-                </a>
-            </div>
-            <p class="mb-1">Broj: {{duz.broj_telefona}}</p>
-        </div>
-        {% endfor %}
     </div>
+    {% endif %}
 </div>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const viewSelector = document.getElementById("viewSelector");
-    const appointmentsSection = document.getElementById("appointments-section");
-    const earningsSection = document.getElementById("earnings-section");
-    const selectPeriod = document.getElementById("selectPeriod");
-    const earningsRows = document.querySelectorAll("#earnings tr");
-    const zarada_30 = document.getElementById("zarada_30")
-    const zarada_7 = document.getElementById("zarada_7")
-    const zarada_1 = document.getElementById("zarada_1")
-
-    viewSelector.addEventListener("change", function () {
-        if (this.value === "appointments") {
-            appointmentsSection.style.display = "block";
-            earningsSection.style.display = "none";
-            duzniciSection.style.display = "none";
-        } else if (this.value === "duznici") {
-            appointmentsSection.style.display = "none";
-            earningsSection.style.display = "none";
-            duzniciSection.style.display = "block";
-
-        } else {
-            appointmentsSection.style.display = "none";
-            earningsSection.style.display = "block";
-            duzniciSection.style.display = "none";
-        }
-    });
-
-    function filterEarnings() {
-        selectPeriod.addEventListener("change", function () {
-            [zarada_30, zarada_7, zarada_1].forEach(table => {
-                table.style.display = "none";  // Hide all tables
-                table.style.width = "100%";    // Ensure width is retained
-            });
-    
-            // Show the selected table
-            const selectedTable = document.getElementById(this.value);
-            selectedTable.style.display = "table"; // Use "table" instead of "block"
-            selectedTable.style.width = "100%";    // Force full width
-        });
-    }
-
-    selectPeriod.addEventListener("change", filterEarnings);
-    filterEarnings();
-});
-
-</script>
 
 {% endblock %}

@@ -1,175 +1,407 @@
 {% extends 'appointment/zafrizera.html' %}
 {% block opcije %}
+
 <style>
-    .dropdown-menu {
-        max-height: 500px;
-        overflow-y: auto;
-        width: 100%;
-    }
-    .dropdown-item {
-        cursor: pointer;
-    }
-    .search-box {
-        width: 100%;
-        padding: 5px;
-        border: none;
-        border-bottom: 1px solid #ccc;
-        outline: none;
-    }
-    .burger-btn {
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
+    :root {
+        --bg-primary: #0f0f0f;
+        --bg-secondary: #1a1a1a;
+        --bg-tertiary: #2a2a2a;
+        --text-primary: #ffffff;
+        --text-secondary: #cccccc;
+        --text-muted: #888888;
+        --border-color: #333333;
+        --accent-color: #404040;
+        --success-color: #22c55e;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
     }
 
-    #User stylinggg
+    body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    .user-profile {
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        max-width: 350px;
-        margin: auto;
-      }
-  
-      .user-profile .user-header {
+    .page-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        min-height: 100vh;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 300;
         text-align: center;
-        margin-bottom: 20px;
-      }
-  
-      .user-profile .user-name {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333333;
-        margin: 0;
-      }
-  
-      .user-profile .user-phone {
-        font-size: 16px;
-        color: #666666;
-        margin: 5px 0 0;
-      }
-  
-      .user-profile .user-details {
+        margin-bottom: 3rem;
+        color: var(--text-primary);
+        letter-spacing: 1px;
+    }
+
+    .search-container {
+        background: var(--bg-secondary);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .search-input {
+        width: 100%;
+        background: var(--bg-primary);
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        background: var(--bg-tertiary);
+    }
+
+    .search-input::placeholder {
+        color: var(--text-muted);
+    }
+
+    .search-results {
+        margin-top: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+        border-radius: 10px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        display: none;
+    }
+
+    .search-result-item {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
         display: flex;
         justify-content: space-between;
-        gap: 10px;
-      }
-  
-      .user-profile .detail-card {
-        background-color: #f9f9f9;
-        border-radius: 8px;
-        padding: 15px;
-        flex: 1;
+        align-items: center;
+    }
+
+    .search-result-item:hover {
+        background: var(--bg-tertiary);
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+
+    .search-result-name {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .search-result-phone {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .search-result-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .search-result-stats {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .no-results {
+        padding: 2rem;
         text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-  
-      .user-profile .detail-card h3 {
-        font-size: 14px;
-        color: #888888;
-        margin: 0 0 10px;
-      }
-  
-      .user-profile .detail-card p {
-        font-size: 18px;
-        font-weight: bold;
-        color: #333333;
-        margin: 0;
-      }
+        color: var(--text-muted);
+        font-style: italic;
+    }
+
+    .selected-client {
+        background: var(--bg-secondary);
+        border-radius: 15px;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        margin-top: 2rem;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .client-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .client-name {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .client-phone {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .client-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .stat-card {
+        background: var(--bg-primary);
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        background: var(--bg-tertiary);
+        transform: translateY(-2px);
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-card.success .stat-number { color: var(--success-color); }
+    .stat-card.danger .stat-number { color: var(--danger-color); }
+    .stat-card.primary .stat-number { color: var(--text-primary); }
+
+    .empty-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-muted);
+    }
+
+    .empty-message h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .search-info {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .client-stats {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
-<div class="container my-4 broder">
-    <div class="d-flex align-items-center">
-        <!-- Burger Button -->
-        <div class="dropdown">
-            <button class="burger-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                ☰
-            </button>
-            <ul class="dropdown-menu">
-                <li>
-                    <input type="text" class="search-box form-control" placeholder="Pretrazi..." onkeyup="filterDropdown()">
-                </li>
-                {% for usr in users %}
-                 <li><a type="submit" class="dropdown-item" href="{% url 'opcije_klijenti' %}?user_id={{usr.id}}" onclick="selectOption(this)">{{ usr.ime_prezime }}</a></li>
-                {% endfor %}
+<div class="page-container">
+    <h1 class="page-title">Klijenti</h1>
 
-            </ul>
-        </form>
+    <div class="search-container">
+        <input 
+            type="text" 
+            class="search-input" 
+            id="searchInput"
+            placeholder="Pretražite klijente po imenu ili broju telefona..."
+            autocomplete="off"
+        >
+        <div class="search-info">Ukupno {{ count }} klijenata</div>
+        
+        <div class="search-results" id="searchResults">
+            <div class="no-results" id="noResults">
+                Počnite kucanje da pretražite klijente...
+            </div>
         </div>
-
-        <!-- Selected Option Display -->
-        <span class="ms-3" id="selected-option">Izaberite korisnika:</span>
     </div>
-</div>
-<hr>
-{% if user.is_superuser %}
-<div class="profile-view mb-5">
+
     {% if user_view %}
-    <div class="user-profile">
-        <div class="user-header">
-          <h1 class="user-name">{{user_view.ime_prezime}}</h1>
-          <p class="user-phone">{{user_view.broj_telefona}}</p>
+    <div class="selected-client">
+        <div class="client-header">
+            <h2 class="client-name">{{ user_view.ime_prezime }}</h2>
+            <div class="client-phone">
+                <i class="fas fa-phone"></i>
+                {{ user_view.broj_telefona }}
+            </div>
         </div>
-        <div class="user-details">
-          <div class="detail-card">
-            <h3>Ukupno potroseno</h3>
-            <p>{{ ukupno }} RSD</p>
-          </div>
-          <div class="detail-card">
-            <h3>Zakazanih termina</h3>
-            <p>{{ broj_termina }}</p>
-          </div>
-          <div class="detail-card">
-            <h3>Duguje</h3>
-            <p>{{user_view.dugovanje}} RSD</p>
-          </div>
+
+        <div class="client-stats">
+            {% if user.is_superuser %}
+            <div class="stat-card success">
+                <div class="stat-number">{{ ukupno|default:0 }}</div>
+                <div class="stat-label">Ukupno potrošeno (RSD)</div>
+            </div>
+            {% endif %}
+            
+            <div class="stat-card primary">
+                <div class="stat-number">{{ broj_termina|default:0 }}</div>
+                <div class="stat-label">Broj termina</div>
+            </div>
+            
+            <div class="stat-card {% if user_view.dugovanje > 0 %}danger{% else %}success{% endif %}">
+                <div class="stat-number">{{ user_view.dugovanje|default:0 }}</div>
+                <div class="stat-label">Duguje (RSD)</div>
+            </div>
         </div>
-      </div>
+    </div>
     {% else %}
-    <h3 class="p-5">Izaberite  korisnika !</h3>
+    <div class="empty-message">
+        <h3>Izaberite klijenta</h3>
+        <p>Koristite pretragu da pronađete i izaberete klijenta</p>
+    </div>
     {% endif %}
 </div>
-{% else %}
-<div class="profile-view mb-5">
-  {% if user_view %}
-  <div class="user-profile">
-      <div class="user-header">
-        <h1 class="user-name">{{user_view.ime_prezime}}</h1>
-        <p class="user-phone">{{user_view.broj_telefona}}</p>
-      </div>
-      <div class="user-details">
-        <div class="detail-card">
-          <h3>Zakazanih termina</h3>
-          <p>{{ broj_termina }}</p>
-        </div>
-        <div class="detail-card">
-          <h3>Duguje</h3>
-          <p>{{user_view.dugovanje}} RSD</p>
-        </div>
-      </div>
-    </div>
-  {% else %}
-  <h3 class="p-5">Izaberite  korisnika !</h3>
-  {% endif %}
-</div>
-{% endif %}
-<script>
-    function filterDropdown() {
-        let input = document.querySelector(".search-box");
-        let filter = input.value.toLowerCase();
-        let items = document.querySelectorAll(".dropdown-item");
 
-        items.forEach(item => {
-            let text = item.textContent || item.innerText;
-            item.style.display = text.toLowerCase().includes(filter) ? "" : "none";
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const noResults = document.getElementById('noResults');
+    
+    // Client data
+    const clients = [
+        {% for usr in users %}
+        {
+            id: '{{ usr.id }}',
+            name: '{{ usr.ime_prezime }}',
+            phone: '{{ usr.broj_telefona }}',
+            termini: {{ usr.broj_termina|default:0 }},
+            dugovanje: {{ usr.dugovanje|default:0 }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    let searchTimeout;
+
+    searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.trim().toLowerCase();
+        
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
+        
+        if (query.length === 0) {
+            searchResults.style.display = 'none';
+            return;
+        }
+
+        // Debounce search
+        searchTimeout = setTimeout(() => {
+            performSearch(query);
+        }, 200);
+    });
+
+    function performSearch(query) {
+        const filtered = clients.filter(client => 
+            client.name.toLowerCase().includes(query) || 
+            client.phone.includes(query)
+        );
+
+        displayResults(filtered, query);
+    }
+
+    function displayResults(results, query) {
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'block';
+
+        if (results.length === 0) {
+            searchResults.innerHTML = `
+                <div class="no-results">
+                    Nema rezultata za "${query}"
+                </div>
+            `;
+            return;
+        }
+
+        results.forEach(client => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'search-result-item';
+            resultItem.onclick = () => selectClient(client.id);
+            
+            resultItem.innerHTML = `
+                <div class="search-result-info">
+                    <div class="search-result-name">${highlightMatch(client.name, query)}</div>
+                    <div class="search-result-phone">${highlightMatch(client.phone, query)}</div>
+                </div>
+                <div class="search-result-stats">
+                    ${client.termini} termina | ${client.dugovanje} RSD dug
+                </div>
+            `;
+            
+            searchResults.appendChild(resultItem);
         });
     }
 
-    function selectOption(element) {
-        document.getElementById("selected-option").textContent = element.textContent;
+    function highlightMatch(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark style="background: #f59e0b; color: #000; padding: 1px 3px; border-radius: 2px;">$1</mark>');
     }
+
+    function selectClient(clientId) {
+        // Show loading state
+        searchInput.style.opacity = '0.6';
+        searchInput.disabled = true;
+        
+        // Navigate to client
+        window.location.href = `{% url 'opcije_klijenti' %}?user_id=${clientId}`;
+    }
+
+    // Hide results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-container')) {
+            searchResults.style.display = 'none';
+        }
+    });
+
+    // Focus search input on page load (if no client selected)
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if not user_view %}
+        searchInput.focus();
+        {% endif %}
+    });
+
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            this.value = '';
+            searchResults.style.display = 'none';
+        }
+    });
 </script>
+
 {% endblock %}
