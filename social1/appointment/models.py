@@ -191,3 +191,52 @@ class Duznik(models.Model):
 
     def __str__(self):
         return self.name if self.name else (self.user.ime_prezime if self.user and hasattr(self.user, 'ime_prezime') else "Nema ime")
+
+
+class Review(models.Model):
+    STAR_CHOICES = [
+        (1, '1 Zvezda'),
+        (2, '2 Zvezde'),
+        (3, '3 Zvezde'),
+        (4, '4 Zvezde'),
+        (5, '5 Zvezda'),
+    ]
+    
+    user = models.OneToOneField("Korisnik", on_delete=models.CASCADE, related_name='review')
+    rating = models.IntegerField(choices=STAR_CHOICES)
+    comment = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_approved = models.BooleanField(default=True)  # For potential moderation
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.ime_prezime} - {self.rating} zvezda"
+    
+    @property
+    def user_initials(self):
+        """Get user initials for avatar display"""
+        if self.user.ime_prezime:
+            parts = self.user.ime_prezime.strip().split()
+            if len(parts) >= 2:
+                return f"{parts[0][0].upper()}{parts[-1][0].upper()}"
+            elif len(parts) == 1:
+                return f"{parts[0][0].upper()}"
+        return "U"  # Default if no name
+    
+    @property
+    def star_range(self):
+        """Get range for displaying stars in template"""
+        return range(1, 6)
+    
+    @property
+    def filled_stars(self):
+        """Get range for filled stars"""
+        return range(1, self.rating + 1)
+    
+    @property 
+    def empty_stars(self):
+        """Get range for empty stars"""
+        return range(self.rating + 1, 6)

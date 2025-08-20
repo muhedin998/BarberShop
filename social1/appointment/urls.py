@@ -3,6 +3,7 @@ from django.urls import path, reverse_lazy
 from . import views
 from . import fcm_views
 from django.contrib.auth import views as auth_views
+from .views import views_reviews
 
 urlpatterns =[
     path('', views.zakazi, name="zakazi"),
@@ -40,6 +41,10 @@ urlpatterns =[
     path('fcm/unregister-token/', fcm_views.unregister_fcm_token, name='unregister_fcm_token'),
     path('fcm/token-status/', fcm_views.fcm_token_status, name='fcm_token_status'),
     
+    # Reviews endpoints
+    path('recenzije/', views_reviews.reviews_list, name='reviews_list'),
+    path('nova-recenzija/', views_reviews.create_review, name='create_review'),
+    path('obrisi-recenziju/<int:review_id>/', views_reviews.delete_review, name='delete_review'),
 
   
 ]

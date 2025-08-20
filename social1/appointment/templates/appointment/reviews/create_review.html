@@ -1,0 +1,255 @@
+{% extends "appointment/base.html" %}
+{% block content %}
+<br><br><br><br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h3>
+                        {% if is_update %}
+                            <i class="fa fa-edit"></i> Ažurirajte svoju recenziju
+                        {% else %}
+                            <i class="fa fa-star"></i> Dodajte recenziju
+                        {% endif %}
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="review-form">
+                        {% csrf_token %}
+                        
+                        <!-- Star Rating -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ form.rating.label }}</label>
+                            <div class="star-rating-container">
+                                <div class="star-display mb-2" id="star-display">
+                                    <span class="star" data-value="1"><i class="fa fa-star-o"></i></span>
+                                    <span class="star" data-value="2"><i class="fa fa-star-o"></i></span>
+                                    <span class="star" data-value="3"><i class="fa fa-star-o"></i></span>
+                                    <span class="star" data-value="4"><i class="fa fa-star-o"></i></span>
+                                    <span class="star" data-value="5"><i class="fa fa-star-o"></i></span>
+                                </div>
+                                <div class="rating-text text-muted mb-3" id="rating-text">
+                                    Kliknite na zvezde za ocenu
+                                </div>
+                                
+                                <!-- Hidden radio buttons -->
+                                <div style="display: none;">
+                                    {{ form.rating }}
+                                </div>
+                            </div>
+                            {% if form.rating.errors %}
+                                <div class="text-danger small">{{ form.rating.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="mb-4">
+                            <label for="{{ form.comment.id_for_label }}" class="form-label fw-bold">
+                                {{ form.comment.label }}
+                            </label>
+                            {{ form.comment }}
+                            <div class="form-text">
+                                <span id="char-count">0</span>/500 karaktera
+                            </div>
+                            {% if form.comment.errors %}
+                                <div class="text-danger small">{{ form.comment.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit buttons -->
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary flex-fill">
+                                <i class="fa fa-save"></i>
+                                {% if is_update %}Ažuriraj recenziju{% else %}Dodaj recenziju{% endif %}
+                            </button>
+                            <a href="{% url 'reviews_list' %}" class="btn btn-outline-secondary flex-fill">
+                                <i class="fa fa-arrow-left"></i> Nazad
+                            </a>
+                        </div>
+                    </form>
+
+                    {% if is_update %}
+                    <div class="mt-3 pt-3 border-top">
+                        <p class="text-muted small">
+                            <i class="fa fa-info-circle"></i>
+                            Poslednja izmena: {{ existing_review.updated_at|date:"d.m.Y H:i" }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.star-rating-container {
+    text-align: center;
+}
+
+.star {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 2px;
+}
+
+.star:hover {
+    transform: scale(1.1);
+}
+
+.star.active {
+    color: #ffc107;
+}
+
+.star.hover {
+    color: #ffc107;
+}
+
+.rating-text {
+    font-size: 1rem;
+    min-height: 24px;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#id_comment {
+    resize: vertical;
+    min-height: 120px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star');
+    const ratingText = document.getElementById('rating-text');
+    const radioButtons = document.querySelectorAll('input[name="rating"]');
+    const commentTextarea = document.getElementById('id_comment');
+    const charCount = document.getElementById('char-count');
+    
+    const ratingTexts = {
+        1: 'Vrlo loše iskustvo',
+        2: 'Loše iskustvo', 
+        3: 'Prosečno iskustvo',
+        4: 'Dobro iskustvo',
+        5: 'Odlično iskustvo'
+    };
+
+    // Initialize existing rating if updating
+    {% if existing_review %}
+    const existingRating = {{ existing_review.rating }};
+    setRating(existingRating);
+    // Also set the radio button for existing rating
+    const existingRadio = Array.from(radioButtons).find(radio => radio.value == existingRating);
+    if (existingRadio) {
+        existingRadio.checked = true;
+    }
+    {% endif %}
+
+    // Debug: Log radio buttons
+    console.log('Radio buttons found:', radioButtons.length);
+    radioButtons.forEach((radio, i) => {
+        console.log(`Radio ${i}: value=${radio.value}`);
+    });
+
+    // Star click handlers
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            const rating = index + 1;
+            console.log(`Clicked star ${index}, rating: ${rating}`);
+            setRating(rating);
+            // Set the radio button - find by value instead of index
+            const targetRadio = Array.from(radioButtons).find(radio => radio.value == rating);
+            if (targetRadio) {
+                targetRadio.checked = true;
+                console.log(`Set radio button value ${rating} to checked`);
+            } else {
+                console.error(`No radio button found with value ${rating}`);
+            }
+        });
+        
+        star.addEventListener('mouseenter', () => {
+            const rating = index + 1;
+            highlightStars(rating);
+        });
+        
+        star.addEventListener('mouseleave', () => {
+            const currentRating = getCurrentRating();
+            highlightStars(currentRating);
+        });
+    });
+
+    function setRating(rating) {
+        highlightStars(rating);
+        ratingText.textContent = ratingTexts[rating] || 'Kliknite na zvezde za ocenu';
+    }
+
+    function highlightStars(rating) {
+        stars.forEach((star, index) => {
+            const icon = star.querySelector('i');
+            if (index + 1 <= rating) {
+                icon.className = 'fa fa-star';
+                star.classList.add('active');
+            } else {
+                icon.className = 'fa fa-star-o';
+                star.classList.remove('active');
+            }
+        });
+    }
+
+    function getCurrentRating() {
+        for (let i = 0; i < radioButtons.length; i++) {
+            if (radioButtons[i].checked) {
+                return parseInt(radioButtons[i].value);
+            }
+        }
+        return 0;
+    }
+
+    // Character counter
+    function updateCharCount() {
+        const count = commentTextarea.value.length;
+        charCount.textContent = count;
+        charCount.style.color = count > 450 ? '#dc3545' : count > 400 ? '#fd7e14' : '#6c757d';
+    }
+
+    commentTextarea.addEventListener('input', updateCharCount);
+    updateCharCount(); // Initialize counter
+
+    // Form validation
+    document.getElementById('review-form').addEventListener('submit', function(e) {
+        const rating = getCurrentRating();
+        const comment = commentTextarea.value.trim();
+        
+        if (rating === 0) {
+            e.preventDefault();
+            alert('Molimo izaberite ocenu od 1 do 5 zvezda.');
+            return;
+        }
+        
+        if (comment.length === 0) {
+            e.preventDefault();
+            alert('Molimo unesite komentar.');
+            commentTextarea.focus();
+            return;
+        }
+    });
+});
+</script>
+
+{% endblock %}

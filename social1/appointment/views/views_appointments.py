@@ -3,13 +3,14 @@ from django.shortcuts import render, redirect
 from ..forms import TestForm
 from django.contrib import messages
 from datetime import datetime
-from ..models import Usluge, Frizer, Termin, Notification
+from ..models import Usluge, Frizer, Termin, Notification, Review
 from django.core.serializers import serialize
 import json
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.db.models import Avg, Count
 
 
 @login_required(redirect_field_name='user_login/')
@@ -220,6 +221,18 @@ def zakazi(request):
     max_date = (sada + timezone.timedelta(days=30)).strftime('%Y-%m-%d')
     min_date = sada.strftime('%Y-%m-%d')
     
+    # Get review data for landing page section
+    reviews = Review.objects.filter(is_approved=True).select_related('user')[:6]  # Show latest 6 reviews
+    review_stats = reviews.aggregate(
+        average_rating=Avg('rating'),
+        total_reviews=Count('id')
+    )
+    
+    if review_stats['average_rating']:
+        review_stats['average_rating'] = round(review_stats['average_rating'], 1)
+    else:
+        review_stats['average_rating'] = 0
+    
     context = {
         'viewname': viewname,
         'godina': sada.year,
@@ -232,6 +245,8 @@ def zakazi(request):
         "ls3":ls3,
         'max_date': max_date,
         'min_date': min_date,
+        'reviews': reviews,
+        'review_stats': review_stats,
     }
     return render(request, 'appointment/jqr.html', context)
 

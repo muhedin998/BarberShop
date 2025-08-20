@@ -1,0 +1,154 @@
+{% extends "appointment/base.html" %}
+{% block content %}
+<br><br><br><br>
+
+<div class="container">
+    <h2 class="w3-center mb-4">RECENZIJE KLIJENATA</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Overall Stats -->
+    {% if stats.total_reviews > 0 %}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4>Prosečna ocena</h4>
+                    <div class="display-4 text-warning">
+                        {{ stats.average_rating }}
+                        <span class="fs-3">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= stats.average_rating %}
+                                    <i class="fa fa-star text-warning"></i>
+                                {% else %}
+                                    <i class="fa fa-star-o text-muted"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <p class="text-muted">Ukupno {{ stats.total_reviews }} recenzij{{ stats.total_reviews|pluralize:"a,e,a" }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Distribucija ocena</h5>
+                    {% for star, data in star_distribution.items reversed %}
+                    <div class="d-flex align-items-center mb-1">
+                        <span class="me-2">{{ star }} <i class="fa fa-star text-warning"></i></span>
+                        <div class="progress flex-grow-1 me-2" style="height: 20px;">
+                            <div class="progress-bar bg-warning" 
+                                 style="width: {{ data.percentage }}%">
+                            </div>
+                        </div>
+                        <span class="text-muted">{{ data.count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Add Review Button (for logged in users) -->
+    {% if user.is_authenticated %}
+    <div class="text-center mb-4">
+        <a href="{% url 'create_review' %}" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Dodajte svoju recenziju
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Reviews List -->
+    <div class="row">
+        {% for review in reviews %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Avatar with initials -->
+                        <div class="review-avatar me-3">
+                            <div class="circle-avatar bg-primary text-white d-flex align-items-center justify-content-center"
+                                 style="width: 50px; height: 50px; border-radius: 50%; font-weight: bold; font-size: 18px;">
+                                {{ review.user_initials }}
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">{{ review.user.ime_prezime|default:"Anonimni korisnik" }}</h6>
+                            <div class="stars mb-1">
+                                {% for i in review.filled_stars %}
+                                    <i class="fa fa-star text-warning"></i>
+                                {% endfor %}
+                                {% for i in review.empty_stars %}
+                                    <i class="fa fa-star-o text-muted"></i>
+                                {% endfor %}
+                            </div>
+                            <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                        </div>
+                    </div>
+                    
+                    <p class="card-text">{{ review.comment }}</p>
+                    
+                    <!-- Show edit/delete options for the review owner -->
+                    {% if user == review.user %}
+                    <div class="mt-3">
+                        <a href="{% url 'create_review' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fa fa-edit"></i> Ažuriraj
+                        </a>
+                        <a href="{% url 'delete_review' review.id %}" class="btn btn-sm btn-outline-danger">
+                            <i class="fa fa-trash"></i> Obriši
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fa fa-star-o fa-3x text-muted mb-3"></i>
+                <h4>Još nema recenzija</h4>
+                <p class="text-muted">Budite prvi koji će podeliti svoje iskustvo!</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'create_review' %}" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Dodajte recenziju
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.circle-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.stars i {
+    font-size: 16px;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.progress {
+    background-color: #f8f9fa;
+}
+</style>
+
+{% endblock %}
