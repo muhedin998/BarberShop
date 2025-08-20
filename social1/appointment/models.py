@@ -107,23 +107,62 @@ class Termin(models.Model):
     vreme = models.TimeField(blank=True, null=True)
     poruka = models.CharField(max_length=250, blank=True, null=True)
     cena_termina = models.IntegerField(blank=True, null=True)
+    
+    @property
+    def effective_price(self):
+        """Returns the effective price for this appointment (cena_termina if available, otherwise calculated)"""
+        if self.cena_termina is not None:
+            return self.cena_termina
+        return self.calculate_total_price()
+    
+    def calculate_total_price(self):
+        """Calculate total price without saving"""
+        total_cena = 0
+        
+        # Add main service price
+        if self.usluga:
+            total_cena += self.usluga.cena
+        
+        # Add additional services prices
+        if self.dodatne_usluge:
+            dodatne_usluge_objects = Usluge.objects.filter(id__in=self.dodatne_usluge)
+            for dodatna_usluga in dodatne_usluge_objects:
+                total_cena += dodatna_usluga.cena
+        
+        return total_cena
+    
+    @property
+    def has_multiple_services(self):
+        """Check if appointment has additional services"""
+        return bool(self.dodatne_usluge)
+    
+    @property
+    def all_services(self):
+        """Get all services (main + additional) with their info"""
+        services = []
+        if self.usluga:
+            services.append({
+                'name': self.usluga.name,
+                'price': self.usluga.cena,
+                'is_main': True
+            })
+        
+        if self.dodatne_usluge:
+            dodatne_usluge_objects = Usluge.objects.filter(id__in=self.dodatne_usluge)
+            for usluga in dodatne_usluge_objects:
+                services.append({
+                    'name': usluga.name,
+                    'price': usluga.cena,
+                    'is_main': False
+                })
+        
+        return services
 
     def save(self, *args, **kwargs):
         if self.cena_termina is None:
-            total_cena = 0
-            
-            # Dodaj cenu glavne usluge
-            if self.usluga:
-                total_cena += self.usluga.cena
-            
-            # Dodaj cene dodatnih usluga
-            if self.dodatne_usluge:
-                dodatne_usluge_objects = Usluge.objects.filter(id__in=self.dodatne_usluge)
-                for dodatna_usluga in dodatne_usluge_objects:
-                    total_cena += dodatna_usluga.cena
-            
-            self.cena_termina = total_cena
+            self.cena_termina = self.calculate_total_price()
 
+            # Apply free appointment logic (every 15th appointment)
             if self.user and not self.user.is_superuser:
                 # Count *existing* appointments (excluding the one we're about to save)
                 previous_appointments = Termin.objects.filter(user=self.user).count()
