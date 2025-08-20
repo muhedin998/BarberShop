@@ -26,6 +26,15 @@
     <a href="https://youtube.com/@hasredin1983"><i class="fa fa-youtube-play w3-hover-opacity"  style="font-size: 1.73em; padding-right: 10px;"></i></a>
     <a href="https://vm.tiktok.com/ZMFjSnoWv/"><i class="fab fa-tiktok w3-hover-opacity"  style="font-size: 1.73em; padding-right: 10px;"></i></a>
   </div>
+  
+  <!-- Share Button attached to header -->
+  <div class="w3-display-right" style="top: 75%; transform: translateY(-25%); right: 0;">
+    <div id="floatingShareBtn" class="floating-share-btn">
+      <button onclick="shareWebsite()" class="share-btn" title="Podelite stranicu">
+        <i class="fa fa-share-alt"></i>
+      </button>
+    </div>
+  </div>
 </header>
 
 <!-- About Section -->
@@ -419,5 +428,196 @@
     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d498.57833048513305!2d20.50159454077727!3d43.12535684819401!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13532dedac606f15%3A0xd3416630345bc298!2sMuski%20Frizerski%20Salon%20%22HASKO%22!5e1!3m2!1sen!2srs!4v1663260916062!5m2!1sen!2srs" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
 </div>
+
+<!-- Floating Share Button Styles -->
+<style>
+.floating-share-btn {
+  position: relative;
+}
+
+.share-btn {
+  background: rgba(52, 152, 219, 0.65);
+  border: none;
+  border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.share-btn:hover {
+  background: rgba(41, 128, 185, 0.85);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.share-btn:active {
+  transform: scale(0.95);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .share-btn {
+    width: 70px;
+    height: 70px;
+    font-size: 22px;
+  }
+}
+</style>
+
+<!-- Floating Share Button JavaScript -->
+<script>
+// Share functionality
+function shareWebsite() {
+  const url = window.location.href;
+  const title = 'Frizerski salon HASKO - Novi Pazar';
+  const text = 'Posetite frizerski salon HASKO u Novom Pazaru. Više od dvadeset godina iskustva!';
+  
+  // Check if Web Share API is supported (mobile browsers)
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: text,
+      url: url
+    }).catch((error) => {
+      console.log('Error sharing:', error);
+      fallbackShare(url);
+    });
+  } else {
+    // Fallback for desktop browsers
+    fallbackShare(url);
+  }
+}
+
+// Fallback share function for browsers without Web Share API
+function fallbackShare(url) {
+  // Copy URL to clipboard
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showShareMessage('Link kopiran u clipboard!');
+    }).catch(() => {
+      showShareOptions(url);
+    });
+  } else {
+    showShareOptions(url);
+  }
+}
+
+// Show share options modal
+function showShareOptions(url) {
+  const shareText = encodeURIComponent('Posetite frizerski salon HASKO u Novom Pazaru!');
+  const shareUrl = encodeURIComponent(url);
+  
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  `;
+  
+  modal.innerHTML = `
+    <div style="
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    ">
+      <h3 style="margin-bottom: 20px; color: #333;">Podelite stranicu</h3>
+      <div style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank" 
+           style="background: #3b5998; color: white; padding: 12px 15px; border-radius: 8px; text-decoration: none;">
+          <i class="fa fa-facebook" style="font-size: 20px;"></i>
+        </a>
+        <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank"
+           style="background: #1da1f2; color: white; padding: 12px 15px; border-radius: 8px; text-decoration: none;">
+          <i class="fa fa-twitter" style="font-size: 20px;"></i>
+        </a>
+        <a href="https://wa.me/?text=${shareText}%20${shareUrl}" target="_blank"
+           style="background: #25d366; color: white; padding: 12px 15px; border-radius: 8px; text-decoration: none;">
+          <i class="fa fa-whatsapp" style="font-size: 20px;"></i>
+        </a>
+        <button onclick="copyToClipboard('${url}')" 
+                style="background: #6c757d; color: white; padding: 12px 15px; border: none; border-radius: 8px; cursor: pointer;">
+          <i class="fa fa-copy" style="font-size: 20px;"></i>
+        </button>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" 
+              style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;">
+        Zatvori
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close modal when clicking outside
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+}
+
+// Copy to clipboard function
+function copyToClipboard(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
+  showShareMessage('Link kopiran u clipboard!');
+  
+  // Close modal
+  const modal = document.querySelector('div[style*="rgba(0,0,0,0.5)"]');
+  if (modal) modal.remove();
+}
+
+// Show share message
+function showShareMessage(message) {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    z-index: 2001;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+// No scroll detection needed - button naturally scrolls with header
+</script>
 
 {% endblock %}
