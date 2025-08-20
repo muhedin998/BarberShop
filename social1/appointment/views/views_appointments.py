@@ -93,18 +93,39 @@ def potvrdi(request):
             else:
                 messages.error(request, "Greska na serveru, pokusajte ponovo", extra_tags='danger')
 
-    # Pripremi podatke o dodatnim uslugama za prikaz
+    # Create a temporary Termin instance to calculate pricing
+    temp_termin = Termin(
+        usluga_id=usluga,
+        dodatne_usluge=dodatne_usluge or []
+    )
+    
+    # Get service information using the new model methods
+    all_services = temp_termin.all_services
+    ukupna_cena = temp_termin.calculate_total_price()
+    
+    # Prepare data for template compatibility
     dodatne_usluge_nazivi = []
-    if dodatne_usluge:
-        dodatne_usluge_objekti = Usluge.objects.filter(id__in=dodatne_usluge)
-        dodatne_usluge_nazivi = [usluga.name for usluga in dodatne_usluge_objekti]
+    dodatne_usluge_info = []
+    glavna_usluga_info = None
+    
+    for service in all_services:
+        if service['is_main']:
+            glavna_usluga_info = {'name': service['name'], 'cena': service['price']}
+        else:
+            dodatne_usluge_nazivi.append(service['name'])
+            dodatne_usluge_info.append({'name': service['name'], 'cena': service['price']})
 
     context = {
         'filtered_list': json.dumps(list(termini_2)),
         'viewname': viewname,
         'form':form,
         'duration':duration,
-        'dodatne_usluge_nazivi': dodatne_usluge_nazivi
+        'dodatne_usluge_nazivi': dodatne_usluge_nazivi,
+        'dodatne_usluge_info': dodatne_usluge_info,
+        'glavna_usluga_info': glavna_usluga_info,
+        'ukupna_cena': ukupna_cena,
+        'has_multiple_services': temp_termin.has_multiple_services,
+        'all_services': all_services
 
     }
     return render(request, 'appointment/zakazivanje.html',context)

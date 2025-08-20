@@ -77,7 +77,7 @@
           </tr>
           {% for usl in termini %}
               {% if user.is_superuser %}
-                  <tr class="{% if usl.cena_termina == 0 %} bg-warning {% endif %}" onclick="openModal('{{usl.user.id}}', '{{usl.usluga.cena}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{{usl.user.ime_prezime}}', '{{usl.user.broj_telefona}}')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  <tr class="{% if usl.cena_termina == 0 %} bg-warning {% endif %}" onclick="openModal('{{usl.user.id}}', '{{usl.effective_price}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{{usl.user.ime_prezime}}', '{{usl.user.broj_telefona}}')" data-bs-toggle="modal" data-bs-target="#exampleModal">
               {% else %}
                   <tr>
               {% endif %}

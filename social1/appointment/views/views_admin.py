@@ -112,12 +112,8 @@ def opcije_klijenti(request):
         broj_termina = Termin.objects.filter(user=usr)
         ukupno = 0
         for termin in broj_termina:
-            ukupno += termin.cena_termina
-        print(ukupno)
+            ukupno += termin.effective_price
         usr.refresh_from_db()
-        print(f"SQL Value: {usr.dugovanje} (Type: {type(usr.dugovanje)})")
-        print(usr.id)
-        print(f"Dugovanje in other view: {usr.dugovanje}")  # Check value
         context = {
             'users': users,
             'count': count,

@@ -42,6 +42,14 @@
                 <div id="dodatne-usluge-container">
                     <!-- Dodatni select-ovi za usluge će se dodavati ovde -->
                 </div>
+                
+                <div id="cene-pregled" style="display: none; margin-top: 15px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
+                    <strong>Pregled cena:</strong>
+                    <div id="glavna-usluga-cena"></div>
+                    <div id="dodatne-usluge-cene"></div>
+                    <hr style="margin: 10px 0;">
+                    <div id="ukupna-cena" style="font-weight: bold; color: #007bff;"></div>
+                </div>
                 <br>
                 <label><br>Izaberite frizera: </label>
                 <select class='w3-select' name="frizer" required="required" id="id_frizer" style="-webkit-appearance: none;">
@@ -82,15 +90,31 @@
                 <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="text" name="broj_telefona" > 
             {% endif %}
 
-            {% if dodatne_usluge_nazivi %}
+            {% if has_multiple_services %}
             <div class="alert alert-info">
-                <strong>Dodatne usluge:</strong>
-                <ul style="margin-bottom: 0;">
-                {% for naziv in dodatne_usluge_nazivi %}
-                    <li>{{ naziv }}</li>
+                <strong>Odabrane usluge:</strong>
+                <ul style="margin-bottom: 10px;">
+                {% for service in all_services %}
+                    <li>
+                        {% if service.is_main %}
+                            <strong>{{ service.name }}</strong> (glavna) - {{ service.price }} RSD
+                        {% else %}
+                            {{ service.name }} (dodatna) - {{ service.price }} RSD
+                        {% endif %}
+                    </li>
                 {% endfor %}
                 </ul>
                 <small class="text-muted">Vreme termina se računa samo za glavnu uslugu.</small>
+            </div>
+            {% elif glavna_usluga_info %}
+            <div class="alert alert-info">
+                <strong>Odabrana usluga:</strong> {{ glavna_usluga_info.name }} - {{ glavna_usluga_info.cena }} RSD
+            </div>
+            {% endif %}
+            
+            {% if ukupna_cena %}
+            <div class="alert alert-success">
+                <strong>Ukupna cena termina: {{ ukupna_cena }} RSD</strong>
             </div>
             {% endif %}
             
@@ -139,6 +163,69 @@
 
     let dodatneUslugeCount = 0;
     const MAX_DODATNE_USLUGE = 3;
+    let uslugeData = {}; // Object to store service data (id -> {name, price})
+
+    // Initialize service data from the select options
+    function inicijalizujUslugeData() {
+        const glavniSelect = document.getElementById('id_usluga');
+        const options = glavniSelect.querySelectorAll('option[value]');
+        
+        options.forEach(option => {
+            if (option.value) {
+                const fullText = option.textContent.trim();
+                const parts = fullText.split(' - ');
+                if (parts.length >= 2) {
+                    const name = parts[0];
+                    const price = parseInt(parts[1]) || 0;
+                    uslugeData[option.value] = { name: name, price: price };
+                }
+            }
+        });
+    }
+
+    // Update price display
+    function azurirajCene() {
+        const glavnaUsluga = document.getElementById('id_usluga').value;
+        const cenePregled = document.getElementById('cene-pregled');
+        const glavnaUslugaCena = document.getElementById('glavna-usluga-cena');
+        const dodatneUslugeCene = document.getElementById('dodatne-usluge-cene');
+        const ukupnaCena = document.getElementById('ukupna-cena');
+        
+        if (!glavnaUsluga || !cenePregled) {
+            if (cenePregled) cenePregled.style.display = 'none';
+            return;
+        }
+        
+        let ukupno = 0;
+        let hasAdditionalServices = false;
+        
+        // Display main service price
+        if (uslugeData[glavnaUsluga]) {
+            glavnaUslugaCena.innerHTML = `<strong>Glavna usluga:</strong> ${uslugeData[glavnaUsluga].name} - ${uslugeData[glavnaUsluga].price} RSD`;
+            ukupno += uslugeData[glavnaUsluga].price;
+        }
+        
+        // Display additional services prices
+        dodatneUslugeCene.innerHTML = '';
+        const dodatneUslugeSelects = document.querySelectorAll('[id^=\"dodatna_usluga_\"]');
+        let additionalServicesHTML = '';
+        
+        dodatneUslugeSelects.forEach((select, index) => {
+            if (select.value && uslugeData[select.value]) {
+                additionalServicesHTML += `<div>Dodatna usluga ${index + 1}: ${uslugeData[select.value].name} - ${uslugeData[select.value].price} RSD</div>`;
+                ukupno += uslugeData[select.value].price;
+                hasAdditionalServices = true;
+            }
+        });
+        
+        if (hasAdditionalServices) {
+            dodatneUslugeCene.innerHTML = '<strong>Dodatne usluge:</strong><br>' + additionalServicesHTML;
+        }
+        
+        // Display total with emphasis
+        ukupnaCena.innerHTML = `<strong style="color: #28a745; font-size: 1.1em;">UKUPNA CENA: ${ukupno} RSD</strong>`;
+        cenePregled.style.display = ukupno > 0 ? 'block' : 'none';
+    }
 
     function pokaziDodajUsluguDugme() {
         const glavnaUsluga = document.getElementById('id_usluga').value;
@@ -154,6 +241,7 @@
             dodatneUslugeCount = 0;
             azurirajDugme();
         }
+        azurirajCene(); // Update prices when main service changes
     }
 
     function dodajUsluguSelect() {
@@ -194,6 +282,9 @@
         // Dodaj opcije iz glavnog select-a
         select.innerHTML = glavniSelect.innerHTML;
         
+        // Add event listener for price updates
+        select.addEventListener('change', azurirajCene);
+        
         // Kreiraj dugme za uklanjanje
         const ukloniBtn = document.createElement('button');
         ukloniBtn.type = 'button';
@@ -211,6 +302,7 @@
         container.appendChild(wrapperDiv);
         
         azurirajDugme();
+        azurirajCene(); // Update prices when new service is added
     }
 
     function ukloniDodatnuUslugu(id) {
@@ -221,6 +313,7 @@
             const postojece = document.querySelectorAll('.dodatna-usluga-wrapper');
             dodatneUslugeCount = postojece.length;
             azurirajDugme();
+            azurirajCene(); // Update prices when service is removed
         }
     }
 
@@ -233,7 +326,7 @@
         }
     }
 
-    // Add date validation for 30-day limit
+    // Add date validation for 30-day limit and initialize price system
     document.addEventListener('DOMContentLoaded', function() {
         const dateInput = document.getElementById('datum');
         
@@ -248,6 +341,15 @@
                 this.value = '';
             }
         });
+        
+        // Initialize service data and price system
+        inicijalizujUslugeData();
+        
+        // Add event listener to main service select
+        const glavnaUslugaSelect = document.getElementById('id_usluga');
+        if (glavnaUslugaSelect) {
+            glavnaUslugaSelect.addEventListener('change', pokaziDodajUsluguDugme);
+        }
     });
 
 </script>
