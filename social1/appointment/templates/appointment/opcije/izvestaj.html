@@ -284,6 +284,30 @@
         font-size: 2rem;
     }
 
+    .barber-selector {
+        background: #f8fafc;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .barber-selector .period-btn {
+        background: white;
+        margin: 0 0.25rem;
+        font-size: 1.3rem;
+        padding: 0.8rem 1.2rem;
+    }
+
+    .current-barber {
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.3rem;
+    }
+
     @media (max-width: 768px) {
         .reports-container {
             padding: 1rem;
@@ -303,8 +327,22 @@
             gap: 1rem;
         }
         
+        .card-header > div {
+            flex-direction: column !important;
+            width: 100%;
+            gap: 1rem !important;
+        }
+        
         .period-selector {
             width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .period-btn {
+            flex: 1;
+            min-width: auto;
+            padding: 0.8rem 1rem !important;
+            font-size: 1.2rem !important;
         }
         
         .debtor-content {
@@ -324,6 +362,12 @@
     <div class="page-header">
         <h1 class="page-title">Izveštaji</h1>
         <p class="page-subtitle">Pregled zarade i dužnika</p>
+        <!-- DEBUG INFO - Remove this after testing -->
+        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+            <small>
+                Debug: Username = "{{ debug_username }}" | Is Staff = {{ debug_staff_check }} | All Barbers Count = {{ all_barbers|length }}
+            </small>
+        </div>
     </div>
 
     <!-- Navigation Tabs -->
@@ -347,7 +391,21 @@
     <div class="stats-grid">
         <div class="stat-card success">
             <div class="stat-number">{{ total_earnings|floatformat:0 }}</div>
-            <div class="stat-label">Ukupna zarada ({{ period_days }} dana)</div>
+            <div class="stat-label">
+                Ukupna zarada ({{ period_days }} dana)
+                {% if is_staff and selected_barber != 'all' %}
+                    <br><small>
+                        {% if selected_barber == 'hasredin' %}Hasredin Bećirović
+                        {% elif selected_barber == 'muvehid' %}Muvehid Bećirović
+                        {% elif selected_barber == 'admin' %}Admin
+                        {% endif %}
+                    </small>
+                {% elif is_hasredin %}
+                    <br><small>Hasredin Bećirović</small>
+                {% elif is_muvehid %}
+                    <br><small>Muvehid Bećirović</small>
+                {% endif %}
+            </div>
         </div>
         <div class="stat-card">
             <div class="stat-number">{{ avg_daily_earnings|floatformat:0 }}</div>
@@ -362,11 +420,33 @@
     <div class="content-card">
         <div class="card-header">
             <h2 class="card-title">Dnevna zarada</h2>
-            <div class="period-selector">
-                <a href="?view=earnings&period=1" class="period-btn {% if current_period == '1' %}active{% endif %}">1 dan</a>
-                <a href="?view=earnings&period=7" class="period-btn {% if current_period == '7' %}active{% endif %}">7 dana</a>
-                <a href="?view=earnings&period=30" class="period-btn {% if current_period == '30' %}active{% endif %}">30 dana</a>
-                <a href="?view=earnings&period=90" class="period-btn {% if current_period == '90' %}active{% endif %}">90 dana</a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                {% if is_staff %}
+                <!-- Barber selector for staff -->
+                <div class="period-selector">
+                    {% for barber in all_barbers %}
+                    <a href="?view=earnings&period={{ current_period }}&barber={{ barber.id }}" 
+                       class="period-btn {% if selected_barber == barber.id %}active{% endif %}">
+                        {{ barber.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="current-barber">
+                    🪒 Moja zarada: 
+                    {% if is_hasredin %}Hasredin Bećirović
+                    {% elif is_muvehid %}Muvehid Bećirović
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Period selector -->
+                <div class="period-selector">
+                    <a href="?view=earnings&period=1&barber={{ selected_barber }}" class="period-btn {% if current_period == '1' %}active{% endif %}">1 dan</a>
+                    <a href="?view=earnings&period=7&barber={{ selected_barber }}" class="period-btn {% if current_period == '7' %}active{% endif %}">7 dana</a>
+                    <a href="?view=earnings&period=30&barber={{ selected_barber }}" class="period-btn {% if current_period == '30' %}active{% endif %}">30 dana</a>
+                    <a href="?view=earnings&period=90&barber={{ selected_barber }}" class="period-btn {% if current_period == '90' %}active{% endif %}">90 dana</a>
+                </div>
             </div>
         </div>
         
@@ -376,14 +456,27 @@
                 <thead>
                     <tr>
                         <th>Datum</th>
-                        <th style="text-align: right;">Zarada (RSD)</th>
+                        {% if is_staff and selected_barber == 'all' %}
+                        <th style="text-align: center;">Detaljno po frizerima</th>
+                        {% endif %}
+                        <th style="text-align: right;">Ukupna zarada (RSD)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for entry in earnings_data %}
                     <tr>
                         <td>{{ entry.datum|date:"d.m.Y" }}</td>
-                        <td style="text-align: right; font-weight: 600;">
+                        {% if is_staff and selected_barber == 'all' %}
+                        <td style="padding: 1rem;">
+                            {% for barber, amount in entry.barber_breakdown.items %}
+                            <div style="display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="font-size: 1.1rem;">{{ barber }}:</span>
+                                <span style="font-weight: 600; color: var(--success-color);">{{ amount|floatformat:0 }} RSD</span>
+                            </div>
+                            {% endfor %}
+                        </td>
+                        {% endif %}
+                        <td style="text-align: right; font-weight: 700; font-size: 1.4rem; color: var(--success-color);">
                             {{ entry.total_earnings|floatformat:0 }}
                         </td>
                     </tr>
