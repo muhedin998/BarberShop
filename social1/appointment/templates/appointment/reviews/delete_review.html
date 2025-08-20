@@ -1,0 +1,71 @@
+{% extends "appointment/base.html" %}
+{% block content %}
+<br><br><br><br>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header text-center bg-danger text-white">
+                    <h3><i class="fa fa-trash"></i> Brisanje recenzije</h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fa fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <h5>Da li ste sigurni da želite da obrišete svoju recenziju?</h5>
+                        <p class="text-muted">Ova akcija se ne može poništiti.</p>
+                    </div>
+
+                    <!-- Review preview -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="circle-avatar bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                                     style="width: 40px; height: 40px; border-radius: 50%; font-weight: bold;">
+                                    {{ review.user_initials }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">{{ review.user.ime_prezime }}</h6>
+                                    <div class="stars">
+                                        {% for i in review.filled_stars %}
+                                            <i class="fa fa-star text-warning"></i>
+                                        {% endfor %}
+                                        {% for i in review.empty_stars %}
+                                            <i class="fa fa-star-o text-muted"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mb-0">{{ review.comment }}</p>
+                            <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
+                        </div>
+                    </div>
+
+                    <form method="post" class="d-flex gap-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger flex-fill">
+                            <i class="fa fa-trash"></i> Da, obriši recenziju
+                        </button>
+                        <a href="{% url 'reviews_list' %}" class="btn btn-outline-secondary flex-fill">
+                            <i class="fa fa-arrow-left"></i> Ne, vrati se nazad
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.circle-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.stars i {
+    font-size: 14px;
+}
+</style>
+
+{% endblock %}

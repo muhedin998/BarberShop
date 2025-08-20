@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Korisnik, Termin
+from .models import Korisnik, Termin, Review
 import datetime as dt
 #import django.contrib.auth.password_validation.CommonPasswordValidator
 
@@ -131,4 +131,32 @@ class TestForm(forms.ModelForm):
     #         if visible.name == 'frizer' or visible.name == 'usluga':
     #             #print(visible.name)
     #             visible.field.widget.attrs['class'] = 'w3-select'
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.RadioSelect(
+                attrs={'class': 'star-rating'},
+                choices=Review.STAR_CHOICES
+            ),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Podelite svoje iskustvo sa nama...',
+                'maxlength': 500
+            })
+        }
+        labels = {
+            'rating': 'Ocena (1-5 zvezda)',
+            'comment': 'Komentar'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super(ReviewForm, self).__init__(*args, **kwargs)
+        # Make rating field required
+        self.fields['rating'].required = True
+        self.fields['comment'].required = True
 
