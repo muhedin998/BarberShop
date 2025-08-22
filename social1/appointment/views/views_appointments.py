@@ -25,6 +25,26 @@ def potvrdi(request):
     duration = Usluge.objects.get(pk=usluga).duzina.total_seconds()
     termini = Termin.objects.filter(frizer=frizer,datum=datum)
     termini_2 = []
+    
+    # Calculate loyalty message for second step
+    try:
+        current_appointments = Termin.objects.filter(user=request.user).count()
+        next_appointment_number = current_appointments + 1
+        
+        # Calculate appointments remaining until next free appointment
+        # Free appointments are: 15th, 30th, 45th, etc.
+        if next_appointment_number % 15 == 0 and next_appointment_number > 0:
+            # Next appointment is free
+            loyalty_message = f"🎁 Čestitamo! Vaš sledeći termin (#{next_appointment_number}) je BESPLATAN!"
+        else:
+            # Calculate how many more appointments needed
+            appointments_until_free = 15 - (current_appointments % 15)
+            if appointments_until_free == 1:
+                loyalty_message = f"⭐ Još samo 1 termin do besplatnog! (trenutno imate {current_appointments} termina)"
+            else:
+                loyalty_message = f"📊 Još {appointments_until_free} termina do besplatnog! (trenutno imate {current_appointments} termina)"
+    except Exception as e:
+        loyalty_message = "Prijavite se da vidite informacije o besplatnim terminima"
 
     try:
         ter = f"{termini[0].vreme}".split(":")
@@ -126,7 +146,8 @@ def potvrdi(request):
         'glavna_usluga_info': glavna_usluga_info,
         'ukupna_cena': ukupna_cena,
         'has_multiple_services': temp_termin.has_multiple_services,
-        'all_services': all_services
+        'all_services': all_services,
+        'termin_counter': loyalty_message
 
     }
     return render(request, 'appointment/zakazivanje.html',context)
@@ -143,12 +164,27 @@ def termin(request):
     is_next_free = False
 
     try:
-        termin_counter = Termin.objects.filter(user=request.user).count() + 1
+        current_appointments = Termin.objects.filter(user=request.user).count()
+        next_appointment_number = current_appointments + 1
+        
+        # Calculate appointments remaining until next free appointment
+        # Free appointments are: 15th, 30th, 45th, etc.
+        if next_appointment_number % 15 == 0 and next_appointment_number > 0:
+            # Next appointment is free
+            is_next_free = f"🎁 Čestitamo! Vaš sledeći termin (#{next_appointment_number}) je BESPLATAN!"
+        else:
+            # Calculate how many more appointments needed
+            appointments_until_free = 15 - (current_appointments % 15)
+            if appointments_until_free == 1:
+                is_next_free = f"⭐ Još samo 1 termin do besplatnog! (trenutno imate {current_appointments} termina)"
+            else:
+                is_next_free = f"📊 Još {appointments_until_free} termina do besplatnog! (trenutno imate {current_appointments} termina)"
+            
+        termin_counter = next_appointment_number
     except Exception as e:
         termin_counter = 0
+        is_next_free = "Prijavite se da vidite informacije o besplatnim terminima"
         print("User not logged in")
-
-    is_next_free = "Sledeci termin je besplatan !" if (termin_counter % 15 == 0) else f"Još  {15 - termin_counter % 15} zakazivanja do besplatnog šišanja!"
 
     print(termin_counter)
 

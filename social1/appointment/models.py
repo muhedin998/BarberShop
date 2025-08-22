@@ -16,6 +16,7 @@ class Korisnik(AbstractUser):
 class Frizer(models.Model):
     name = models.CharField(max_length=250, default='Izaberite Frizera')
     image = models.ImageField(null=True, blank=True, upload_to="images/")
+    phone = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.name 
@@ -24,9 +25,10 @@ class Usluge(models.Model):
     name = models.CharField(max_length=250, default="Izaberite Uslugu")
     cena = models.IntegerField()
     duzina = models.DurationField(default=timedelta)
+    slika = models.ImageField(upload_to="images/usluga/", null=True, blank=True)
 
     def __str__(self):
-        return F"{self.name} - {self.cena}"
+            return F"{self.name}"
 
 class FCMToken(models.Model):
     user = models.ForeignKey("Korisnik", on_delete=models.CASCADE)

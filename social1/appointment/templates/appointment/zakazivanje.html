@@ -13,7 +13,21 @@
 
 {% endif %}
 
-    <h2 class="w3-center bg-danger text-white my-3 px-3">{{ termin_counter   }}</h2>
+    <div class="loyalty-info-container">
+        {% if "BESPLATAN" in termin_counter %}
+            <div class="loyalty-badge free-next">
+                {{ termin_counter }}
+            </div>
+        {% elif "1 termin do" in termin_counter %}
+            <div class="loyalty-badge almost-free">
+                {{ termin_counter }}
+            </div>
+        {% else %}
+            <div class="loyalty-badge regular">
+                {{ termin_counter }}
+            </div>
+        {% endif %}
+    </div>
 
     <div class="mb-3 row justify-content-center ">
     <br>
@@ -24,14 +38,51 @@
         <form method="post" class="w3-margin">
             {% csrf_token %}
             <label>Glavna usluga: </label>
-            <select class='w3-select' name="usluga" required="required" id="id_usluga" style="-webkit-appearance: none;" onchange="pokaziDodajUsluguDugme()">
+            <!-- Hidden actual select for form submission -->
+            <select name="usluga" required="required" id="id_usluga" style="display: none;">
                 <option selected disabled value=""></option>
                 {% with value=form.usluga.value %}
                 {% for value in form.usluga.field.choices.queryset %}
                 <option title="{{value}}" value="{{ value.id }}"{% if value.id == 15 or value.id == 14 or value.id == 13 %}disabled{% endif %}>{{ value }}</option>
                 {% endfor %}
                 {% endwith %}
-                </select>
+            </select>
+            
+            <!-- Custom dropdown for Usluga -->
+            <div class="custom-select-container">
+                <div class="custom-select-trigger" id="usluga-trigger" onclick="toggleDropdown('usluga')">
+                    <span id="usluga-selected">Izaberite uslugu...</span>
+                    <div class="custom-select-arrow">
+                        <i class="fa fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="custom-select-dropdown" id="usluga-dropdown">
+                    {% for value in form.usluga.field.choices.queryset %}
+                    {% if value.id != 15 and value.id != 14 and value.id != 13 %}
+                    <div class="custom-select-option" data-value="{{ value.id }}" onclick="selectOption('usluga', '{{ value.id }}', '{{ value }}')">
+                        <div class="option-content">
+                            <div class="option-left">
+                                <div class="option-avatar service-avatar">
+                                    {% if value.slika %}
+                                        <img src="{{ value.slika.url }}" alt="{{ value.name }}" class="avatar-image">
+                                    {% else %}
+                                        <i class="fa fa-scissors"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="option-info">
+                                    <span class="option-name">{{ value }}</span>
+                                    <span class="option-duration">{% if value.duzina %}{% widthratio value.duzina.total_seconds 60 1 %}{% else %}30{% endif %} min</span>
+                                </div>
+                            </div>
+                            <div class="option-right">
+                                <span class="option-price">{{ value.cena }} RSD</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
                 
                 <div id="dodaj-uslugu-section" style="display: none; margin-top: 15px;">
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="dodaj-uslugu-btn" onclick="dodajUsluguSelect()">
@@ -52,7 +103,8 @@
                 </div>
                 <br>
                 <label><br>Izaberite frizera: </label>
-                <select class='w3-select' name="frizer" required="required" id="id_frizer" style="-webkit-appearance: none;">
+                <!-- Hidden actual select for form submission -->
+                <select name="frizer" required="required" id="id_frizer" style="display: none;">
                     <option selected disabled value=""></option>
                     {% with value=form.frizer.value %}
                     {% for value in form.frizer.field.choices.queryset %}
@@ -66,6 +118,65 @@
                     {% endfor %}
                     {% endwith %}
                 </select>
+                
+                <!-- Custom dropdown for Frizer -->
+                <div class="custom-select-container">
+                    <div class="custom-select-trigger" id="frizer-trigger" onclick="toggleDropdown('frizer')">
+                        <span id="frizer-selected">Izaberite frizera...</span>
+                        <div class="custom-select-arrow">
+                            <i class="fa fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="custom-select-dropdown" id="frizer-dropdown">
+                        {% for value in form.frizer.field.choices.queryset %}
+                        {% if value.id == 4 %}
+                            {% if user.is_superuser %}
+                            <div class="custom-select-option" data-value="{{ value.id }}" onclick="selectOption('frizer', '{{ value.id }}', '{{ value }}')">
+                                <div class="option-content">
+                                    <div class="option-left">
+                                        <div class="option-avatar barber-avatar">
+                                            {% if value.image %}
+                                                <img src="{{ value.image.url }}" alt="{{ value.name }}" class="avatar-image">
+                                            {% else %}
+                                                <span class="avatar-initials">{{ value.name|slice:":2"|upper }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="option-info">
+                                            <span class="option-name">{{ value }}</span>
+                                            <span class="option-status">Admin - Dostupan</span>
+                                        </div>
+                                    </div>
+                                    <div class="option-right">
+                                        <span class="option-badge admin-badge">Admin</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <div class="custom-select-option" data-value="{{ value.id }}" onclick="selectOption('frizer', '{{ value.id }}', '{{ value }}')">
+                            <div class="option-content">
+                                <div class="option-left">
+                                    <div class="option-avatar barber-avatar">
+                                        {% if value.image %}
+                                            <img src="{{ value.image.url }}" alt="{{ value.name }}" class="avatar-image">
+                                        {% else %}
+                                            <span class="avatar-initials">{{ value.name|slice:":2"|upper }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="option-info">
+                                        <span class="option-name">{{ value }}</span>
+                                        <span class="option-status">Sledeci slobodan: Danas 14:30</span>
+                                    </div>
+                                </div>
+                                <div class="option-right">
+                                    <span class="option-badge barber-badge">Frizer</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
                 <label><br>Izaberite datum: </label><br>
                 <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="date" name="datum" id="datum" min="{{ min_date }}" max="{{ max_date }}" style="border: none; "><br>
                 <small class="text-muted">Možete zakazati termin maksimalno 30 dana unapred</small><br><br>
@@ -165,22 +276,24 @@
     const MAX_DODATNE_USLUGE = 3;
     let uslugeData = {}; // Object to store service data (id -> {name, price})
 
-    // Initialize service data from the select options
+    // Initialize service data from the Django template data
     function inicijalizujUslugeData() {
-        const glavniSelect = document.getElementById('id_usluga');
-        const options = glavniSelect.querySelectorAll('option[value]');
+        // Initialize with data from Django template
+        uslugeData = {
+            {% for value in form.usluga.field.choices.queryset %}
+            {% if value.id != 15 and value.id != 14 and value.id != 13 %}
+            '{{ value.id }}': {
+                name: '{{ value.name|escapejs }}',
+                price: {{ value.cena }},
+                duration: {% if value.duzina %}{% widthratio value.duzina.total_seconds 60 1 %}{% else %}30{% endif %},
+                slika: {% if value.slika %}'{{ value.slika.url }}'{% else %}null{% endif %}
+            }{% if not forloop.last %},{% endif %}
+            {% endif %}
+            {% endfor %}
+        };
         
-        options.forEach(option => {
-            if (option.value) {
-                const fullText = option.textContent.trim();
-                const parts = fullText.split(' - ');
-                if (parts.length >= 2) {
-                    const name = parts[0];
-                    const price = parseInt(parts[1]) || 0;
-                    uslugeData[option.value] = { name: name, price: price };
-                }
-            }
-        });
+        // Make it globally available
+        window.uslugeData = uslugeData;
     }
 
     // Update price display
@@ -244,6 +357,136 @@
         azurirajCene(); // Update prices when main service changes
     }
 
+    function createCustomSelectForAdditional(selectId) {
+        // Create custom select container
+        const customSelectContainer = document.createElement('div');
+        customSelectContainer.className = 'custom-select-container';
+        customSelectContainer.style.flex = '1';
+        customSelectContainer.style.marginBottom = '0';
+        
+        // Create custom select trigger
+        const customSelectTrigger = document.createElement('div');
+        customSelectTrigger.className = 'custom-select-trigger';
+        customSelectTrigger.id = `${selectId}-trigger`;
+        customSelectTrigger.onclick = () => toggleDropdown(selectId);
+        
+        const selectedSpan = document.createElement('span');
+        selectedSpan.id = `${selectId}-selected`;
+        selectedSpan.textContent = 'Izaberite dodatnu uslugu...';
+        
+        const arrowDiv = document.createElement('div');
+        arrowDiv.className = 'custom-select-arrow';
+        arrowDiv.innerHTML = '<i class="fa fa-chevron-down"></i>';
+        
+        customSelectTrigger.appendChild(selectedSpan);
+        customSelectTrigger.appendChild(arrowDiv);
+        
+        // Create custom select dropdown
+        const customSelectDropdown = document.createElement('div');
+        customSelectDropdown.className = 'custom-select-dropdown';
+        customSelectDropdown.id = `${selectId}-dropdown`;
+        
+        // Create options from the main select element (same data source)
+        const mainSelect = document.getElementById('id_usluga');
+        const mainOptions = mainSelect.querySelectorAll('option');
+        
+        mainOptions.forEach(option => {
+            if (!option.value || option.disabled) return; // Skip empty and disabled options
+            
+            const serviceId = option.value;
+            const serviceName = option.textContent.trim();
+            
+            // Skip disabled services
+            if (serviceId === '13' || serviceId === '14' || serviceId === '15') return;
+            
+            const customOption = document.createElement('div');
+            customOption.className = 'custom-select-option';
+            customOption.setAttribute('data-value', serviceId);
+            customOption.onclick = () => selectOptionAdditional(selectId, serviceId, serviceName);
+            
+            // Get service data if available, otherwise use defaults
+            const serviceData = window.uslugeData && window.uslugeData[serviceId];
+            const duration = serviceData ? serviceData.duration : '30'; // default duration
+            const price = serviceData ? serviceData.price : '0'; // will be updated by price calculation
+            
+            // Get service data including image
+            const hasImage = serviceData && serviceData.slika;
+            const imageHtml = hasImage ? 
+                `<img src="${serviceData.slika}" alt="${serviceName}" class="avatar-image">` : 
+                `<i class="fa fa-scissors"></i>`;
+            
+            customOption.innerHTML = `
+                <div class="option-content">
+                    <div class="option-left">
+                        <div class="option-avatar service-avatar">
+                            ${imageHtml}
+                        </div>
+                        <div class="option-info">
+                            <span class="option-name">${serviceName}</span>
+                            <span class="option-duration">${duration} min</span>
+                        </div>
+                    </div>
+                    <div class="option-right">
+                        <span class="option-price">${price} RSD</span>
+                    </div>
+                </div>
+            `;
+            customSelectDropdown.appendChild(customOption);
+        });
+        
+        // Assemble custom select
+        customSelectContainer.appendChild(customSelectTrigger);
+        customSelectContainer.appendChild(customSelectDropdown);
+        
+        return customSelectContainer;
+    }
+
+    function selectOptionAdditional(selectId, value, text) {
+        // Check for duplicates before selection
+        const selectedValues = [];
+        const mainService = document.getElementById('id_usluga').value;
+        if (mainService) selectedValues.push(mainService);
+        
+        // Get all other additional services
+        const otherSelects = document.querySelectorAll('[id^="dodatna_usluga_"]:not(#' + selectId + ')');
+        otherSelects.forEach(select => {
+            if (select.value) selectedValues.push(select.value);
+        });
+        
+        // Check if this value is already selected
+        if (selectedValues.includes(value)) {
+            const serviceName = window.uslugeData[value]?.name || 'Unknown';
+            alert(`Usluga "${serviceName}" je već izabrana. Molimo izaberite drugu uslugu.`);
+            return;
+        }
+        
+        // Update hidden select
+        const hiddenSelect = document.getElementById(selectId);
+        hiddenSelect.value = value;
+        
+        // Update visible text
+        const selectedSpan = document.getElementById(selectId + '-selected');
+        selectedSpan.textContent = text;
+        selectedSpan.classList.add('selected');
+        
+        // Remove any error styling
+        const trigger = document.getElementById(selectId + '-trigger');
+        trigger.classList.remove('error');
+        
+        // Close dropdown
+        const dropdown = document.getElementById(selectId + '-dropdown');
+        dropdown.classList.remove('open');
+        
+        // Reset arrow
+        const arrow = document.querySelector('#' + selectId + '-trigger .custom-select-arrow i');
+        arrow.classList.remove('fa-chevron-up');
+        arrow.classList.add('fa-chevron-down');
+        
+        // Trigger change event
+        const event = new Event('change', { bubbles: true });
+        hiddenSelect.dispatchEvent(event);
+    }
+
     function dodajUsluguSelect() {
         if (dodatneUslugeCount >= MAX_DODATNE_USLUGE) {
             alert('Možete dodati maksimalno 3 dodatne usluge.');
@@ -254,48 +497,51 @@
         
         const container = document.getElementById('dodatne-usluge-container');
         const glavniSelect = document.getElementById('id_usluga');
+        const selectId = `dodatna_usluga_${dodatneUslugeCount}`;
         
         // Kreiraj div wrapper za dodatnu uslugu
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'dodatna-usluga-wrapper';
-        wrapperDiv.style.marginTop = '10px';
+        wrapperDiv.style.marginTop = '15px';
         wrapperDiv.id = `dodatna-usluga-${dodatneUslugeCount}`;
         
         // Kreiraj label
         const label = document.createElement('label');
         label.textContent = `Dodatna usluga ${dodatneUslugeCount}:`;
+        label.style.display = 'block';
+        label.style.marginBottom = '8px';
+        label.style.fontWeight = '500';
         
         // Kreiraj row div za select i dugme
         const rowDiv = document.createElement('div');
         rowDiv.style.display = 'flex';
-        rowDiv.style.alignItems = 'center';
+        rowDiv.style.alignItems = 'flex-start';
         rowDiv.style.gap = '10px';
         
-        // Kreiraj select element
-        const select = document.createElement('select');
-        select.className = 'w3-select';
-        select.name = `dodatna_usluga_${dodatneUslugeCount}`;
-        select.id = `dodatna_usluga_${dodatneUslugeCount}`;
-        select.style.webkitAppearance = 'none';
-        select.style.flex = '1';
+        // Create hidden select for form submission
+        const hiddenSelect = document.createElement('select');
+        hiddenSelect.name = `dodatna_usluga_${dodatneUslugeCount}`;
+        hiddenSelect.id = selectId;
+        hiddenSelect.style.display = 'none';
+        hiddenSelect.innerHTML = glavniSelect.innerHTML;
+        hiddenSelect.addEventListener('change', azurirajCene);
         
-        // Dodaj opcije iz glavnog select-a
-        select.innerHTML = glavniSelect.innerHTML;
-        
-        // Add event listener for price updates
-        select.addEventListener('change', azurirajCene);
+        // Create custom select
+        const customSelect = createCustomSelectForAdditional(selectId);
         
         // Kreiraj dugme za uklanjanje
         const ukloniBtn = document.createElement('button');
         ukloniBtn.type = 'button';
         ukloniBtn.className = 'btn btn-outline-danger btn-sm';
         ukloniBtn.innerHTML = '<i class="fa fa-minus"></i>';
+        ukloniBtn.style.height = '56px'; // Match select height
         ukloniBtn.onclick = function() {
             ukloniDodatnuUslugu(dodatneUslugeCount);
         };
         
         // Sastavi elemente
-        rowDiv.appendChild(select);
+        rowDiv.appendChild(hiddenSelect);
+        rowDiv.appendChild(customSelect);
         rowDiv.appendChild(ukloniBtn);
         wrapperDiv.appendChild(label);
         wrapperDiv.appendChild(rowDiv);
@@ -352,6 +598,531 @@
         }
     });
 
+    // Custom Select Dropdown Functions
+    function toggleDropdown(type) {
+        const dropdown = document.getElementById(type + '-dropdown');
+        const trigger = document.getElementById(type + '-trigger');
+        const arrow = trigger.querySelector('.custom-select-arrow i');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-select-dropdown').forEach(dd => {
+            if (dd.id !== type + '-dropdown') {
+                dd.classList.remove('open');
+            }
+        });
+        
+        // Reset all arrows
+        document.querySelectorAll('.custom-select-arrow i').forEach(arr => {
+            if (arr !== arrow) {
+                arr.classList.remove('fa-chevron-up');
+                arr.classList.add('fa-chevron-down');
+            }
+        });
+        
+        // Toggle current dropdown
+        dropdown.classList.toggle('open');
+        
+        // Toggle arrow direction
+        if (dropdown.classList.contains('open')) {
+            arrow.classList.remove('fa-chevron-down');
+            arrow.classList.add('fa-chevron-up');
+        } else {
+            arrow.classList.remove('fa-chevron-up');
+            arrow.classList.add('fa-chevron-down');
+        }
+    }
+
+    function selectOption(type, value, text) {
+        // Update hidden select
+        const hiddenSelect = document.getElementById('id_' + type);
+        hiddenSelect.value = value;
+        
+        // Update visible text
+        const selectedSpan = document.getElementById(type + '-selected');
+        selectedSpan.textContent = text;
+        selectedSpan.classList.add('selected');
+        
+        // Close dropdown
+        const dropdown = document.getElementById(type + '-dropdown');
+        dropdown.classList.remove('open');
+        
+        // Reset arrow
+        const arrow = document.querySelector('#' + type + '-trigger .custom-select-arrow i');
+        arrow.classList.remove('fa-chevron-up');
+        arrow.classList.add('fa-chevron-down');
+        
+        // Trigger change event for existing functionality
+        const event = new Event('change', { bubbles: true });
+        hiddenSelect.dispatchEvent(event);
+        
+        // For usluga, trigger the dodatne usluge functionality
+        if (type === 'usluga') {
+            pokaziDodajUsluguDugme();
+        }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-select-container')) {
+            document.querySelectorAll('.custom-select-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('open');
+            });
+            document.querySelectorAll('.custom-select-arrow i').forEach(arrow => {
+                arrow.classList.remove('fa-chevron-up');
+                arrow.classList.add('fa-chevron-down');
+            });
+        }
+    });
+
+    // Form validation to ensure no empty additional services
+    function validateAdditionalServices() {
+        // Get only the wrapper elements (not individual selects)
+        const additionalWrappers = document.querySelectorAll('.dodatna-usluga-wrapper');
+        const emptySelects = [];
+        const selectedValues = [];
+        const duplicates = [];
+        
+        // Get main service value
+        const mainService = document.getElementById('id_usluga').value;
+        if (mainService) {
+            selectedValues.push(mainService);
+        }
+        
+        additionalWrappers.forEach((wrapper, index) => {
+            const selectId = wrapper.id.replace('dodatna-usluga-', '');
+            const select = document.getElementById(`dodatna_usluga_${selectId}`);
+            
+            if (select) {
+                const value = select.value;
+                const selectNumber = parseInt(selectId);
+                
+                // Check for empty selections
+                if (!value) {
+                    emptySelects.push(selectNumber);
+                } else {
+                    // Check for duplicates
+                    if (selectedValues.includes(value)) {
+                        duplicates.push({
+                            number: selectNumber,
+                            serviceName: window.uslugeData[value]?.name || 'Unknown'
+                        });
+                    } else {
+                        selectedValues.push(value);
+                    }
+                }
+            }
+        });
+        
+        // Clear previous error states
+        document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
+            trigger.classList.remove('error');
+        });
+        
+        // Show validation errors
+        if (emptySelects.length > 0) {
+            // Highlight empty selects
+            emptySelects.forEach(selectNumber => {
+                const trigger = document.querySelector(`#dodatna_usluga_${selectNumber}-trigger`);
+                if (trigger) trigger.classList.add('error');
+            });
+            
+            alert(`Molimo izaberite uslugu za dodatne usluge: ${emptySelects.join(', ')}`);
+            return false;
+        }
+        
+        if (duplicates.length > 0) {
+            // Highlight duplicate selects
+            duplicates.forEach(duplicate => {
+                const trigger = document.querySelector(`#dodatna_usluga_${duplicate.number}-trigger`);
+                if (trigger) trigger.classList.add('error');
+            });
+            
+            const duplicateMessages = duplicates.map(d => 
+                `Dodatna usluga ${d.number} (${d.serviceName})`
+            );
+            alert(`Jedna te iste usluge ne možete izabrati više puta:\n${duplicateMessages.join('\n')}`);
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Add validation to form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('#prva-forma form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!validateAdditionalServices()) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+
 </script>
+
+<!-- Custom Select Styles -->
+<style>
+    .custom-select-container {
+        position: relative;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .custom-select-trigger {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        min-height: 56px;
+    }
+
+    .custom-select-trigger:hover {
+        border-color: #007bff;
+        box-shadow: 0 4px 8px rgba(0,123,255,0.15);
+    }
+
+    .custom-select-trigger.active {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+    }
+
+    .custom-select-arrow {
+        color: #666;
+        transition: color 0.3s ease;
+    }
+
+    .custom-select-trigger:hover .custom-select-arrow {
+        color: #007bff;
+    }
+
+    .custom-select-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .custom-select-dropdown.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .custom-select-option {
+        padding: 20px 18px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .custom-select-option:last-child {
+        border-bottom: none;
+    }
+
+    .custom-select-option:hover {
+        background-color: #f8f9fa;
+        transform: translateX(2px);
+    }
+
+    .custom-select-option:active {
+        background-color: #e9ecef;
+    }
+
+    .option-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .option-left {
+        display: flex;
+        align-items: center;
+        flex: 1;
+    }
+
+    .option-right {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .option-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        flex-shrink: 0;
+    }
+
+    .service-avatar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 20px;
+    }
+
+    .barber-avatar {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    .avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .avatar-initials {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .option-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .option-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1em;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+
+    .option-duration,
+    .option-status {
+        font-size: 0.95em;
+        color: #666;
+        font-weight: 400;
+        line-height: 1.3;
+    }
+
+    .option-price {
+        color: #28a745;
+        font-weight: 700;
+        font-size: 1.05em;
+        background: rgba(40, 167, 69, 0.1);
+        padding: 8px 12px;
+        border-radius: 8px;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .option-badge {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .barber-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .admin-badge {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    #usluga-selected.selected,
+    #frizer-selected.selected {
+        color: #333;
+        font-weight: 500;
+    }
+
+    /* Error states */
+    .custom-select-trigger.error {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important;
+    }
+
+    .custom-select-trigger.error .custom-select-arrow {
+        color: #dc3545 !important;
+    }
+
+    /* Custom scrollbar for dropdown */
+    .custom-select-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-select-dropdown::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .custom-select-dropdown::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+    .custom-select-dropdown::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Loyalty Info Styling */
+    .loyalty-info-container {
+        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .loyalty-badge {
+        display: inline-block;
+        padding: 1.5rem 2.5rem;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 1.6rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin: 0 auto;
+        max-width: 95%;
+        line-height: 1.5;
+        letter-spacing: 0.5px;
+    }
+    
+    .loyalty-badge.free-next {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: 3px solid #34d399;
+        animation: celebration-pulse 2s infinite;
+    }
+    
+    .loyalty-badge.almost-free {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        border: 3px solid #fbbf24;
+        animation: excitement-pulse 1.5s infinite;
+    }
+    
+    .loyalty-badge.regular {
+        background: linear-gradient(135deg, #3b82f6, #1e40af);
+        color: white;
+        border: 3px solid #60a5fa;
+    }
+    
+    @keyframes celebration-pulse {
+        0%, 100% {
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: scale(1);
+        }
+        50% {
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+            transform: scale(1.02);
+        }
+    }
+    
+    @keyframes excitement-pulse {
+        0%, 100% {
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        50% {
+            box-shadow: 0 6px 18px rgba(245, 158, 11, 0.5);
+        }
+    }
+
+    /* Mobile responsive - Make everything BIGGER for touch */
+    @media (max-width: 768px) {
+        .loyalty-badge {
+            font-size: 1.8rem;
+            padding: 2rem 2rem;
+            border-radius: 24px;
+            max-width: 98%;
+            line-height: 1.4;
+        }
+        
+        .custom-select-trigger {
+            padding: 20px 18px;
+            min-height: 64px;
+        }
+        
+        .custom-select-option {
+            padding: 24px 18px;
+        }
+        
+        .option-avatar {
+            width: 55px;
+            height: 55px;
+            margin-right: 16px;
+        }
+        
+        .service-avatar {
+            font-size: 22px;
+        }
+        
+        .barber-avatar {
+            font-size: 20px;
+        }
+        
+        .option-name {
+            font-size: 1.2em;
+            margin-bottom: 6px;
+        }
+        
+        .option-duration,
+        .option-status {
+            font-size: 1em;
+        }
+        
+        .option-price {
+            font-size: 1.1em;
+            padding: 10px 14px;
+            min-width: 90px;
+        }
+        
+        .option-badge {
+            font-size: 0.85em;
+            padding: 8px 12px;
+            min-width: 70px;
+        }
+        
+        /* Make dropdown arrows bigger on mobile */
+        .custom-select-arrow {
+            font-size: 1.2em;
+        }
+        
+        /* Increase selected text size */
+        .custom-select-trigger span {
+            font-size: 1.1em;
+        }
+        
+        /* Make remove buttons bigger on mobile */
+        .btn-outline-danger {
+            min-height: 64px !important;
+            padding: 12px 16px !important;
+            font-size: 1.1em !important;
+        }
+    }
+</style>
 
 {% endblock %}

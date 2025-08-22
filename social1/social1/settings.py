@@ -28,7 +28,7 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = [
     "localhost",  
     "127.0.0.1", 
-    "192.168.0.34",
+    "192.168.0.27",
     "frizerskisalonhasko.com",
     "www.frizerskisalonhasko.com",
     "*.ngrok-free.app",  # Allow all ngrok domains for development
@@ -46,7 +46,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://cd88-89-216-152-130.ngrok-free.app",
     "https://c624-89-216-152-130.ngrok-free.app",
     'https://a7df-178-149-237-173.eu.ngrok.io',
-    'http://192.168.0.34:8000',
     'http://localhost:8000',
     'http://127.0.0.1:8000'
 ]

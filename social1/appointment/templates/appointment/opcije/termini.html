@@ -1,17 +1,495 @@
 {% extends 'appointment/zafrizera.html' %}
 {% block opcije %}
 <style>
-.phone-link:hover {
-    color: #0056b3 !important;
-    text-decoration: underline !important;
+/* Modern card-based design for mobile */
+.appointments-container {
+    padding: 1rem;
+    max-width: 100%;
 }
 
-.phone-link i {
-    transition: transform 0.2s ease;
+.appointment-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
 }
 
-.phone-link:hover i {
-    transform: scale(1.1);
+.appointment-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.appointment-card.cancelled {
+    background: #fee2e2;
+    border-color: #dc2626;
+}
+
+.appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.customer-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #1f2937;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.8px;
+}
+
+.customer-phone {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.customer-phone:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.frizer-info {
+    color: #6b7280;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+/* Frizer Profile Styles */
+.frizer-profile {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.frizer-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+}
+
+.frizer-avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.frizer-details {
+    flex: 1;
+}
+
+.frizer-phone {
+    color: #059669;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.3rem 0;
+    font-weight: 600;
+}
+
+.frizer-phone:hover {
+    color: #047857;
+    text-decoration: underline;
+}
+
+/* Detailed Service Styles */
+.detailed-service {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.service-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.service-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.service-details {
+    flex: 1;
+}
+
+.service-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.service-duration,
+.service-price {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.95rem;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.service-price {
+    color: #059669;
+}
+
+/* Detailed Additional Services */
+.detailed-additional-services {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f3f4f6;
+}
+
+.detailed-service-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.detailed-service-item:last-child {
+    border-bottom: none;
+}
+
+.additional-service-image {
+    width: 35px;
+    height: 35px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.additional-service-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.additional-service-info {
+    flex: 1;
+}
+
+.additional-service-name {
+    font-weight: 600;
+    color: #1f2937;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.additional-service-meta {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.additional-service-duration,
+.additional-service-price {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.additional-service-price {
+    color: #059669;
+    font-weight: 600;
+}
+
+.datetime-badge {
+    background: #1f2937;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 140px;
+    white-space: nowrap;
+}
+
+.datetime-badge.cancelled {
+    background: #dc2626;
+}
+
+.service-actions-row {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    min-height: fit-content;
+}
+
+.service-info {
+    background: #f8fafc;
+    padding: 1.2rem;
+    border-radius: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.compact-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.free-appointment-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.free-appointment-card {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    border: 3px solid #f59e0b !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.free-appointment-card::before {
+    content: "🎁 BESPLATAN";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);
+    z-index: 10;
+    border: 2px solid #fbbf24;
+}
+
+.free-appointment-card:hover {
+    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.3) !important;
+    transform: translateY(-4px) !important;
+    border-color: #d97706 !important;
+}
+
+.free-appointment-card .customer-info h3 {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.free-appointment-card .datetime-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.free-appointment-card .service-info {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.service-title {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 0.6rem;
+}
+
+.additional-services {
+    margin-top: 0.5rem;
+}
+
+.additional-services-title {
+    font-size: 1.2rem;
+    color: #6b7280;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.service-tag {
+    display: inline-block;
+    background: #e5e7eb;
+    color: #374151;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    margin: 0.2rem 0.3rem 0.2rem 0;
+    font-weight: 600;
+}
+
+.message-section {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.message-section.empty {
+    display: none;
+}
+
+.message-text {
+    margin: 0;
+    color: #92400e;
+    font-style: italic;
+}
+
+.actions-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cancel-btn {
+    background: #dc2626;
+    color: white;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.cancel-btn:hover {
+    background: #b91c1c;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.debt-btn {
+    background: #059669;
+    color: white;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.debt-btn:hover {
+    background: #047857;
+}
+
+.free-appointment-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    border: 2px solid #fbbf24;
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+    }
+}
+
+.page-header {
+    background: linear-gradient(135deg, #1f2937, #374151);
+    color: white;
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+}
+
+.exclude-form {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.exclude-form h4 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.exclude-form input[type="date"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.exclude-form .btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .button-container {
@@ -43,6 +521,41 @@
 .button-container #callButton:hover {
     background-color: #138496;
     border-color: #117a8b;
+}
+
+@media (max-width: 768px) {
+    .appointment-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .datetime-badge {
+        align-self: stretch;
+        text-align: center;
+    }
+    
+    .actions-row {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .service-actions-row {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .service-info {
+        padding: 1rem;
+    }
+    
+    .compact-actions {
+        align-items: center;
+    }
+    
+    .cancel-btn {
+        padding: 0.6rem 1rem;
+    }
 }
 </style>
 <!-- The Modal -->
@@ -77,113 +590,201 @@
     </div>
   </div>
   
-  <div class="w3-container">
-      <br /><br /><br />
-      {% if user.is_superuser %}
-      <div class="row">
-          <div class="col-xs-6 col-lg-6 col-md-6">
-              <h2 class="w3-center">
-                  Vaši termini <i class="fa fa-arrow-down"></i>
-              </h2>
-          </div>
-          <div class="col-xs-6 col-lg-6 col-md-6 w3-padding">
-              <form action="" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="form_type" value="form1">
-  
-                  <h4>Iskljucite termine za..</h4>
-                  <input
-                      type="date"
-                      class="form-control"
-                      name="datum"
-                      id="datum"
-                      style="width: 70%"
-                  /><br />
-                  <input
-                      type="submit"
-                      value="Iskljuci termine"
-                      class="btn btn-danger"
-                  />
-              </form>
-              <br />
-          </div>
-      </div>
-      {% else %}
-      <h2 class="w3-center">Vaši termini <i class="fa fa-arrow-down"></i></h2>
-      {% endif %}
-  
-      <table class="w3-table-all my-2">
-          <tr>
-              {% if user.is_superuser %}
-                  <th>Mušterija</th>
-              {% else %}
-                  <th>Frizer</th>
-              {% endif %}
-              <th>Poruka</th>
-              <th>Usluga</th>
-              <th>Datum & Vreme</th>
-          </tr>
-          {% for usl in termini %}
-              {% if user.is_superuser %}
-                  <tr class="{% if usl.cena_termina == 0 %} bg-warning {% endif %}" onclick="openModal('{{usl.user.id}}', '{{usl.effective_price}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{{usl.user.ime_prezime}}', '{{usl.user.broj_telefona}}')" data-bs-toggle="modal" data-bs-target="#exampleModal">
-              {% else %}
-                  <tr>
-              {% endif %}
-              {% if user.is_superuser %} {% if usl.name == "OTKAZAN DAN" %}
-              <!-- <td class="bg-danger text-light w3-center">{{ usl.name }}</td> -->
-              <td class="bg-danger text-light w3-center" colspan="4">
-                  {{ usl.name }} &nbsp {{ usl.datum }} &nbsp
-                  <a
-                      href="{% url 'otkazivanje' usl.id %}"
-                      onclick="event.stopPropagation(); return confirm('Da li zelite da oktažete termin ?');"
-                      >Otkaži <i class="fa-solid fa-xmark"></i
-                  ></a>
-              </td>
-  
-              {% else %}
-              <td>
-                {% if usl.user %}
-                  {{ usl.user.ime_prezime|default:"Nepoznato ime" }} <br />
-                  <a href="tel:{{ usl.user.broj_telefona }}" class="phone-link" style="color: #007bff; text-decoration: none;">
-                    <i class="fa fa-phone" style="margin-right: 5px;"></i>{{ usl.user.broj_telefona }}
-                  </a>
-                {% else %}
-                  {{ usl.name }} <br />
-                  <a href="tel:{{ usl.broj_telefona }}" class="phone-link" style="color: #007bff; text-decoration: none;">
-                    <i class="fa fa-phone" style="margin-right: 5px;"></i>{{ usl.broj_telefona }}
-                  </a>
+<div class="appointments-container">
+    <div class="page-header">
+        <h1 class="page-title">
+            {% if user.is_superuser %}
+                Upravljanje Terminima
+            {% elif user.username == "hasko123" or user.username == "Muvehid" or user.username == "admin" %}
+                Moji Termini kao Frizer
+            {% else %}
+                Moji Zakazani Termini
+            {% endif %}
+            <i class="fa fa-calendar"></i>
+        </h1>
+    </div>
+
+    {% if user.is_superuser %}
+    <div class="exclude-form">
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="form1">
+            <h4>Isključite termine za određeni dan</h4>
+            <input type="date" name="datum" id="datum" required />
+            <button type="submit" class="btn btn-danger">
+                <i class="fa fa-ban"></i> Isključi termine
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+    {% for usl in termini %}
+        {% if usl.name == "OTKAZAN DAN" %}
+            <div class="appointment-card cancelled">
+                <div class="appointment-header">
+                    <div class="customer-info">
+                        <h3>🚫 OTKAZAN DAN</h3>
+                    </div>
+                    <div class="datetime-badge cancelled">
+                        {{ usl.datum|date:"d M Y" }}
+                    </div>
+                </div>
+                <div class="actions-row">
+                    <a href="{% url 'otkazivanje' usl.id %}" 
+                       onclick="return confirm('Da li želite da uklonite otkazivanje?');" 
+                       class="cancel-btn">
+                        <i class="fa fa-undo"></i> Ukloni otkazivanje
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="appointment-card {% if usl.cena_termina == 0 %}free-appointment-card{% endif %}" 
+                 {% if user.is_superuser %}
+                 onclick="openModal('{% if usl.name %}21{% else %}{{usl.user.id}}{% endif %}', '{{usl.effective_price}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{% if usl.name %}{{usl.name}}{% else %}{{usl.user.ime_prezime}}{% endif %}', '{% if usl.broj_telefona %}{{usl.broj_telefona}}{% else %}{{usl.user.broj_telefona}}{% endif %}')"
+                 style="cursor: pointer;"
+                 {% endif %}>
+                
+                <div class="appointment-header">
+                    <div class="customer-info">
+                        {% if user.is_superuser or user.username == "hasko123" or user.username == "Muvehid" or user.username == "admin" %}
+                            <!-- Frizer/Admin view - show customer info -->
+                            {% if usl.name and usl.broj_telefona %}
+                                <!-- Show customer name and phone from form (priority) -->
+                                <h3>{{ usl.name }}</h3>
+                                <a href="tel:{{ usl.broj_telefona }}" class="customer-phone">
+                                    <i class="fa fa-phone"></i>{{ usl.broj_telefona }}
+                                </a>
+                            {% elif usl.user %}
+                                <!-- Fallback to user info if no form data -->
+                                <h3>{{ usl.user.ime_prezime|default:"Nepoznato ime" }}</h3>
+                                <a href="tel:{{ usl.user.broj_telefona }}" class="customer-phone">
+                                    <i class="fa fa-phone"></i>{{ usl.user.broj_telefona }}
+                                </a>
+                            {% else %}
+                                <!-- Final fallback -->
+                                <h3>Nepoznata mušterija</h3>
+                            {% endif %}
+                        {% else %}
+                            <!-- Customer view - show frizer info with image -->
+                            <div class="frizer-profile">
+                                {% if usl.frizer.image %}
+                                    <img src="{{ usl.frizer.image.url }}" alt="{{ usl.frizer.name }}" class="frizer-avatar">
+                                {% else %}
+                                    <div class="frizer-avatar-placeholder">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="frizer-details">
+                                    <h3>{{ usl.frizer.name }}</h3>
+                                    {% if usl.frizer.phone %}
+                                        <a href="tel:{{ usl.frizer.phone }}" class="frizer-phone">
+                                            <i class="fa fa-phone"></i>{{ usl.frizer.phone }}
+                                        </a>
+                                    {% endif %}
+                                    <div class="frizer-info">
+                                        <i class="fa fa-scissors"></i> Vaš frizer
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="datetime-badge">
+                        {{ usl.datum|date:"d M" }} • {{ usl.vreme|time:"H:i" }}
+                    </div>
+                </div>
+
+                <div class="service-actions-row">
+                    <div class="service-info">
+                        {% if user.is_superuser or user.username == "hasko123" or user.username == "Muvehid" or user.username == "admin" %}
+                            <!-- Frizer/Admin view - simple service display -->
+                            <div class="service-title">{{ usl.usluga.name }}</div>
+                            {% if usl.dodatne_usluge %}
+                                <div class="additional-services">
+                                    <div class="additional-services-title">Dodatne usluge:</div>
+                                    {% for dodatna_usluga in usl.dodatne_usluge_objekti %}
+                                        <span class="service-tag">{{ dodatna_usluga.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <!-- Customer view - detailed service display -->
+                            <div class="detailed-service">
+                                {% if usl.usluga.slika %}
+                                    <img src="{{ usl.usluga.slika.url }}" alt="{{ usl.usluga.name }}" class="service-image">
+                                {% else %}
+                                    <div class="service-icon">
+                                        <i class="fa fa-scissors"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="service-details">
+                                    <div class="service-title">{{ usl.usluga.name }}</div>
+                                    <div class="service-meta">
+                                        <span class="service-duration">
+                                            <i class="fa fa-clock"></i> {% if usl.usluga.duzina %}{% widthratio usl.usluga.duzina.total_seconds 60 1 %}{% else %}30{% endif %} min
+                                        </span>
+                                        <span class="service-price">
+                                            <i class="fa fa-tag"></i> {{ usl.usluga.cena }} RSD
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if usl.dodatne_usluge %}
+                                <div class="detailed-additional-services">
+                                    <div class="additional-services-title">
+                                        <i class="fa fa-plus-circle"></i> Dodatne usluge:
+                                    </div>
+                                    {% for dodatna_usluga in usl.dodatne_usluge_objekti %}
+                                        <div class="detailed-service-item">
+                                            {% if dodatna_usluga.slika %}
+                                                <img src="{{ dodatna_usluga.slika.url }}" alt="{{ dodatna_usluga.name }}" class="additional-service-image">
+                                            {% else %}
+                                                <div class="additional-service-icon">
+                                                    <i class="fa fa-scissors"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="additional-service-info">
+                                                <span class="additional-service-name">{{ dodatna_usluga.name }}</span>
+                                                <div class="additional-service-meta">
+                                                    <span class="additional-service-duration">
+                                                        <i class="fa fa-clock"></i> {% if dodatna_usluga.duzina %}{% widthratio dodatna_usluga.duzina.total_seconds 60 1 %}{% else %}30{% endif %} min
+                                                    </span>
+                                                    <span class="additional-service-price">
+                                                        <i class="fa fa-tag"></i> {{ dodatna_usluga.cena }} RSD
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="compact-actions">
+                        <a href="{% url 'otkazivanje' usl.id %}" 
+                           onclick="{% if user.is_superuser %}event.stopPropagation(); {% endif %}return confirm('Da li želite da otkažete termin?');" 
+                           class="cancel-btn">
+                            <i class="fa fa-times"></i> Otkaži
+                        </a>
+                    </div>
+                </div>
+
+                {% if usl.poruka %}
+                <div class="message-section">
+                    <p class="message-text">💬 {{ usl.poruka }}</p>
+                </div>
                 {% endif %}
-              </td>
-              {% endif %} {% else %}
-              <td>{{ usl.frizer }}</td>
-              {% endif %} {% if usl.name == "OTKAZAN DAN" %}
-              <!-- <td class="bg-danger text-light w3-center" colspan="2"> &nbsp {{ usl.datum }}  &nbsp <a href="{% url 'otkazivanje' usl.id %}" onclick="return confirm('Da li zelite da oktažete termin ?');">Otkaži <i class="fa-solid fa-xmark"></i></a></td>          -->
-              {% else %}
-              <td>{{ usl.poruka|default:"" }}</td>
-              <td>
-                  {{ usl.usluga.name }}
-                  {% if usl.dodatne_usluge %}
-                      <br><small class="text-muted">Dodatne usluge:</small>
-                      <ul style="margin: 5px 0; padding-left: 20px;">
-                      {% for dodatna_usluga in usl.dodatne_usluge_objekti %}
-                          <li style="font-size: 0.9em;">{{ dodatna_usluga.name }}</li>
-                      {% endfor %}
-                      </ul>
-                  {% endif %}
-              </td>
-              <td>
-                  {{ usl.datum }}, {{ usl.vreme|time:"H:i" }} &nbsp
-                  <a
-                      href="{% url 'otkazivanje' usl.id %}"
-                      onclick="return confirm('Da li zelite da oktažete termin ?');"
-                      >Otkaži <i class="fa-solid fa-xmark"></i
-                  ></a>
-              </td>
-              {% endif %}
-          </tr>
-          {% endfor %}
-      </table>
-  </div>
+
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    {% if not termini %}
+        <div class="appointment-card" style="text-align: center; padding: 3rem;">
+            <h3 style="color: #6b7280; margin-bottom: 1rem;">Nema termina</h3>
+            <p style="color: #9ca3af;">Trenutno nema zakazanih termina.</p>
+        </div>
+    {% endif %}
+</div>
   <script>
       var date = document.getElementById("datum");
       var novi = new Date().toISOString().split("T")[0];

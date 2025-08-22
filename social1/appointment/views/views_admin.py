@@ -84,8 +84,21 @@ def opcije_termini(request):
             termini = Termin.objects.all().order_by('datum','vreme').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer)
 
         else:
-            frizer = Korisnik.objects.get(username = request.user.username)
-            termini = Termin.objects.all().order_by('datum').exclude(datum__lt=datetime.now().date()).filter(user=frizer)
+            # Check if user is a frizer (specific usernames)
+            frizer_object = None
+            if request.user.username == "hasko123":
+                frizer_object = Frizer.objects.get(name="Hasredin Bećirović")
+            elif request.user.username == "Muvehid":
+                frizer_object = Frizer.objects.get(name="Muvehid Bećirović")
+            elif request.user.username == "admin":
+                frizer_object = Frizer.objects.get(name="(bez imena)")
+            
+            if frizer_object:
+                # Frizer view - show appointments assigned to them
+                termini = Termin.objects.all().order_by('datum','vreme').exclude(datum__lt=datetime.now().date()).filter(frizer=frizer_object)
+            else:
+                # Regular customer view - show their own appointments
+                termini = Termin.objects.filter(user=request.user).order_by('datum','vreme').exclude(datum__lt=datetime.now().date())
     else:
         return redirect('zakazi')
     
@@ -175,8 +188,6 @@ def opcije_izvestaj(request):
         'is_staff': is_staff,
         'is_hasredin': is_hasredin,
         'is_muvehid': is_muvehid,
-        'debug_username': request.user.username,  # Debug info
-        'debug_staff_check': request.user.username in staff_usernames  # Debug info
     }
     
     if view_type == 'debtors':
