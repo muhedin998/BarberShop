@@ -77,6 +77,68 @@
         }
         /* --- END: FONT SIZE INCREASES --- */
 
+        /* FREE appointment special styling */
+        .free-appointment-card {
+            background: linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%);
+            border: 3px solid #10b981;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .free-appointment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .free-badge {
+            background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706);
+            color: #1f2937;
+            font-weight: 900;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.5);
+            animation: pulse-free 2s infinite;
+            border: 2px solid #fbbf24;
+        }
+
+        @keyframes pulse-free {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .free-price-container {
+            position: relative;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 3px solid #34d399;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .free-price-text {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: glow-text 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-text {
+            from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.3); }
+            to { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.6); }
+        }
+
         /* Styles for the modal (kept from original) */
         .modal {
             display: none;
@@ -223,17 +285,11 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="appointment-card relative bg-slate-800/50 rounded-2xl shadow-lg border {% if usl.cena_termina == 0 %}border-amber-500{% else %}border-slate-700{% endif %} overflow-hidden flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5"
+                    <div class="appointment-card relative {% if usl.cena_termina == 0 %}free-appointment-card{% else %}bg-slate-800/50{% endif %} rounded-2xl shadow-lg border {% if usl.cena_termina == 0 %}border-emerald-400{% else %}border-slate-700{% endif %} overflow-hidden flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5"
                             {% if user.is_superuser %}
                          onclick="openModal('{% if usl.name %}21{% else %}{{usl.user.id}}{% endif %}', '{{usl.effective_price}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{% if usl.name %}{{usl.name}}{% else %}{{usl.user.ime_prezime}}{% endif %}', '{% if usl.broj_telefona %}{{usl.broj_telefona}}{% else %}{{usl.user.broj_telefona}}{% endif %}')"
                          style="cursor: pointer;"
                             {% endif %}>
-
-                        {% if usl.cena_termina == 0 %}
-                            <div class="absolute top-4 right-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase shadow-lg z-10">
-                                🎁 Besplatan
-                            </div>
-                        {% endif %}
 
                         <div class="p-8 flex-grow">
                             <div class="flex items-start justify-between mb-6">
@@ -263,10 +319,16 @@
                             </div>
 
                             <div class="my-8 text-center">
-                                <p class="text-4xl font-extrabold {% if usl.cena_termina == 0 %}text-amber-400{% else %}text-teal-400{% endif %}">{{ usl.usluga.name }}</p>
-                                <p class="text-3xl font-semibold text-slate-200 mt-3">
-                                    {{ usl.effective_price }} <span class="text-2xl text-slate-400">RSD</span>
-                                </p>
+                                <p class="text-4xl font-extrabold {% if usl.cena_termina == 0 %}text-white{% else %}text-teal-400{% endif %}">{{ usl.usluga.name }}</p>
+                                {% if usl.cena_termina == 0 %}
+                                    <div class="free-price-container mt-4 mx-auto max-w-xs">
+                                            🎁 BESPLATAN
+                                    </div>
+                                {% else %}
+                                    <p class="text-3xl font-semibold text-slate-200 mt-3">
+                                        {{ usl.effective_price }} <span class="text-2xl text-slate-400">RSD</span>
+                                    </p>
+                                {% endif %}
                             </div>
 
                             {% if usl.dodatne_usluge %}
