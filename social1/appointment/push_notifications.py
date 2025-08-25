@@ -10,6 +10,17 @@ logger = logging.getLogger(__name__)
 # Initialize Firebase Admin SDK
 def initialize_firebase():
     if not firebase_admin._apps:
+        # Debug logging
+        logger.info("=== FIREBASE DEBUG ===")
+        logger.info(f"FIREBASE_CONFIG exists: {hasattr(settings, 'FIREBASE_CONFIG')}")
+        if hasattr(settings, 'FIREBASE_CONFIG'):
+            config = settings.FIREBASE_CONFIG
+            logger.info(f"private_key exists: {bool(config.get('private_key'))}")
+            logger.info(f"private_key length: {len(config.get('private_key', ''))}")
+            logger.info(f"project_id: {config.get('project_id')}")
+            logger.info(f"client_email: {config.get('client_email')}")
+        logger.info("=== END FIREBASE DEBUG ===")
+        
         # Try to use environment variables first, fallback to config file
         if hasattr(settings, 'FIREBASE_CONFIG') and settings.FIREBASE_CONFIG.get('private_key'):
             cred = credentials.Certificate(settings.FIREBASE_CONFIG)
