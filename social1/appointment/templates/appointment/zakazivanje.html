@@ -14,18 +14,20 @@
 {% endif %}
 
     <div class="loyalty-info-container">
-        {% if "BESPLATAN" in termin_counter %}
-            <div class="loyalty-badge free-next">
-                {{ termin_counter }}
-            </div>
-        {% elif "1 termin do" in termin_counter %}
-            <div class="loyalty-badge almost-free">
-                {{ termin_counter }}
-            </div>
-        {% else %}
-            <div class="loyalty-badge regular">
-                {{ termin_counter }}
-            </div>
+        {% if  not user.is_superuser %}
+            {% if "BESPLATAN" in termin_counter %}
+                <div class="loyalty-badge free-next">
+                    {{ termin_counter }}
+                </div>
+            {% elif "1 termin do" in termin_counter %}
+                <div class="loyalty-badge almost-free">
+                    {{ termin_counter }}
+                </div>
+            {% else %}
+                <div class="loyalty-badge regular">
+                    {{ termin_counter }}
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 
