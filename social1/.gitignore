@@ -49,3 +49,7 @@ push_notifications.log
 # Temporary files
 *.tmp
 *.temp
+
+# IntelliJ
+*.iml
+dataSources.xml
