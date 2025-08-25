@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from ..forms import TestForm
 from django.contrib import messages
-from datetime import datetime
+from datetime import datetime, time, timedelta
 from ..models import Usluge, Frizer, Termin, Notification, Review
 from django.core.serializers import serialize
 import json
@@ -11,6 +11,79 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.db.models import Avg, Count
+
+
+def get_next_free_slot(frizer_id, days_ahead=7):
+    """
+    Calculate next available time slot for a barber
+    Looking ahead for the specified number of days
+    """
+    today = datetime.now().date()
+    
+    # Working hours: 10:00 - 19:00 (Monday to Saturday, Friday is off - from JS validation)
+    working_start = time(10, 0)
+    working_end = time(19, 0)
+    slot_duration = timedelta(minutes=30)  # Default appointment duration
+    
+    for day_offset in range(days_ahead):
+        check_date = today + timedelta(days=day_offset)
+        
+        # Skip Fridays (day 4 in weekday(), 0=Monday)
+        if check_date.weekday() == 4:  # Friday
+            continue
+
+        
+        # Get existing appointments for this barber on this date
+        existing_appointments = Termin.objects.filter(
+            frizer_id=frizer_id, 
+            datum=check_date
+        ).order_by('vreme')
+        
+        # Generate time slots for the day
+        current_time = datetime.combine(check_date, working_start)
+        end_time = datetime.combine(check_date, working_end)
+        
+        while current_time < end_time:
+            current_time_only = current_time.time()
+            
+            # Check if this slot is free
+            is_free = True
+            for appointment in existing_appointments:
+                appointment_start = datetime.combine(check_date, appointment.vreme)
+                appointment_duration = appointment.usluga.duzina if appointment.usluga else timedelta(minutes=30)
+                appointment_end = appointment_start + appointment_duration
+                
+                # Check for overlap
+                slot_end = current_time + slot_duration
+                if (current_time < appointment_end and slot_end > appointment_start):
+                    is_free = False
+                    break
+            
+            if is_free:
+                if check_date == today:
+                    # For today, only show slots that are at least 1 hour from now
+                    now = datetime.now()
+                    if current_time > now + timedelta(hours=1):
+                        return {
+                            'date': check_date,
+                            'time': current_time_only,
+                            'formatted': f"{'Danas' if check_date == today else check_date.strftime('%d.%m')} {current_time_only.strftime('%H:%M')}"
+                        }
+                else:
+                    return {
+                        'date': check_date,
+                        'time': current_time_only,
+                        'formatted': f"{check_date.strftime('%d.%m')} {current_time_only.strftime('%H:%M')}"
+                    }
+            
+            current_time += slot_duration
+    
+    # If no free slots found in the next week
+    return {
+        'date': None,
+        'time': None,
+        'formatted': "Nema slobodnih termina"
+    }
 
 
 @login_required(redirect_field_name='user_login/')
@@ -188,6 +261,16 @@ def termin(request):
 
     print(termin_counter)
 
+    # Get next free slot for each barber
+    frizeri_with_slots = []
+    all_frizeri = Frizer.objects.all()
+    for frizer in all_frizeri:
+        next_slot = get_next_free_slot(frizer.id)
+        frizeri_with_slots.append({
+            'frizer': frizer,
+            'next_free_slot': next_slot['formatted']
+        })
+
     if request.method == 'POST':
         #check if first form button is clicked
         if 'form_filter_button' in request.POST:
@@ -217,6 +300,7 @@ def termin(request):
         'dan': format(sada.day, "02d"),
         'form': form_filter,
         "termin_counter": is_next_free,
+        'frizeri_with_slots': frizeri_with_slots,
     }
     return render(request, 'appointment/zakazivanje.html', context)
 
