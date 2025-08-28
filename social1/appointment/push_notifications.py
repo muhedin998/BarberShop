@@ -10,25 +10,15 @@ logger = logging.getLogger(__name__)
 # Initialize Firebase Admin SDK
 def initialize_firebase():
     if not firebase_admin._apps:
-        # Debug logging
-        logger.info("=== FIREBASE DEBUG ===")
-        logger.info(f"FIREBASE_CONFIG exists: {hasattr(settings, 'FIREBASE_CONFIG')}")
-        if hasattr(settings, 'FIREBASE_CONFIG'):
-            config = settings.FIREBASE_CONFIG
-            logger.info(f"private_key exists: {bool(config.get('private_key'))}")
-            logger.info(f"private_key length: {len(config.get('private_key', ''))}")
-            logger.info(f"project_id: {config.get('project_id')}")
-            logger.info(f"client_email: {config.get('client_email')}")
-        logger.info("=== END FIREBASE DEBUG ===")
         
-        # Try to use environment variables first, fallback to config file
-        if hasattr(settings, 'FIREBASE_CONFIG') and settings.FIREBASE_CONFIG.get('private_key'):
-            cred = credentials.Certificate(settings.FIREBASE_CONFIG)
+        # Always use the config file since we have it
+        cred_path = os.path.join(settings.BASE_DIR, 'firebase-config.json')
+        if os.path.exists(cred_path):
+            cred = credentials.Certificate(cred_path)
         else:
-            # Fallback to config file for development
-            cred_path = os.path.join(settings.BASE_DIR, 'firebase-config.json')
-            if os.path.exists(cred_path):
-                cred = credentials.Certificate(cred_path)
+            # Fallback to environment variables if config file doesn't exist
+            if hasattr(settings, 'FIREBASE_CONFIG') and settings.FIREBASE_CONFIG.get('private_key'):
+                cred = credentials.Certificate(settings.FIREBASE_CONFIG)
             else:
                 raise Exception("Firebase configuration not found. Please set environment variables or provide firebase-config.json")
         firebase_admin.initialize_app(cred)
@@ -99,7 +89,6 @@ def send_push_notification(fcm_token, title, body, data=None):
         
         # Send the message
         response = messaging.send(message)
-        logger.info(f'Successfully sent message: {response}')
         return response
         
     except Exception as e:
@@ -124,27 +113,21 @@ def send_push_notification_to_user(user, title, body, data=None):
         from .models import FCMToken
         user_tokens = FCMToken.objects.filter(user=user, is_active=True)
         
-        logger.info(f'Found {user_tokens.count()} active FCM tokens for user {user.username}')
         
         if not user_tokens.exists():
-            logger.warning(f'No active FCM tokens found for user {user.username}')
             return []
         
         successful_sends = []
         
         for token_obj in user_tokens:
-            logger.info(f'Attempting to send push notification to token {token_obj.id} for user {user.username}')
             result = send_push_notification(token_obj.token, title, body, data)
             if result:
                 successful_sends.append(result)
-                logger.info(f'Successfully sent notification to token {token_obj.id}')
             else:
-                logger.warning(f'Failed to send notification to token {token_obj.id}, marking as inactive')
                 # Mark token as inactive if sending failed
                 token_obj.is_active = False
                 token_obj.save()
         
-        logger.info(f'Push notification summary for user {user.username}: {len(successful_sends)} successful, {user_tokens.count() - len(successful_sends)} failed')
         return successful_sends
         
     except Exception as e:
@@ -197,9 +180,6 @@ def send_bulk_push_notifications(tokens, title, body, data=None):
         # Send all messages
         response = messaging.send_all(messages)
         
-        logger.info(f'Successfully sent {response.success_count} messages')
-        if response.failure_count > 0:
-            logger.warning(f'Failed to send {response.failure_count} messages')
             
         return {
             'success_count': response.success_count,

@@ -7,27 +7,59 @@ class NotificationPermissionHandler {
     this.init();
   }
 
-  init() {
+  async init() {
+    
+    // Check if FCM Manager detected an unsupported browser
+    if (window.fcmManager && !window.fcmManager.isInitialized && !window.fcmManager.isSupported) {
+      return;
+    }
+    
     // Check current permission status
     this.checkPermissionStatus();
+    
+    // Wait for FCM to be ready before showing UI (especially important for mobile)
+    if (window.fcmManager && !window.fcmManager.isInitialized) {
+      try {
+        await new Promise((resolve) => {
+          const checkFCM = () => {
+            if (window.fcmManager.isInitialized) {
+              resolve();
+            } else {
+              setTimeout(checkFCM, 100);
+            }
+          };
+          checkFCM();
+          
+          // Timeout after 5 seconds to not block UI indefinitely
+          setTimeout(resolve, 5000);
+        });
+      } catch (error) {
+        // FCM initialization failed
+      }
+    }
+    
+    // Only proceed if FCM was successfully initialized or permission is already granted
+    if (!window.fcmManager || (!window.fcmManager.isInitialized && !this.permissionGranted)) {
+      return;
+    }
     
     // If permission is already granted, generate token immediately
     if (this.permissionGranted) {
       this.generateTokenForGrantedPermission();
     } else {
-      // Setup permission request UI only if permission not granted
+      // Setup permission request UI only if permission not granted and FCM is available
       this.setupPermissionUI();
     }
     
     // Auto-request permission for logged in users (optional)
     this.autoRequestPermission();
+    
   }
 
   checkPermissionStatus() {
     if ('Notification' in window) {
       this.permissionGranted = Notification.permission === 'granted';
     } else {
-      console.warn('This browser does not support notifications');
     }
   }
 
@@ -51,15 +83,15 @@ class NotificationPermissionHandler {
     banner.innerHTML = `
       <div class="notification-banner-content">
         <div class="notification-banner-text">
-          <strong>Stay Updated!</strong>
-          <p>Enable notifications to receive important updates about your appointments.</p>
+          <strong>Ostanite u toku!</strong>
+          <p>Omogućite obaveštenja da biste primali važne informacije o vašim terminima.</p>
         </div>
         <div class="notification-banner-actions">
           <button id="enable-notifications-btn" class="btn btn-primary btn-sm">
-            Enable Notifications
+            Omogući obaveštenja
           </button>
           <button id="dismiss-notification-banner" class="btn btn-secondary btn-sm">
-            Not Now
+            Ne sada
           </button>
         </div>
       </div>
@@ -152,6 +184,9 @@ class NotificationPermissionHandler {
     document.head.appendChild(style);
     document.body.appendChild(banner);
 
+    // Setup button handlers AFTER the banner is in the DOM
+    this.setupButtonHandlers();
+
     // Show banner with animation
     setTimeout(() => {
       banner.classList.add('show');
@@ -161,33 +196,108 @@ class NotificationPermissionHandler {
   setupButtonHandlers() {
     // Enable notifications button
     const enableBtn = document.getElementById('enable-notifications-btn');
+    
     if (enableBtn) {
-      enableBtn.addEventListener('click', () => {
-        this.requestPermission();
-      });
+      
+      // Remove any existing event listeners to prevent duplicates
+      enableBtn.replaceWith(enableBtn.cloneNode(true));
+      const newEnableBtn = document.getElementById('enable-notifications-btn');
+      
+      // Single handler for mobile compatibility - avoid multiple event listeners
+      const handlePermissionRequest = (e) => {
+        
+        // Prevent any potential conflicts with other handlers
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Ensure we're in a user gesture context for mobile browsers
+        this.requestPermissionWithUserGesture(e);
+      };
+      
+      // Use only click event for maximum compatibility
+      // Mobile devices will trigger click after touchend automatically
+      newEnableBtn.addEventListener('click', handlePermissionRequest, { once: true });
+      
+      // Add touch event for mobile - use once to prevent multiple registrations
+      newEnableBtn.addEventListener('touchend', handlePermissionRequest, { once: true, passive: false });
+      
     }
 
     // Dismiss banner button
     const dismissBtn = document.getElementById('dismiss-notification-banner');
     if (dismissBtn) {
-      dismissBtn.addEventListener('click', () => {
+      const handleDismiss = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         this.dismissBanner();
+      };
+      
+      dismissBtn.addEventListener('click', handleDismiss);
+      dismissBtn.addEventListener('touchend', handleDismiss);
+      
+      dismissBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
       });
+    }
+  }
+
+  // Method specifically for mobile compatibility
+  async requestPermissionWithUserGesture(event) {
+    try {
+      
+      // Disable the button immediately to prevent double-clicks
+      const button = event.target.closest('button');
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Zahtevam dozvolu...';
+      }
+      
+      // For mobile browsers, ensure FCM is ready before requesting permission
+      if (window.fcmManager && !window.fcmManager.isInitialized) {
+        await new Promise(resolve => {
+          const checkInitialized = () => {
+            if (window.fcmManager.isInitialized) {
+              resolve();
+            } else {
+              setTimeout(checkInitialized, 100);
+            }
+          };
+          checkInitialized();
+          
+          // Timeout after 3 seconds
+          setTimeout(resolve, 3000);
+        });
+      }
+      
+      // Call the main permission request method immediately
+      // Don't show toast before - keep user gesture context clean
+      const result = await this.requestPermission();
+      
+      // Re-enable button if permission failed
+      if (!result && button) {
+        button.disabled = false;
+        button.textContent = 'Omogući obaveštenja';
+      }
+      
+      return result;
+    } catch (error) {
+      
+      // Re-enable button on error
+      const button = event.target.closest('button');
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Omogući obaveštenja';
+      }
+      
+      // Show error toast after button is restored
+      this.showToast(`Greška: ${error.message}`, 'error', 5000);
+      return false;
     }
   }
 
   async requestPermission() {
     try {
-      if (!window.fcmManager) {
-        this.showErrorMessage('Notification system not available. Please refresh the page and try again.');
-        return false;
-      }
-
-      if (!window.fcmManager.isInitialized) {
-        this.showErrorMessage('Notification system not ready. Please wait a moment and try again.');
-        return false;
-      }
-
+      
       // Check current permission status
       const currentPermission = Notification.permission;
 
@@ -196,35 +306,48 @@ class NotificationPermissionHandler {
         return false;
       }
 
-      // Request notification permission and get FCM token
-      const token = await window.fcmManager.requestPermission();
+      // For mobile browsers, request permission directly
       
-      if (token) {
-        this.permissionGranted = true;
-        this.permissionRequested = true;
-        
-        // Hide banner
-        this.hideBanner();
-        
-        // Show success message
-        this.showSuccessMessage();
-        
-        return true;
-      } else {
-        // Check if permission was denied
-        const newPermission = Notification.permission;
-        
-        if (newPermission === 'denied') {
+      let permission;
+      try {
+        permission = await Notification.requestPermission();
+      } catch (error) {
+        this.showErrorMessage('Neuspešan zahtev za dozvolu obaveštenja. Molimo pokušajte ponovo.');
+        return false;
+      }
+      
+      
+      if (permission !== 'granted') {
+        if (permission === 'denied') {
           this.showPermissionBlockedMessage();
-        } else if (newPermission === 'granted') {
-          this.showErrorMessage('Notifications enabled but token registration failed. Please try again.');
         } else {
-          this.showErrorMessage('Failed to enable notifications. Please try again.');
+          this.showErrorMessage('Dozvola za obaveštenja nije data. Molimo pokušajte ponovo.');
         }
         return false;
       }
+
+      // Success - permission granted
+      this.permissionGranted = true;
+      this.permissionRequested = true;
+      
+      // Hide banner
+      this.hideBanner();
+      
+      // Show success message
+      this.showSuccessMessage();
+      
+      // Try to get FCM token if available, but don't fail if not
+      if (window.fcmManager && window.fcmManager.isInitialized) {
+        try {
+          const token = await window.fcmManager.generateToken();
+        } catch (tokenError) {
+          // Don't show error - browser permission was still successful
+        }
+      }
+      
+      return true;
     } catch (error) {
-      this.showErrorMessage('An error occurred while enabling notifications.');
+      this.showErrorMessage('Došlo je do greške prilikom omogućavanja obaveštenja.');
       return false;
     }
   }
@@ -264,18 +387,18 @@ class NotificationPermissionHandler {
   }
 
   showSuccessMessage() {
-    this.showToast('Notifications enabled successfully! You\'ll now receive important updates.', 'success');
+    this.showToast('Obaveštenja su uspešno omogućena! Sada ćete primati važna ažuriranja.', 'success');
   }
 
   showErrorMessage(customMessage = null) {
-    const message = customMessage || 'Failed to enable notifications. Please try again or check your browser settings.';
+    const message = customMessage || 'Neuspešno omogućavanje obaveštenja. Molimo pokušajte ponovo ili proverite podešavanja vašeg pretraživača.';
     this.showToast(message, 'error');
   }
 
   showPermissionBlockedMessage() {
     const instructions = this.getBrowserInstructions();
     this.showToast(
-      `Notifications are blocked for this site. ${instructions}`,
+      `Obaveštenja su blokirana za ovaj sajt. ${instructions}`,
       'error',
       10000 // Show for 10 seconds
     );
@@ -285,16 +408,16 @@ class NotificationPermissionHandler {
     const userAgent = navigator.userAgent.toLowerCase();
     
     if (userAgent.includes('chrome')) {
-      return 'Click the lock icon in the address bar → Notifications → Allow, then refresh the page.';
+      return 'Kliknite na ikonu brave u adresnoj liniji → Obaveštenja → Dozvoli, zatim osvežite stranicu.';
     } else if (userAgent.includes('firefox')) {
-      return 'Click the shield icon in the address bar → Turn off blocking for Notifications, then refresh the page.';
+      return 'Kliknite na ikonu štita u adresnoj liniji → Isključite blokiranje obaveštenja, zatim osvežite stranicu.';
     } else if (userAgent.includes('safari')) {
-      return 'Go to Safari → Preferences → Websites → Notifications → Allow for this site, then refresh the page.';
+      return 'Idite na Safari → Podešavanja → Veb sajtovi → Obaveštenja → Dozvolite za ovaj sajt, zatim osvežite stranicu.';
     } else if (userAgent.includes('edge')) {
-      return 'Click the lock icon in the address bar → Notifications → Allow, then refresh the page.';
+      return 'Kliknite na ikonu brave u adresnoj liniji → Obaveštenja → Dozvoli, zatim osvežite stranicu.';
     }
     
-    return 'Please check your browser settings to allow notifications for this site, then refresh the page.';
+    return 'Molimo proverite podešavanja vašeg pretraživača da biste dozvolili obaveštenja za ovaj sajt, zatim osvežite stranicu.';
   }
 
   showToast(message, type = 'info', duration = 5000) {
@@ -444,7 +567,7 @@ class NotificationPermissionHandler {
       
       if (token) {
         // Show a subtle success message (not as prominent as the banner success)
-        this.showToast('Push notifications are ready! You\'ll receive important updates.', 'success', 3000);
+        this.showToast('Push obaveštenja su spremna! Primaćete važna ažuriranja.', 'success', 3000);
         return true;
       } else {
         return false;
@@ -456,43 +579,33 @@ class NotificationPermissionHandler {
   }
 }
 
+
 // Initialize notification permission handler when DOM is ready AND FCM is ready
-function initializeNotificationHandler() {
+async function initializeNotificationHandler() {
+  
   // Check authentication status
   const bodyHasAuthClass = document.body.classList.contains('authenticated');
   const metaTag = document.querySelector('meta[name="user-authenticated"]');
   const metaIsAuth = metaTag && metaTag.content === 'true';
   const isAuthenticated = bodyHasAuthClass || metaIsAuth;
   
-  if (isAuthenticated) {
-    // Wait for FCM to be ready before initializing notification handler
-    if (window.fcmManager && window.fcmManager.isInitialized) {
-      try {
-        window.notificationPermissionHandler = new NotificationPermissionHandler();
-      } catch (error) {
-        // Silent fail
-      }
-    } else {
-      window.addEventListener('fcmReady', () => {
-        try {
-          window.notificationPermissionHandler = new NotificationPermissionHandler();
-        } catch (error) {
-          // Silent fail
-        }
-      });
-      
-      // Fallback timeout in case FCM fails to initialize
-      setTimeout(() => {
-        if (!window.notificationPermissionHandler && window.fcmManager) {
-          try {
-            window.notificationPermissionHandler = new NotificationPermissionHandler();
-          } catch (error) {
-            // Silent fail
-          }
-        }
-      }, 5000);
+  
+  // Always initialize for testing - remove authentication requirement
+  
+  // Wait a moment for FCM manager to complete initialization
+  setTimeout(async () => {
+    // Check if FCM manager failed to initialize (unsupported browser)
+    if (window.fcmManager && !window.fcmManager.isInitialized) {
+      return;
     }
-  }
+    
+    // Initialize notification handler immediately without waiting for FCM
+    try {
+      window.notificationPermissionHandler = new NotificationPermissionHandler();
+    } catch (error) {
+      // Browser/notification error occurred
+    }
+  }, 1000); // Give FCM time to initialize
 }
 
 // Initialize when DOM is ready

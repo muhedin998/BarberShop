@@ -18,14 +18,11 @@ def register_fcm_token(request):
     Register or update FCM token for the current user
     """
     try:
-        logger.info(f'FCM token registration request from user {request.user.username}')
-        logger.info(f'Request body: {request.body.decode("utf-8")[:200]}...')
         
         data = json.loads(request.body)
         token = data.get('token')
         device_id = data.get('device_id', 'web-browser')
         
-        logger.info(f'Token length: {len(token) if token else 0}, Device ID: {device_id}')
         
         if not token:
             logger.error('No FCM token provided in request')
@@ -39,21 +36,32 @@ def register_fcm_token(request):
         ).exclude(token=token)
         
         deactivated_count = existing_tokens.update(is_active=False)
-        if deactivated_count > 0:
-            logger.info(f'Deactivated {deactivated_count} old FCM tokens for user {request.user.username}')
         
         # Create or update the FCM token
-        fcm_token, created = FCMToken.objects.update_or_create(
-            user=request.user,
-            device_id=device_id,
-            defaults={
-                'token': token,
-                'is_active': True
-            }
-        )
+        # First check if this token already exists for another user
+        existing_token_same_value = FCMToken.objects.filter(token=token).first()
+        
+        if existing_token_same_value and existing_token_same_value.user != request.user:
+            # Token exists for different user - update it to point to current user
+            existing_token_same_value.user = request.user
+            existing_token_same_value.device_id = device_id
+            existing_token_same_value.is_active = True
+            existing_token_same_value.save()
+            
+            fcm_token = existing_token_same_value
+            created = False
+        else:
+            # Normal update_or_create for same user
+            fcm_token, created = FCMToken.objects.update_or_create(
+                user=request.user,
+                device_id=device_id,
+                defaults={
+                    'token': token,
+                    'is_active': True
+                }
+            )
         
         action = 'created' if created else 'updated'
-        logger.info(f'FCM token {action} for user {request.user.username} - Token ID: {fcm_token.id}')
         
         return JsonResponse({
             'success': True,
@@ -86,7 +94,6 @@ def unregister_fcm_token(request):
         ).update(is_active=False)
         
         if updated:
-            logger.info(f'FCM token deactivated for user {request.user.username}')
             return JsonResponse({
                 'success': True,
                 'message': 'FCM token unregistered successfully'

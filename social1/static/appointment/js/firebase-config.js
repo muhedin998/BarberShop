@@ -23,26 +23,54 @@ class FCMManager {
   async init() {
     try {
       
-      // Check if Firebase Messaging is supported
-      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push messaging is not supported in this browser');
+      // Enhanced browser detection for unsupported browsers
+      const browserInfo = this.detectBrowser();
+      
+      // Check if browser is known to be unsupported
+      if (browserInfo.isUnsupported) {
+        this.showUnsupportedBrowserMessage(browserInfo);
         return false;
       }
+      
+      // Check if Firebase Messaging is supported
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        this.showUnsupportedBrowserMessage(browserInfo);
+        return false;
+      }
+      
+      
+      // Browser detection for debugging and mobile-specific handling
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+      
 
+      // Check for HTTPS requirement (critical for mobile browsers)
+      if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+        return false;
+      }
 
       // Register service worker FIRST, before Firebase
       await this.registerServiceWorker();
 
-      // Import Firebase modules
-      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js');
-      const { getMessaging, getToken, onMessage, isSupported } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
-
+      // Import Firebase modules with error handling for mobile
+      let initializeApp, getMessaging, getToken, onMessage, isSupported;
+      try {
+        const firebaseApp = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js');
+        const firebaseMessaging = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
+        
+        initializeApp = firebaseApp.initializeApp;
+        getMessaging = firebaseMessaging.getMessaging;
+        getToken = firebaseMessaging.getToken;
+        onMessage = firebaseMessaging.onMessage;
+        isSupported = firebaseMessaging.isSupported;
+      } catch (importError) {
+        return false;
+      }
 
       // Check if messaging is supported
       this.isSupported = await isSupported();
       
       if (!this.isSupported) {
-        console.warn('Firebase Messaging is not supported in this browser');
         return false;
       }
 
@@ -54,15 +82,15 @@ class FCMManager {
       return true;
 
     } catch (error) {
-      console.error('Error initializing FCM Manager:', error);
-      console.error('Error details:', error.message, error.stack);
+      
+      // More specific error logging for mobile debugging
+      
       return false;
     }
   }
 
   async registerServiceWorker() {
     try {
-      // Use absolute URL to handle ngrok subdomains properly
       const swUrl = `${window.location.origin}/firebase-messaging-sw.js`;
       
       // Check if service worker is already registered
@@ -78,17 +106,24 @@ class FCMManager {
         }
       }
       
-      const registration = await navigator.serviceWorker.register(swUrl, {
-        scope: '/'
-      });
+      
+      // For mobile browsers, add additional options
+      const registrationOptions = {
+        scope: '/',
+        // Help mobile browsers with service worker lifecycle
+        updateViaCache: 'none'
+      };
+      
+      const registration = await navigator.serviceWorker.register(swUrl, registrationOptions);
       
       // Wait for the service worker to be active
       await this.waitForServiceWorkerActive(registration);
       
       return registration;
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
-      console.error('Current origin:', window.location.origin);
+      
+      // More specific error handling for mobile browsers
+      
       throw error;
     }
   }
@@ -150,8 +185,12 @@ class FCMManager {
     try {
 
       if (!this.isInitialized) {
-        console.error('FCM Manager not initialized');
         return null;
+      }
+
+      // Check if permission is already granted
+      if (Notification.permission === 'granted') {
+        return await this.generateToken();
       }
 
       const permission = await Notification.requestPermission();
@@ -162,8 +201,6 @@ class FCMManager {
         return null;
       }
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
-      console.error('Error details:', error.message, error.stack);
       return null;
     }
   }
@@ -183,52 +220,47 @@ class FCMManager {
       }
       
       const activeRegistration = registrations.find(reg => reg.active);
+      
       if (!activeRegistration) {
-        console.warn('No active service worker found, attempting to register...');
         await this.registerServiceWorker();
-      } else {
       }
 
       const { getToken } = await import('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging.js');
       
-      
       // Get the service worker registration
       const swRegistration = await navigator.serviceWorker.getRegistration('/');
+      
       if (!swRegistration || !swRegistration.active) {
         throw new Error('Service worker not properly registered or active');
       }
 
-      // Try to get token without VAPID key first (Firebase will use project default)
+      // For mobile browsers, always try with VAPID key first for better compatibility
       let token;
       try {
-        token = await getToken(this.messaging, {
-          serviceWorkerRegistration: swRegistration
-        });
-      } catch (vapidError) {
-        
-        // If that fails, try with a VAPID key
         token = await getToken(this.messaging, {
           vapidKey: 'BKAhiDB3rapdGVKIyzRrNb2EJlIkvDcV4ujdy_lz7dWN5wD_9uI6spViYbpwC_ckZ1md0Nn-Ara2E2wSdaCNNw4',
           serviceWorkerRegistration: swRegistration
         });
+      } catch (vapidError) {
+        
+        // Fallback: try without VAPID key
+        try {
+          token = await getToken(this.messaging, {
+            serviceWorkerRegistration: swRegistration
+          });
+        } catch (fallbackError) {
+          throw fallbackError;
+        }
       }
 
       if (token) {
         this.currentToken = token;
-        
-        // Register token with backend
         await this.registerTokenWithBackend(token);
         return token;
       } else {
         return null;
       }
     } catch (error) {
-      console.error('Error generating FCM token:', error);
-      if (error.message.includes('messaging/unsupported-browser')) {
-        console.error('This browser does not support Firebase messaging');
-      } else if (error.message.includes('messaging/permission-blocked')) {
-        console.error('Notification permission was denied');
-      }
       return null;
     }
   }
@@ -251,11 +283,9 @@ class FCMManager {
         const data = await response.json();
         return data;
       } else {
-        console.error('Failed to register token:', response.statusText);
         return null;
       }
     } catch (error) {
-      console.error('Error registering token with backend:', error);
       return null;
     }
   }
@@ -278,11 +308,9 @@ class FCMManager {
         this.currentToken = null;
         return data;
       } else {
-        console.error('Failed to unregister token:', response.statusText);
         return null;
       }
     } catch (error) {
-      console.error('Error unregistering token:', error);
       return null;
     }
   }
@@ -301,7 +329,6 @@ class FCMManager {
       });
 
     } catch (error) {
-      console.error('Error setting up foreground messaging:', error);
     }
   }
 
@@ -356,6 +383,317 @@ class FCMManager {
     return deviceId;
   }
 
+  detectBrowser() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const vendor = navigator.vendor?.toLowerCase() || '';
+    
+    // Known unsupported browsers
+    const unsupportedBrowsers = {
+      'duckduckgo': {
+        name: 'DuckDuckGo Browser',
+        reason: 'DuckDuckGo browser blocks tracking APIs including push notifications for privacy protection.',
+        recommendations: ['Chrome', 'Firefox', 'Samsung Internet']
+      },
+      'arc': {
+        name: 'Arc Browser',
+        reason: 'Arc browser has limited push notification support on mobile devices.',
+        recommendations: ['Chrome', 'Firefox', 'Safari']
+      },
+      'focus': {
+        name: 'Firefox Focus',
+        reason: 'Firefox Focus is designed for privacy and blocks push notifications.',
+        recommendations: ['Firefox', 'Chrome']
+      },
+      'brave': {
+        name: 'Brave Browser',
+        reason: 'Brave browser may block push notifications by default for privacy.',
+        recommendations: ['Chrome', 'Firefox']
+      }
+    };
+
+    // Check for specific browsers
+    let browserInfo = {
+      name: 'Unknown Browser',
+      isUnsupported: false,
+      reason: '',
+      recommendations: ['Chrome', 'Firefox'],
+      isMobile: /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
+    };
+
+    // Detect specific browsers
+    if (userAgent.includes('duckduckgo') || userAgent.includes('ddg')) {
+      browserInfo = { ...browserInfo, ...unsupportedBrowsers.duckduckgo, isUnsupported: true };
+    } else if (userAgent.includes('arc')) {
+      browserInfo = { ...browserInfo, ...unsupportedBrowsers.arc, isUnsupported: true };
+    } else if (userAgent.includes('focus')) {
+      browserInfo = { ...browserInfo, ...unsupportedBrowsers.focus, isUnsupported: true };
+    } else if (userAgent.includes('brave')) {
+      browserInfo = { ...browserInfo, ...unsupportedBrowsers.brave, isUnsupported: true };
+    } else if (userAgent.includes('safari') && userAgent.includes('mobile') && !userAgent.includes('chrome')) {
+      // Safari mobile has limited support
+      browserInfo.name = 'Safari Mobile';
+      browserInfo.isUnsupported = true;
+      browserInfo.reason = 'Safari mobile requires adding the website to your home screen for push notifications.';
+      browserInfo.recommendations = ['Chrome', 'Firefox'];
+    } else if (userAgent.includes('chrome')) {
+      browserInfo.name = 'Chrome';
+    } else if (userAgent.includes('firefox')) {
+      browserInfo.name = 'Firefox';
+    } else if (userAgent.includes('edge')) {
+      browserInfo.name = 'Edge';
+    } else if (userAgent.includes('opera')) {
+      browserInfo.name = 'Opera';
+    }
+
+    return browserInfo;
+  }
+
+  showUnsupportedBrowserMessage(browserInfo) {
+    // Remove any existing unsupported browser messages
+    const existingMessage = document.getElementById('unsupported-browser-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.id = 'unsupported-browser-message';
+    messageDiv.className = 'unsupported-browser-banner';
+    
+    messageDiv.innerHTML = `
+      <div class="unsupported-browser-content">
+        <div class="unsupported-browser-icon">ℹ️</div>
+        <div class="unsupported-browser-text">
+          <strong>Push Notifications Unavailable</strong>
+          <p>${browserInfo.reason}</p>
+          <p><strong>Recommended browsers:</strong> ${browserInfo.recommendations.join(', ')}</p>
+          <div class="unsupported-browser-actions">
+            <button id="learn-more-browser" class="btn btn-outline btn-sm">Learn More</button>
+            <button id="dismiss-browser-message" class="btn btn-secondary btn-sm">Dismiss</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Add styles
+    const style = document.createElement('style');
+    style.textContent = `
+      .unsupported-browser-banner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+        color: #333;
+        padding: 12px 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .unsupported-browser-banner.show {
+        transform: translateY(0);
+      }
+      
+      .unsupported-browser-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      .unsupported-browser-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+      
+      .unsupported-browser-text {
+        flex: 1;
+      }
+      
+      .unsupported-browser-text p {
+        margin: 4px 0;
+        font-size: 14px;
+      }
+      
+      .unsupported-browser-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+      }
+      
+      .unsupported-browser-banner .btn {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        border: none;
+      }
+      
+      .unsupported-browser-banner .btn-outline {
+        background: transparent;
+        border: 1px solid #333;
+        color: #333;
+      }
+      
+      .unsupported-browser-banner .btn-secondary {
+        background: rgba(0,0,0,0.1);
+        color: #333;
+      }
+      
+      @media (max-width: 768px) {
+        .unsupported-browser-content {
+          flex-direction: column;
+          text-align: center;
+        }
+        
+        .unsupported-browser-actions {
+          justify-content: center;
+        }
+      }
+    `;
+    
+    document.head.appendChild(style);
+    document.body.appendChild(messageDiv);
+
+    // Setup event handlers
+    setTimeout(() => {
+      const learnMoreBtn = document.getElementById('learn-more-browser');
+      const dismissBtn = document.getElementById('dismiss-browser-message');
+      
+      if (learnMoreBtn) {
+        learnMoreBtn.addEventListener('click', () => {
+          this.showBrowserCompatibilityInfo(browserInfo);
+        });
+      }
+      
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+          localStorage.setItem('browser_message_dismissed', 'true');
+          messageDiv.classList.remove('show');
+          setTimeout(() => messageDiv.remove(), 300);
+        });
+      }
+      
+      // Check if user previously dismissed
+      const dismissed = localStorage.getItem('browser_message_dismissed');
+      if (!dismissed) {
+        messageDiv.classList.add('show');
+      }
+    }, 100);
+  }
+
+  showBrowserCompatibilityInfo(browserInfo) {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div class="browser-info-modal-overlay">
+        <div class="browser-info-modal">
+          <h3>Browser Compatibility Information</h3>
+          <div class="browser-info-content">
+            <p><strong>Current Browser:</strong> ${browserInfo.name}</p>
+            <p><strong>Issue:</strong> ${browserInfo.reason}</p>
+            
+            <h4>Recommended Browsers for Push Notifications:</h4>
+            <ul>
+              <li><strong>Chrome/Chromium:</strong> Full support on all platforms</li>
+              <li><strong>Firefox:</strong> Full support on desktop and mobile</li>
+              <li><strong>Edge:</strong> Full support on Windows and mobile</li>
+              <li><strong>Samsung Internet:</strong> Full support on Android devices</li>
+            </ul>
+            
+            <h4>Alternative Ways to Stay Updated:</h4>
+            <ul>
+              <li>📧 Enable email notifications in your account settings</li>
+              <li>🔄 Manually refresh the page to check for updates</li>
+              <li>📱 Use our mobile app if available</li>
+              <li>🌐 Bookmark this page and check regularly</li>
+            </ul>
+          </div>
+          <button id="close-browser-modal" class="btn btn-primary">Got It</button>
+        </div>
+      </div>
+    `;
+    
+    // Add modal styles
+    const modalStyle = document.createElement('style');
+    modalStyle.textContent = `
+      .browser-info-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      
+      .browser-info-modal {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      
+      .browser-info-modal h3 {
+        margin-top: 0;
+        color: #333;
+      }
+      
+      .browser-info-modal h4 {
+        margin-top: 20px;
+        margin-bottom: 8px;
+        color: #555;
+      }
+      
+      .browser-info-content {
+        margin-bottom: 20px;
+      }
+      
+      .browser-info-modal ul {
+        margin: 8px 0;
+        padding-left: 20px;
+      }
+      
+      .browser-info-modal li {
+        margin: 4px 0;
+      }
+      
+      .browser-info-modal .btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    `;
+    
+    document.head.appendChild(modalStyle);
+    document.body.appendChild(modal);
+    
+    // Close modal handler
+    document.getElementById('close-browser-modal').addEventListener('click', () => {
+      modal.remove();
+      modalStyle.remove();
+    });
+    
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal.querySelector('.browser-info-modal-overlay')) {
+        modal.remove();
+        modalStyle.remove();
+      }
+    });
+  }
+
   async getTokenStatus() {
     try {
       const response = await fetch('/fcm/token-status/', {
@@ -373,7 +711,6 @@ class FCMManager {
         return null;
       }
     } catch (error) {
-      console.error('Error getting token status:', error);
       return null;
     }
   }
@@ -382,13 +719,13 @@ class FCMManager {
 // Global FCM Manager instance
 window.fcmManager = new FCMManager();
 
+
 // Initialize FCM when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
   const initialized = await window.fcmManager.init();
+  
   if (initialized) {
     await window.fcmManager.setupForegroundMessaging();
-    
-    // Dispatch custom event to signal FCM is ready
     window.dispatchEvent(new CustomEvent('fcmReady', {
       detail: { fcmManager: window.fcmManager }
     }));
