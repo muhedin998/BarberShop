@@ -104,6 +104,11 @@ ENV/
 env.bak/ 
 venv.bak/ 
 venv
+envs/
+frizer_env/
+
+# Claude Code
+.claude/
 
 # mkdocs documentation 
 /site 
