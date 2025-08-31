@@ -1,0 +1,672 @@
+
+{% extends 'appointment/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.help-hero {
+    background-image: url('/static/images/pozadina1.jpg');
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+    padding: 100px 0 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.help-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
+
+.help-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.help-hero p {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.help-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+.help-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    margin: -40px 20px 60px;
+    position: relative;
+    z-index: 3;
+}
+
+.stat-card {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 50px;
+}
+
+.faq-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+    margin-bottom: 80px;
+}
+
+.faq-section {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.faq-category {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.faq-category-icon {
+    font-size: 1.8rem;
+    color: #667eea;
+    margin-right: 15px;
+}
+
+.faq-category h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.faq-question {
+    background: #f8f9fa;
+    padding: 20px 25px;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    background: #667eea;
+    color: white;
+}
+
+.faq-question.active {
+    background: #667eea;
+    color: white;
+}
+
+.faq-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.faq-question.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0 25px;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    background: white;
+}
+
+.faq-answer.active {
+    padding: 25px;
+    max-height: 200px;
+}
+
+.faq-answer p {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.contact-section {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-radius: 25px;
+    padding: 50px;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><circle cx="30" cy="30" r="1.5" fill="white" opacity="0.05"/></svg>');
+    animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-20px, -20px) rotate(180deg); }
+}
+
+.contact-section h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.contact-section p {
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.contact-form {
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.form-input::placeholder {
+    color: rgba(255,255,255,0.8);
+}
+
+.form-input:focus {
+    outline: none;
+    background: rgba(255,255,255,0.3);
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.submit-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.submit-btn:hover {
+    background: #764ba2;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.support-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin: 60px 0;
+}
+
+.support-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+}
+
+.support-card:hover {
+    transform: translateY(-10px);
+}
+
+.support-icon {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+.support-card h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.support-card p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.support-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.support-link:hover {
+    color: #764ba2;
+}
+
+@media (max-width: 768px) {
+    .help-hero {
+        background-attachment: scroll;
+    }
+    .help-hero h1 { font-size: 2.5rem; }
+    .help-hero p { font-size: 1.1rem; }
+    .faq-container { grid-template-columns: 1fr; }
+    .contact-section { padding: 30px 20px; }
+    .help-stats { margin: -30px 10px 40px; }
+}
+</style>
+
+<!-- Hero Section -->
+<div class="help-hero">
+    <div class="help-container">
+        <h1><i class="fa fa-question-circle"></i> POMOĆ I PODRŠKA</h1>
+        <p>Tu smo da vam pomognemo sa svim pitanjima o našem salonu</p>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="help-stats">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-clock-o"></i></div>
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Online podrška</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-users"></i></div>
+        <div class="stat-number">1000+</div>
+        <div class="stat-label">Zadovoljnih klijenata</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-star"></i></div>
+        <div class="stat-number">4.9</div>
+        <div class="stat-label">Prosečna ocena</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa fa-reply"></i></div>
+        <div class="stat-number">< 2h</div>
+        <div class="stat-label">Vreme odgovora</div>
+    </div>
+</div>
+
+<div class="help-container">
+    <!-- FAQ Section -->
+    <h2 class="section-title">Često Postavljana Pitanja</h2>
+    <p class="section-subtitle">Odgovore na najčešća pitanja možete pronaći ovde</p>
+    
+    <div class="faq-container">
+        <!-- General FAQ -->
+        <div class="faq-section">
+            <div class="faq-category">
+                <div class="faq-category-icon"><i class="fa fa-info-circle"></i></div>
+                <h3>Opšta pitanja</h3>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Kako da zakažem termin online?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Termin možete zakazati u samo nekoliko koraka: kliknite na "ZAKAŽITE TERMIN", izaberite željenu uslugu, odaberite frizera, datum i vreme. Sistem će vam automatski prikazati dostupne termine.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li moram da se registrujem?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Da, registracija je obavezna kako biste mogli da zakažete termine i upravljate njima. Proces registracije traje samo minut i omogućiće vam da pratite svoju istoriju termina.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Kako mogu da promenim ili otkažem termin?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Trenutno je moguće otkazati termin pozivom na telefon +381 64 2172921. Online opcija za otkazivanje termina će uskoro biti dostupna.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li mogu da vidim istoriju svojih termina?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Funkcija pregleda istorije termina je u pripremi i biće dostupna u narednoj verziji aplikacije. Za sada možete kontaktirati salon za informacije o prethodnim terminima.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services FAQ -->
+        <div class="faq-section">
+            <div class="faq-category">
+                <div class="faq-category-icon"><i class="fa fa-scissors"></i></div>
+                <h3>Usluge i cene</h3>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Koje usluge nudite?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Nudimo kompletne frizerske usluge: šišanje, feniranje, farbanje, pranje kose, stilizovanje, tretmane za kosu i specijalne usluge za venčanja i događaje.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Gde mogu da vidim cenovnik?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Kompletne cene svih usluga možete pronaći na početnoj stranici u sekciji "USLUGE". Cene se redovno ažuriraju i transparentno su prikazane.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li primate kartice kao način plaćanja?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Da, prihvatamo sve vrste platnih kartica (Visa, MasterCard, Dina karticu), kao i gotovinu. Plaćanje se vrši nakon pružene usluge.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical FAQ -->
+        <div class="faq-section">
+            <div class="faq-category">
+                <div class="faq-category-icon"><i class="fa fa-mobile"></i></div>
+                <h3>Tehnička pitanja</h3>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li mogu da koristim sajt na telefonu?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Apsolutno! Naš sajt je potpuno prilagođen mobilnim uređajima. Možete zakazivati termine, upravljati profilom i koristiti sve funkcije sa telefona ili tableta.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Šta ako zaboravim lozinku?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Funkcija resetovanja lozinke je trenutno u razvoju. Molimo vas da kontaktirate salon na +381 64 2172921 ili hasko83@gmail.com za pomoć oko pristupa nalogu.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li dobijam notifikacije o terminima?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Da, šaljemo notifikacije podsetnik 24 sata pre termina. Kao i u trenutku zakazivanja termina.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Features FAQ -->
+        <div class="faq-section">
+            <div class="faq-category">
+                <div class="faq-category-icon"><i class="fa fa-cog"></i></div>
+                <h3>Funkcije u razvoju</h3>
+            </div>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Koje nove funkcije planirate?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Radimo na: online otkazivanju termina, pregledu istorije termina, resetovanju lozinke, live chat podršci, i poboljšanoj mobilnoj aplikaciji.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Kada će biti dostupne nove funkcije?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Kontinuirano radimo na poboljšanjima. Neke funkcije će biti dostupne u narednim nedeljama, dok će kompleksnije funkcije biti implementirane tokom narednih meseci.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Kako mogu da predložim novu funkciju?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Vaše predloge možete poslati putem kontakt forme na ovoj stranici ili direktno na email hasko83@gmail.com. Sve predloge pažljivo razmatramo!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Options -->
+    <div class="support-options">
+        <div class="support-card">
+            <div class="support-icon"><i class="fa fa-phone"></i></div>
+            <h4>Pozovite nas</h4>
+            <p>Direktan kontakt sa našim timom za hitna pitanja</p>
+            <a href="tel+381 64 2172921" class="support-link">+381 64 2172921</a>
+        </div>
+        
+        <div class="support-card">
+            <div class="support-icon"><i class="fa fa-envelope"></i></div>
+            <h4>Email podrška</h4>
+            <p>Pošaljite nam email za detaljnije konsultacije</p>
+            <a href="mailto:hasko83@gmail.com" class="support-link">hasko83@gmail.com</a>
+        </div>
+        
+        <div class="support-card">
+            <div class="support-icon"><i class="fa fa-map-marker"></i></div>
+            <h4>Posetite nas</h4>
+            <p>Dođite direktno u salon za personalizovane konsultacije</p>
+            <a href="https://maps.app.goo.gl/YiPSVxGjyP2k8YjeA" class="support-link">Pogledaj lokaciju</a>
+        </div>
+        
+        <div class="support-card">
+            <div class="support-icon"><i class="fa fa-comments"></i></div>
+            <h4>Live chat</h4>
+            <p>Funkcija chat-a je u pripremi i biće dostupna uskoro</p>
+            <button type="button" class="support-link" onclick="alert('Live chat funkcija će uskoro biti dostupna. Za sada možete koristiti telefon ili email.')">Uskoro dostupno</button>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-section">
+        <h3><i class="fa fa-paper-plane"></i> Pošaljite nam poruku</h3>
+        <p>Niste pronašli odgovor na vaše pitanje? Kontaktirajte nas direktno!</p>
+        
+        <form class="contact-form" action="{% url 'help_page' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-input" type="text" placeholder="Vaše ime" required name="Name">
+            </div>
+            <div class="form-group">
+                <input class="form-input" type="email" placeholder="Email adresa" required name="Email">
+            </div>
+            <div class="form-group">
+                <input class="form-input" type="text" placeholder="Naslov poruke" required name="Subject">
+            </div>
+            <div class="form-group">
+                <textarea class="form-input form-textarea" placeholder="Vaša poruka..." required name="Message"></textarea>
+            </div>
+            <button class="submit-btn" type="submit" name="kontakt_mail">
+                <i class="fa fa-paper-plane"></i>
+                Pošaljite poruku
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleFAQ(button) {
+    const answer = button.nextElementSibling;
+    const isActive = button.classList.contains('active');
+    
+    // Close all other FAQ items
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.classList.remove('active');
+        q.nextElementSibling.classList.remove('active');
+    });
+    
+    // Toggle current item
+    if (!isActive) {
+        button.classList.add('active');
+        answer.classList.add('active');
+    }
+}
+
+// Add smooth scrolling for better UX
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Add loading animation for form submission
+document.querySelector('.contact-form').addEventListener('submit', function(e) {
+    const submitBtn = this.querySelector('.submit-btn');
+    submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Šalje se...';
+    submitBtn.disabled = true;
+});
+
+function pokreniLiveChatButto() {
+   return alert("Live chat jos uvek nije dostupan !");
+}
+</script>
+{% endblock %}
