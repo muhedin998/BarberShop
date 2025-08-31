@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             name='FCMToken',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.TextField(unique=True)),
+                ('token', models.CharField(max_length=500, unique=True)),
                 ('device_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

@@ -32,7 +32,7 @@ class Usluge(models.Model):
 
 class FCMToken(models.Model):
     user = models.ForeignKey("Korisnik", on_delete=models.CASCADE)
-    token = models.TextField(unique=True)
+    token = models.CharField(max_length=500, unique=True)
     device_id = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,29 @@
+[
+{
+  "model": "appointment.frizer",
+  "pk": 2,
+  "fields": {
+    "name": "Hasredin Bećirović",
+    "image": "images/1000260109.jpg",
+    "phone": null
+  }
+},
+{
+  "model": "appointment.frizer",
+  "pk": 4,
+  "fields": {
+    "name": "(bez imena)",
+    "image": "",
+    "phone": null
+  }
+},
+{
+  "model": "appointment.frizer",
+  "pk": 5,
+  "fields": {
+    "name": "Muvehid Bećirović",
+    "image": "images/1000260108.jpg",
+    "phone": null
+  }
+}
+]
