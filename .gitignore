@@ -107,6 +107,25 @@ venv
 envs/
 frizer_env/
 
+# Sensitive files
+*.env.local
+*.env.production
+.env.*
+secrets.json
+firebase-credentials.json
+*.key
+*.pem
+*.crt
+
+# Database backups
+*.backup
+*.sql
+*.sqlite
+*.db
+
+# Django secret key
+secret_key.txt
+
 # Claude Code
 .claude/
 
