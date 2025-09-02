@@ -1,0 +1,242 @@
+[
+{
+  "model": "appointment.usluge",
+  "pk": 1,
+  "fields": {
+    "name": "Fade šišanje",
+    "cena": 800,
+    "duzina": "00:30:00",
+    "slika": "images/usluga/sisanje.jpeg"
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 2,
+  "fields": {
+    "name": "Klasika šišanje",
+    "cena": 700,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 3,
+  "fields": {
+    "name": "Šišanje + Brada",
+    "cena": 1200,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 4,
+  "fields": {
+    "name": "Šišanje sa strana",
+    "cena": 600,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 5,
+  "fields": {
+    "name": "Šišanje penzionera",
+    "cena": 500,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 6,
+  "fields": {
+    "name": "Brijanje glave",
+    "cena": 600,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 7,
+  "fields": {
+    "name": "Šišanje djece do 12 god",
+    "cena": 600,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 10,
+  "fields": {
+    "name": "Sređivanje manje brade",
+    "cena": 400,
+    "duzina": "00:15:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 11,
+  "fields": {
+    "name": "Sređivanje velike brade",
+    "cena": 500,
+    "duzina": "00:20:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 12,
+  "fields": {
+    "name": "Samo skraćivanje brade",
+    "cena": 200,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 13,
+  "fields": {
+    "name": "Pranje kose",
+    "cena": 150,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 14,
+  "fields": {
+    "name": "Fazon",
+    "cena": 100,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 15,
+  "fields": {
+    "name": "Ne brijemo brade",
+    "cena": 0,
+    "duzina": "10:00:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 16,
+  "fields": {
+    "name": "Afro lokne (minival)",
+    "cena": 1800,
+    "duzina": "01:00:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 17,
+  "fields": {
+    "name": "Izvlačenje pramenova (šatiranje)",
+    "cena": 1500,
+    "duzina": "00:40:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 18,
+  "fields": {
+    "name": "Farbanje + Šišanje",
+    "cena": 1200,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 19,
+  "fields": {
+    "name": "Farbanje kose",
+    "cena": 500,
+    "duzina": "00:15:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 20,
+  "fields": {
+    "name": "Farbanje brade",
+    "cena": 400,
+    "duzina": "00:15:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 21,
+  "fields": {
+    "name": "Airbrush sjenčenje",
+    "cena": 300,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 22,
+  "fields": {
+    "name": "Tretman lica",
+    "cena": 400,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 23,
+  "fields": {
+    "name": "Depilacija toplim voskom",
+    "cena": 200,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 24,
+  "fields": {
+    "name": "Vlakna za kosu",
+    "cena": 300,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 25,
+  "fields": {
+    "name": "Tatto tribali",
+    "cena": 200,
+    "duzina": "00:10:00",
+    "slika": ""
+  }
+},
+{
+  "model": "appointment.usluge",
+  "pk": 26,
+  "fields": {
+    "name": "Namaz",
+    "cena": 0,
+    "duzina": "00:30:00",
+    "slika": ""
+  }
+}
+]

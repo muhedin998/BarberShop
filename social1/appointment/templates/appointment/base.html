@@ -134,7 +134,11 @@
       <a href="#reviews" class="w3-bar-item w3-button"><i class="fa fa-star"></i> RECENZIJE</a>
       <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> KONTAKT</a>
       {% if user.is_authenticated %}
+<<<<<<< HEAD
       <a href="{% url 'zafrizera' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar" aria-hidden="true"></i> TERMINI</a>
+=======
+      <a href="{% url 'help_page' %}" class="w3-bar-item w3-button"><i class="fa fa-question-circle" aria-hidden="true"></i> POMOĆ</a>
+>>>>>>> origin/izmene
       <a href="{% url 'user_logout' %}" class="w3-bar-item w3-button"><i class="fa fa-sign-out" aria-hidden="true"></i> ODJAVI SE</a>
       {% else %}
       <a href="{% url 'user_logout' %}" class="w3-bar-item w3-button"><i class="fa fa-sign-in" aria-hidden="true"></i> PRIJAVI SE</a>
@@ -149,7 +153,11 @@
       <i class="fa fa-bars"></i>
     </a>
     {% if user.is_authenticated %}
+<<<<<<< HEAD
     <a href="{% url 'zafrizera' %}" class="w3-bar-item w3-button w3-right w3-hide-large"><i class="fa fa-calendar" aria-hidden="true"></i> </a>
+=======
+    <a href="{% url 'help_page' %}" class="w3-bar-item w3-button w3-right w3-hide-large"><i class="fa fa-question-circle" aria-hidden="true"></i> </a>
+>>>>>>> origin/izmene
     {% endif %}
   </div>
 </div>
@@ -172,7 +180,11 @@
   {% endif %}
    
   {% if user.is_authenticated %}
+<<<<<<< HEAD
      <a href="{% url 'zafrizera' %}" class="w3-bar-item w3-button"><i class="fa fa-calendar" aria-hidden="true"></i> TERMINI</a>
+=======
+     <a href="{% url 'help_page' %}" class="w3-bar-item w3-button"><i class="fa fa-question-circle" aria-hidden="true"></i> POMOĆ</a>
+>>>>>>> origin/izmene
      <a href="{% url 'user_logout' %}" class="w3-bar-item w3-button" style="position: absolute; bottom: 0;"><i class="fa fa-sign-out" aria-hidden="true" ></i> ODJAVI SE</a>
   {% else %}
      <a href="{% url 'user_logout' %}" class="w3-bar-item w3-button" style="position: absolute; bottom: 0;"><i class="fa fa-sign-out" aria-hidden="true"></i> PRIJAVI SE</a>

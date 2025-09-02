@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 # Initialize Firebase Admin SDK
 def initialize_firebase():
     if not firebase_admin._apps:
+<<<<<<< HEAD
         # Debug logging
         logger.info("=== FIREBASE DEBUG ===")
         logger.info(f"FIREBASE_CONFIG exists: {hasattr(settings, 'FIREBASE_CONFIG')}")
@@ -29,6 +30,17 @@ def initialize_firebase():
             cred_path = os.path.join(settings.BASE_DIR, 'firebase-config.json')
             if os.path.exists(cred_path):
                 cred = credentials.Certificate(cred_path)
+=======
+        
+        # Always use the config file since we have it
+        cred_path = os.path.join(settings.BASE_DIR, 'firebase-config.json')
+        if os.path.exists(cred_path):
+            cred = credentials.Certificate(cred_path)
+        else:
+            # Fallback to environment variables if config file doesn't exist
+            if hasattr(settings, 'FIREBASE_CONFIG') and settings.FIREBASE_CONFIG.get('private_key'):
+                cred = credentials.Certificate(settings.FIREBASE_CONFIG)
+>>>>>>> origin/izmene
             else:
                 raise Exception("Firebase configuration not found. Please set environment variables or provide firebase-config.json")
         firebase_admin.initialize_app(cred)
@@ -99,7 +111,10 @@ def send_push_notification(fcm_token, title, body, data=None):
         
         # Send the message
         response = messaging.send(message)
+<<<<<<< HEAD
         logger.info(f'Successfully sent message: {response}')
+=======
+>>>>>>> origin/izmene
         return response
         
     except Exception as e:
@@ -124,15 +139,21 @@ def send_push_notification_to_user(user, title, body, data=None):
         from .models import FCMToken
         user_tokens = FCMToken.objects.filter(user=user, is_active=True)
         
+<<<<<<< HEAD
         logger.info(f'Found {user_tokens.count()} active FCM tokens for user {user.username}')
         
         if not user_tokens.exists():
             logger.warning(f'No active FCM tokens found for user {user.username}')
+=======
+        
+        if not user_tokens.exists():
+>>>>>>> origin/izmene
             return []
         
         successful_sends = []
         
         for token_obj in user_tokens:
+<<<<<<< HEAD
             logger.info(f'Attempting to send push notification to token {token_obj.id} for user {user.username}')
             result = send_push_notification(token_obj.token, title, body, data)
             if result:
@@ -140,11 +161,20 @@ def send_push_notification_to_user(user, title, body, data=None):
                 logger.info(f'Successfully sent notification to token {token_obj.id}')
             else:
                 logger.warning(f'Failed to send notification to token {token_obj.id}, marking as inactive')
+=======
+            result = send_push_notification(token_obj.token, title, body, data)
+            if result:
+                successful_sends.append(result)
+            else:
+>>>>>>> origin/izmene
                 # Mark token as inactive if sending failed
                 token_obj.is_active = False
                 token_obj.save()
         
+<<<<<<< HEAD
         logger.info(f'Push notification summary for user {user.username}: {len(successful_sends)} successful, {user_tokens.count() - len(successful_sends)} failed')
+=======
+>>>>>>> origin/izmene
         return successful_sends
         
     except Exception as e:
@@ -197,9 +227,12 @@ def send_bulk_push_notifications(tokens, title, body, data=None):
         # Send all messages
         response = messaging.send_all(messages)
         
+<<<<<<< HEAD
         logger.info(f'Successfully sent {response.success_count} messages')
         if response.failure_count > 0:
             logger.warning(f'Failed to send {response.failure_count} messages')
+=======
+>>>>>>> origin/izmene
             
         return {
             'success_count': response.success_count,

@@ -6,7 +6,11 @@ from .views_auth import (
 
 # Appointment views
 from .views_appointments import (
+<<<<<<< HEAD
     potvrdi, termin, zakazi, otkazivanje, zafrizera
+=======
+    potvrdi, termin, zakazi, otkazivanje, zafrizera, help_page
+>>>>>>> origin/izmene
 )
 
 # Admin/Management views

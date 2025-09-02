@@ -103,7 +103,40 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/ 
-venv
+venv/
+envs/
+frizer_env/
+
+# Virtual environment files
+venv/**
+**/venv/**
+**/lib/**
+**/bin/**
+**/include/**
+**/share/**
+**/pyvenv.cfg
+
+# Sensitive files
+*.env.local
+*.env.production
+.env.*
+secrets.json
+firebase-credentials.json
+*.key
+*.pem
+*.crt
+
+# Database backups
+*.backup
+*.sql
+*.sqlite
+*.db
+
+# Django secret key
+secret_key.txt
+
+# Claude Code
+.claude/
 
 # mkdocs documentation 
 /site 
@@ -136,3 +169,24 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 social1/appointment/__pycache__/
+
+# Static files (Django collectstatic)
+social1/static/
+staticfiles/
+STATIC_ROOT/
+
+# Media files (user uploads)
+media/
+
+# macOS files
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
