@@ -58,7 +58,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
 
 # Use localhost for development, production site for deployed environment
-SITE_ID = 5 #7 if DEBUG else 5
+SITE_ID = 8 #8 for MySQL, was 5 for SQLite
 
 # Site URL for ngrok/development (set this when using ngrok)
 # Example: SITE_URL = 'https://abc123.ngrok-free.app'
@@ -139,20 +139,29 @@ WSGI_APPLICATION = 'social1.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'barbershop',
-        'USER': 'barberuser',
-        'PASSWORD': 'barberpass123',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+# Database configuration - can be switched with environment variable
+if os.environ.get('USE_SQLITE') == '1':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'barbershop',
+            'USER': 'barberuser',
+            'PASSWORD': 'barberpass123',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"

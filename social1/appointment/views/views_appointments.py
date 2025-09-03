@@ -379,9 +379,6 @@ def otkazivanje(request, termin_id):
 
 @login_required(redirect_field_name='user_login/')
 def zafrizera(request):
-<<<<<<< HEAD
-    return redirect('opcije_termini')
-=======
     return redirect('opcije_termini')
 
 def help_page(request):
@@ -407,4 +404,3 @@ def help_page(request):
             messages.success(request, "Poruka je uspešno poslata!")
             return redirect('help_page')
     return render(request, 'appointment/help_page.html')
->>>>>>> origin/izmene

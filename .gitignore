@@ -175,6 +175,26 @@ social1/static/
 staticfiles/
 STATIC_ROOT/
 
+# App static files (environment specific) 
+**/static/css/
+**/static/js/
+**/static/images/
+**/static/fonts/
+**/static/**/*.css
+**/static/**/*.js
+**/static/**/*.map
+**/static/**/*.min.css
+**/static/**/*.min.js
+
+# Generated/compiled static assets
+*.css.map
+*.js.map
+bundle.js
+bundle.css
+
+# Note: Static files should be managed per environment
+# Use 'python manage.py collectstatic' to regenerate
+
 # Media files (user uploads)
 media/
 
