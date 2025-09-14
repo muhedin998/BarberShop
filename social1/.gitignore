@@ -15,9 +15,14 @@ local_settings.py
 # Firebase credentials
 firebase-config.json
 
-# Static files (collected)
+# Static files - collectstatic output only
+# Very specific patterns to avoid conflicts
 /static/
 /staticfiles/
+
+# Allow app static directories (Django apps)
+!/*/static/
+!/*/static/**
 
 # Media files (optional - you might want to track some)
 /media/
