@@ -128,6 +128,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'appointment.context_processors.notification_count',
+                    'appointment.context_processors.active_banners',
             ],
         },
     },
@@ -166,7 +167,7 @@ else:
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = "frizerskisalonhasko@gmail.com"
-EMAIL_HOST_PASSWORD = "wtweppqeiptlxoxf"
+EMAIL_HOST_PASSWORD = "mert feks tkuu lali"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -276,6 +277,11 @@ LOGGING = {
             'propagate': False,
         },
         'appointment.fcm_views': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'appointment.email': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,

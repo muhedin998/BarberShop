@@ -91,7 +91,7 @@
 	{% endif %}
 	<meta name="csrf-token" content="{{ csrf_token }}">
 </head>
-<body {% if user.is_authenticated %}class="authenticated"{% endif %}>
+<body {% if user.is_authenticated %}class="authenticated{% if active_banners and request.resolver_match.url_name == 'zakazi' %} banner-active{% endif %}"{% elif active_banners and request.resolver_match.url_name == 'zakazi' %}class="banner-active"{% endif %}>
 
 <div class="fixed-bottom-nav">
     <a class="nav-item {% if request.path == '/' %}active{% endif %}" href="{% url 'zakazi' %}" id="home-page">
@@ -186,6 +186,26 @@
   {% endif %}
 
 </nav>
+
+<!-- Banner Display Section - Only on home page -->
+{% if active_banners and request.resolver_match.url_name == 'zakazi' %}
+<div class="banner-container">
+    {% for banner in active_banners %}
+    <div class="site-banner" id="banner-{{ banner.id }}">
+        <div class="banner-content">
+            <div class="banner-text">
+                <h4 class="banner-title">{{ banner.title }}</h4>
+                <p class="banner-message">{{ banner.text }}</p>
+            </div>
+            <button class="banner-close" onclick="closeBanner({{ banner.id }})" aria-label="Zatvori banner">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 {% block content %}
 
 
@@ -348,6 +368,33 @@
     potvrdi_form.remove();
     document.getElementById("nema-termina").style.display = "block"
   }
+</script>
+
+<!-- Banner Scripts -->
+<script>
+function closeBanner(bannerId) {
+    const banner = document.getElementById('banner-' + bannerId);
+    if (banner) {
+        banner.style.display = 'none';
+        // Store the closed banner ID in localStorage so it stays closed during the session
+        let closedBanners = JSON.parse(localStorage.getItem('closedBanners') || '[]');
+        if (!closedBanners.includes(bannerId)) {
+            closedBanners.push(bannerId);
+            localStorage.setItem('closedBanners', JSON.stringify(closedBanners));
+        }
+    }
+}
+
+// Hide previously closed banners when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const closedBanners = JSON.parse(localStorage.getItem('closedBanners') || '[]');
+    closedBanners.forEach(function(bannerId) {
+        const banner = document.getElementById('banner-' + bannerId);
+        if (banner) {
+            banner.style.display = 'none';
+        }
+    });
+});
 </script>
 
 <!-- Firebase and Push Notification Scripts -->

@@ -174,15 +174,57 @@ def potvrdi(request):
             }
             data = TestForm(params)
             if data.is_valid():              
-                data.save()
+                saved_appointment = data.save()
                 vreme_za_poruku = datetime.strptime(request.POST['vreme'][:5],"%H:%M")
                 za_disp = f"{vreme_za_poruku.hour}:{vreme_za_poruku.minute}"
                 messages.success(request,f"Uspešno ste zakazali termin {datum} u {za_disp}")
+                
+                # Create notification
                 Notification.objects.create(
                     user=request.user,
                     title="Novi termin",
                     message=f"Uspešno ste zakazali termin {datum} u {za_disp} sa frizerom {Frizer.objects.get(pk=frizer).name} za uslugu {Usluge.objects.get(pk=usluga).name}.",
                 )
+                
+                # Send confirmation email
+                if request.user.email and request.user.is_email_verified:
+                    try:
+                        # Get additional services if any
+                        dodatne_usluge_objects = []
+                        if dodatne_usluge:
+                            dodatne_usluge_objects = Usluge.objects.filter(id__in=dodatne_usluge)
+                        
+                        # Prepare email context
+                        email_context = {
+                            'user': request.user,
+                            'appointment': saved_appointment,
+                            'dodatne_usluge_objects': dodatne_usluge_objects,
+                            'loyalty_message': loyalty_message,
+                        }
+                        
+                        # Render HTML email template
+                        html_message = render_to_string('appointment/emails/appointment_confirmation.html', email_context)
+                        
+                        # Create and send email
+                        email = EmailMessage(
+                            subject=f'Potvrda termina - {saved_appointment.datum.strftime("%d.%m.%Y")} u {saved_appointment.vreme.strftime("%H:%M")}',
+                            body=html_message,
+                            from_email=settings.EMAIL_HOST_USER,
+                            to=[request.user.email],
+                        )
+                        email.content_subtype = "html"  # Set content type to HTML
+                        email.send()
+                        
+                        import logging
+                        logger = logging.getLogger('appointment.email')
+                        logger.info(f"Confirmation email sent successfully to {request.user.email} for appointment {saved_appointment.id}")
+                        
+                    except Exception as e:
+                        import logging
+                        logger = logging.getLogger('appointment.email')
+                        logger.error(f"Failed to send confirmation email to {request.user.email}: {str(e)}", exc_info=True)
+                        # Don't show error to user as appointment was still created successfully
+                
                 return redirect('termin')
             else:
                 messages.error(request, "Greska na serveru, pokusajte ponovo", extra_tags='danger')

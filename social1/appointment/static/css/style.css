@@ -295,3 +295,201 @@ transform: translateY(0px);
     border: 2px solid white;
     box-sizing: border-box;
 }
+
+/* Banner Styles - Website Theme */
+.banner-container {
+    position: fixed;
+    top: 46px; /* Stick directly to navbar */
+    left: 0;
+    right: 0;
+    z-index: 998; /* Below navbar but above content */
+    margin: 0; /* Remove margins */
+}
+
+.site-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    padding: 20px 25px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    animation: bannerSlideDown 0.5s ease-out;
+    font-family: "Raleway", sans-serif;
+    overflow: hidden;
+    border-radius: 0;
+}
+
+.site-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd, #ff6b6b);
+    background-size: 400% 400%;
+    animation: gradientBorder 4s ease infinite;
+    z-index: -1;
+    padding: 3px;
+    border-radius: 0;
+}
+
+.site-banner::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: -1;
+    border-radius: 0;
+}
+
+.banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-title {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    font-family: "Raleway", sans-serif;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
+}
+
+.banner-message {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.95);
+    font-family: "Raleway", sans-serif;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.banner-close {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: 20px;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.banner-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+@keyframes bannerSlideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes gradientBorder {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Mobile responsiveness for banners */
+@media (max-width: 768px) {
+    .banner-container {
+        position: fixed;
+        top: 46px; /* Stick to navbar on mobile too */
+        left: 0;
+        right: 0;
+        z-index: 998; /* Below navbar but above content */
+        margin: 0;
+    }
+    
+    .site-banner {
+        padding: 18px 20px;
+    }
+    
+    .site-banner::before {
+        padding: 2px; /* Thinner border on mobile */
+    }
+    
+    .site-banner::after {
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+    }
+    
+    .banner-title {
+        font-size: 20px;
+        margin-bottom: 6px;
+        letter-spacing: 0.3px;
+    }
+    
+    .banner-message {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    
+    .banner-close {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+        margin-left: 15px;
+    }
+    
+    .banner-close:hover {
+        transform: scale(1.05);
+    }
+}
+
+/* Multiple banner spacing */
+.site-banner + .site-banner {
+    border-top: 1px solid #e8e8e8;
+}
+
+/* Content adjustment when banners are present */
+.banner-active {
+    padding-top: 50px; /* Approximate banner height + navbar */
+}
+
+@media (max-width: 768px) {
+    .banner-active {
+        padding-top: 50px; /* Slightly smaller on mobile */
+    }
+}

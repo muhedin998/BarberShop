@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potvrda termina - Frizerski salon Hasko</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd, #ff6b6b);
+            background-size: 400% 400%;
+            animation: gradientMove 8s ease infinite;
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+        
+        .header .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            font-weight: 300;
+        }
+        
+        .confirmation-badge {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 15px 30px;
+            margin: 20px 0 0 0;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+        
+        .confirmation-badge .checkmark {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .confirmation-text {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .appointment-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .appointment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            animation: slideGlow 3s linear infinite;
+        }
+        
+        .appointment-details {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .detail-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-icon {
+            font-size: 20px;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #34495e;
+            min-width: 120px;
+        }
+        
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .services-list {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .service-item:last-child {
+            border-bottom: none;
+        }
+        
+        .service-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .service-price {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .total-price {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .total-label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+        
+        .total-amount {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .footer-section {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 3px solid #667eea;
+        }
+        
+        .contact-info {
+            margin: 20px 0;
+            color: #666;
+        }
+        
+        .contact-item {
+            margin: 8px 0;
+        }
+        
+        .reminder-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 171, 160, 0.3);
+        }
+        
+        .reminder-text {
+            color: #2d3436;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .social-links {
+            margin: 20px 0;
+        }
+        
+        .social-link {
+            display: inline-block;
+            margin: 0 10px;
+            text-decoration: none;
+            color: #667eea;
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-link:hover {
+            transform: scale(1.2);
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes slideGlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+            }
+            
+            .header, .content, .footer-section {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .appointment-card {
+                padding: 20px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .detail-label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>FRIZERSKI SALON HASKO</h1>
+                <p class="subtitle">Vaš termin je uspešno zakazan!</p>
+                <div class="confirmation-badge">
+                    <span class="checkmark">✓</span>
+                    <p class="confirmation-text">POTVRĐENO</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                Poštovani {{ user.ime_prezime|default:user.username }},
+            </div>
+            
+            <p>Hvala Vam što ste izabrali naš salon! Vaš termin je uspešno zakazan sa sledećim detaljima:</p>
+            
+            <div class="appointment-card">
+                <div class="appointment-details">
+                    <div class="detail-row">
+                        <span class="detail-icon">📅</span>
+                        <span class="detail-label">Datum:</span>
+                        <span class="detail-value">{{ appointment.datum|date:"d.m.Y" }}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-icon">⏰</span>
+                        <span class="detail-label">Vreme:</span>
+                        <span class="detail-value">{{ appointment.vreme|time:"H:i" }}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-icon">💇‍♂️</span>
+                        <span class="detail-label">Frizer:</span>
+                        <span class="detail-value">{{ appointment.frizer.name }}</span>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <span class="detail-icon">✂️</span>
+                        <span class="detail-label">Usluge:</span>
+                        <div class="detail-value">
+                            <div class="services-list">
+                                <div class="service-item">
+                                    <span class="service-name">{{ appointment.usluga.name }}</span>
+                                    <span class="service-price">{{ appointment.usluga.cena }} RSD</span>
+                                </div>
+                                {% if appointment.dodatne_usluge %}
+                                    {% for dodatna_usluga in dodatne_usluge_objects %}
+                                    <div class="service-item">
+                                        <span class="service-name">{{ dodatna_usluga.name }} <small>(dodatno)</small></span>
+                                        <span class="service-price">{{ dodatna_usluga.cena }} RSD</span>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if appointment.poruka %}
+                    <div class="detail-row">
+                        <span class="detail-icon">💬</span>
+                        <span class="detail-label">Napomena:</span>
+                        <span class="detail-value">{{ appointment.poruka }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="total-price">
+                    <div class="total-label">Ukupna cena:</div>
+                    <div class="total-amount">{{ appointment.effective_price }} RSD</div>
+                </div>
+            </div>
+            
+            <div class="reminder-box">
+                <p class="reminder-text">📱 Dobićete podsetnik 2 sata pre termina putem notifikacije i email-a</p>
+            </div>
+            
+            <p>Molimo Vas da stignete 5-10 minuta pre zakazanog vremena. Ukoliko se planovi promene, molimo Vas da nas obavestite najmanje 24 sata unapred.</p>
+            
+            {% if loyalty_message %}
+            <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 25px 0;">
+                <p style="margin: 0; font-weight: 600; font-size: 16px;">{{ loyalty_message }}</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="footer-section">
+            <h3 style="color: #2c3e50; margin-top: 0;">Kontakt informacije</h3>
+            <div class="contact-info">
+                <div class="contact-item">📍 Adresa salona</div>
+                <div class="contact-item">📞 Broj telefona</div>
+                <div class="contact-item">✉️ frizerskisalonhasko@gmail.com</div>
+            </div>
+            
+            <div class="social-links">
+                <a href="#" class="social-link">📘</a>
+                <a href="#" class="social-link">📷</a>
+                <a href="#" class="social-link">🎵</a>
+            </div>
+            
+            <p style="color: #666; font-size: 12px; margin-top: 20px;">
+                Ovaj email je automatski generisan. Molimo Vas da ne odgovarate na njega.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

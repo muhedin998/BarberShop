@@ -242,3 +242,43 @@ class Review(models.Model):
     def empty_stars(self):
         """Get range for empty stars"""
         return range(self.rating + 1, 6)
+
+
+class Banner(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Naslov banera")
+    text = models.TextField(max_length=500, verbose_name="Tekst banera")
+    start_date = models.DateTimeField(verbose_name="Početak prikazivanja")
+    end_date = models.DateTimeField(verbose_name="Kraj prikazivanja")
+    is_active = models.BooleanField(default=True, verbose_name="Aktivan")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Banner"
+        verbose_name_plural = "Banneri"
+    
+    def __str__(self):
+        if self.start_date and self.end_date:
+            return f"{self.title} ({self.start_date.strftime('%d.%m.%Y')} - {self.end_date.strftime('%d.%m.%Y')})"
+        return self.title
+    
+    @property
+    def is_currently_active(self):
+        """Check if banner should be displayed right now"""
+        from django.utils import timezone
+        if not self.start_date or not self.end_date:
+            return False
+        now = timezone.now()
+        return self.is_active and self.start_date <= now <= self.end_date
+    
+    @classmethod
+    def get_active_banners(cls):
+        """Get all currently active banners"""
+        from django.utils import timezone
+        now = timezone.now()
+        return cls.objects.filter(
+            is_active=True,
+            start_date__lte=now,
+            end_date__gte=now
+        ).order_by('-created_at')
