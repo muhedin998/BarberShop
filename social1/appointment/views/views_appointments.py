@@ -24,7 +24,7 @@ def get_next_free_slot(frizer_id, days_ahead=7):
     working_start = time(10, 0)
     working_end = time(19, 0)
     slot_duration = timedelta(minutes=30)  # Default appointment duration
-    
+
     for day_offset in range(days_ahead):
         check_date = today + timedelta(days=day_offset)
         
@@ -189,7 +189,6 @@ def potvrdi(request):
                 # Send confirmation email
                 if request.user.email and request.user.is_email_verified:
                     try:
-                        # Get additional services if any
                         dodatne_usluge_objects = []
                         if dodatne_usluge:
                             dodatne_usluge_objects = Usluge.objects.filter(id__in=dodatne_usluge)
