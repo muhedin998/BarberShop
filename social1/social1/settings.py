@@ -164,11 +164,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': env('DB_NAME', default='barbershop'),
-            'USER': env('DB_USER', default='barberuser'),
-            'PASSWORD': env('DB_PASSWORD', default='barberpass123'),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='3306'),
+            'NAME': env('DB_NAME', default=''),
+            'USER': env('DB_USER', default=''),
+            'PASSWORD': env('DB_PASSWORD', default=''),
+            'HOST': env('DB_HOST', default=''),
+            'PORT': env('DB_PORT', default=''),
             'OPTIONS': {
                 'charset': 'utf8mb4',
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
