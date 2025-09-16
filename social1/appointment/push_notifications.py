@@ -23,7 +23,7 @@ def initialize_firebase():
                 raise Exception("Firebase configuration not found. Please set environment variables or provide firebase-config.json")
         firebase_admin.initialize_app(cred)
 
-def get_site_url():
+def get_site_url(request=None):
     """
     Get the current site URL for notifications
     """
@@ -32,10 +32,9 @@ def get_site_url():
         if hasattr(settings, 'SITE_URL') and settings.SITE_URL:
             return settings.SITE_URL
         
-        # Try to get current site
-        current_site = Site.objects.get_current()
-        protocol = 'https'  # Always HTTPS for push notifications
-        return f'{protocol}://{current_site.domain}'
+        # Use the new site utilities
+        from .site_utils import get_site_url as get_site_url_util
+        return get_site_url_util(request)
     except Exception:
         # Fallback
         return 'https://frizerskisalonhasko.com'
