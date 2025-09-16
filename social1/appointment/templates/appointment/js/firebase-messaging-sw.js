@@ -1,19 +1,19 @@
-// Firebase Messaging Service Worker
+// Firebase Messaging Service Worker - Django Template
 // This file must be accessible at the root of your domain
 
 // Import Firebase scripts
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js');
 
-// Firebase configuration
+// Firebase configuration - loaded from Django settings
 const firebaseConfig = {
-  apiKey: "AIzaSyC6FWY3qwRD8s0NfwI7LEAAA3ByHTHtIRE",
-  authDomain: "push-notify-4ffd3.firebaseapp.com",
-  projectId: "push-notify-4ffd3",
-  storageBucket: "push-notify-4ffd3.firebasestorage.app",
-  messagingSenderId: "470008617640",
-  appId: "1:470008617640:web:3e7fff66b4865f5276809d",
-  measurementId: "G-YWVQ328VDH"
+  apiKey: "{{ firebase_web_config.apiKey }}",
+  authDomain: "{{ firebase_web_config.authDomain }}",
+  projectId: "{{ firebase_web_config.projectId }}",
+  storageBucket: "{{ firebase_web_config.storageBucket }}",
+  messagingSenderId: "{{ firebase_web_config.messagingSenderId }}",
+  appId: "{{ firebase_web_config.appId }}",
+  measurementId: "{{ firebase_web_config.measurementId }}"
 };
 
 // Initialize Firebase

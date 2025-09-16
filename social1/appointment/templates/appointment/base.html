@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Firebase and Push Notification Scripts -->
 {% if user.is_authenticated %}
-<script src="{% static 'appointment/js/firebase-config.js' %}?v=20250722b"></script>
+<script src="{% url 'firebase_config_js' %}?v=20250722b"></script>
 <script src="{% static 'appointment/js/notification-permission.js' %}?v=20250722b"></script>
 {% endif %}
 

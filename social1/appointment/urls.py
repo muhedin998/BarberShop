@@ -1,8 +1,7 @@
 from django.urls import path, reverse_lazy
 from . import views
-from . import fcm_views
 from django.contrib.auth import views as auth_views
-from .views import views_reviews
+from .views import views_reviews, firebase_views, fcm_views
 
 urlpatterns =[
     path('', views.zakazi, name="zakazi"),
@@ -40,6 +39,9 @@ urlpatterns =[
     path('fcm/register-token/', fcm_views.register_fcm_token, name='register_fcm_token'),
     path('fcm/unregister-token/', fcm_views.unregister_fcm_token, name='unregister_fcm_token'),
     path('fcm/token-status/', fcm_views.fcm_token_status, name='fcm_token_status'),
+    
+    # Firebase JavaScript files
+    path('firebase-config.js', firebase_views.firebase_config_js, name='firebase_config_js'),
     
     # Reviews endpoints
     path('recenzije/', views_reviews.reviews_list, name='reviews_list'),

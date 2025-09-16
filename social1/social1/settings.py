@@ -12,22 +12,34 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import pymysql
+import environ
 
-# Configure pymysql as MySQL driver
-pymysql.install_as_MySQLdb()
+# Initialize environment variables
+env = environ.Env(
+    # Set casting and default values
+    DEBUG=(bool, False),
+    EMAIL_USE_TLS=(bool, True),
+    EMAIL_PORT=(int, 587),
+)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Configure pymysql as MySQL driver
+pymysql.install_as_MySQLdb()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'xgmia2j!q1f+=77*yjc6^axs82dz@kb7c)z%__igt@k0#-b+*&')
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='xgmia2j!q1f+=77*yjc6^axs82dz@kb7c)z%__igt@k0#-b+*&')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = [
     "localhost",  
@@ -152,11 +164,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'barbershop',
-            'USER': 'barberuser',
-            'PASSWORD': 'barberpass123',
-            'HOST': 'localhost',
-            'PORT': '3306',
+            'NAME': env('DB_NAME', default='barbershop'),
+            'USER': env('DB_USER', default='barberuser'),
+            'PASSWORD': env('DB_PASSWORD', default='barberpass123'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='3306'),
             'OPTIONS': {
                 'charset': 'utf8mb4',
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -165,11 +177,11 @@ else:
     }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = "frizerskisalonhasko@gmail.com"
-EMAIL_HOST_PASSWORD = "mert feks tkuu lali"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
 
 
 # Password validation
@@ -238,19 +250,33 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # Firebase Configuration
+# Firebase Server-side Configuration (for admin SDK)
 FIREBASE_CONFIG = {
-    'type': os.environ.get('FIREBASE_TYPE', 'service_account'),
-    'project_id': os.environ.get('FIREBASE_PROJECT_ID', 'push-notify-4ffd3'),
-    'private_key_id': os.environ.get('FIREBASE_PRIVATE_KEY_ID'),
-    'private_key': os.environ.get('FIREBASE_PRIVATE_KEY', '').replace('\\n', '\n'),
-    'client_email': os.environ.get('FIREBASE_CLIENT_EMAIL'),
-    'client_id': os.environ.get('FIREBASE_CLIENT_ID'),
-    'auth_uri': os.environ.get('FIREBASE_AUTH_URI', 'https://accounts.google.com/o/oauth2/auth'),
-    'token_uri': os.environ.get('FIREBASE_TOKEN_URI', 'https://oauth2.googleapis.com/token'),
-    'auth_provider_x509_cert_url': os.environ.get('FIREBASE_AUTH_PROVIDER_CERT_URL'),
-    'client_x509_cert_url': os.environ.get('FIREBASE_CLIENT_CERT_URL'),
-    'universe_domain': os.environ.get('FIREBASE_UNIVERSE_DOMAIN', 'googleapis.com')
+    'type': env('FIREBASE_TYPE', default='service_account'),
+    'project_id': env('FIREBASE_PROJECT_ID', default='push-notify-4ffd3'),
+    'private_key_id': env('FIREBASE_PRIVATE_KEY_ID', default=''),
+    'private_key': env('FIREBASE_PRIVATE_KEY', default='').replace('\\n', '\n'),
+    'client_email': env('FIREBASE_CLIENT_EMAIL', default=''),
+    'client_id': env('FIREBASE_CLIENT_ID', default=''),
+    'auth_uri': env('FIREBASE_AUTH_URI', default='https://accounts.google.com/o/oauth2/auth'),
+    'token_uri': env('FIREBASE_TOKEN_URI', default='https://oauth2.googleapis.com/token'),
+    'auth_provider_x509_cert_url': env('FIREBASE_AUTH_PROVIDER_CERT_URL', default=''),
+    'client_x509_cert_url': env('FIREBASE_CLIENT_CERT_URL', default=''),
+    'universe_domain': env('FIREBASE_UNIVERSE_DOMAIN', default='googleapis.com')
 }
+
+# Firebase Client-side Configuration (for web SDK)
+FIREBASE_WEB_CONFIG = {
+    'apiKey': env('FIREBASE_WEB_API_KEY', default=''),
+    'authDomain': env('FIREBASE_AUTH_DOMAIN', default=''),
+    'projectId': env('FIREBASE_PROJECT_ID', default='push-notify-4ffd3'),
+    'storageBucket': env('FIREBASE_STORAGE_BUCKET', default=''),
+    'messagingSenderId': env('FIREBASE_MESSAGING_SENDER_ID', default=''),
+    'appId': env('FIREBASE_APP_ID', default=''),
+    'measurementId': env('FIREBASE_MEASUREMENT_ID', default='')
+}
+
+FIREBASE_VAPID_KEY = env('FIREBASE_VAPID_KEY', default='')
 
 # Logging configuration
 LOGGING = {

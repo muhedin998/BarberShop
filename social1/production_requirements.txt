@@ -19,3 +19,6 @@ psycopg2-binary==2.9.5
 
 # Firebase for push notifications
 firebase-admin==6.4.0
+
+# Environment variable management
+django-environ==0.12.0

@@ -20,3 +20,12 @@ from .views_profile import (
     profile_page, notifications_page, mark_notification_read,
     mark_notification_unread, delete_notification, mark_all_read
 )
+
+# FCM/Push notification views
+from . import fcm_views
+
+# Firebase views  
+from . import firebase_views
+
+# Service worker views
+from . import sw_views

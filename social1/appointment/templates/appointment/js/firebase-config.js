@@ -1,14 +1,15 @@
 // Firebase Configuration and FCM Setup
+{% load static %}
 
-// Firebase configuration
+// Firebase configuration - loaded from Django settings
 const firebaseConfig = {
-  apiKey: "AIzaSyC6FWY3qwRD8s0NfwI7LEAAA3ByHTHtIRE",
-  authDomain: "push-notify-4ffd3.firebaseapp.com",
-  projectId: "push-notify-4ffd3",
-  storageBucket: "push-notify-4ffd3.firebasestorage.app",
-  messagingSenderId: "470008617640",
-  appId: "1:470008617640:web:3e7fff66b4865f5276809d",
-  measurementId: "G-YWVQ328VDH"
+  apiKey: "{{ firebase_web_config.apiKey }}",
+  authDomain: "{{ firebase_web_config.authDomain }}",
+  projectId: "{{ firebase_web_config.projectId }}",
+  storageBucket: "{{ firebase_web_config.storageBucket }}",
+  messagingSenderId: "{{ firebase_web_config.messagingSenderId }}",
+  appId: "{{ firebase_web_config.appId }}",
+  measurementId: "{{ firebase_web_config.measurementId }}"
 };
 
 // Firebase and FCM management class
@@ -229,7 +230,7 @@ class FCMManager {
       let token;
       try {
         token = await getToken(this.messaging, {
-          vapidKey: 'BKAhiDB3rapdGVKIyzRrNb2EJlIkvDcV4ujdy_lz7dWN5wD_9uI6spViYbpwC_ckZ1md0Nn-Ara2E2wSdaCNNw4',
+          vapidKey: '{{ firebase_vapid_key }}',
           serviceWorkerRegistration: swRegistration
         });
       } catch (vapidError) {
@@ -327,8 +328,8 @@ class FCMManager {
     const title = payload.notification?.title || 'New Notification';
     const options = {
       body: payload.notification?.body || 'You have a new message',
-      icon: payload.notification?.icon || '/static/images/icon.png',
-      badge: '/static/images/icon.png',
+      icon: payload.notification?.icon || '{% static "images/icon.png" %}',
+      badge: '{% static "images/icon.png" %}',
       tag: 'appointment-notification',
       requireInteraction: true,
       renotify: true,
