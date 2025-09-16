@@ -37,20 +37,20 @@
             }
         {% endfor %}
 
-        /* --- START: FONT SIZE INCREASES --- */
-        /* Increased size for Name/Barber Name */
+        /* --- START: ORIGINAL FONT SIZES --- */
+        /* Original size for Name/Barber Name */
         .card-name {
             font-size: 1.875rem; /* 3xl */
             line-height: 2.25rem;
         }
 
-        /* Increased size for Phone Number */
+        /* Original size for Phone Number */
         .card-phone {
             font-size: 1.5rem; /* 2xl */
             line-height: 1.75rem;
         }
 
-        /* Increased size for Date/Time (to be more prominent) */
+        /* Original size for Date/Time */
         .card-time {
             font-size: 2.5rem; /* 4xl */
             line-height: 1;
@@ -60,7 +60,7 @@
             line-height: 1.75rem;
         }
 
-        /* Increased size for Additional Services header and tags */
+        /* Original size for Additional Services header and tags */
         .additional-services-header {
             font-size: 1.25rem; /* 2xl */
             line-height: 1.75rem;
@@ -70,73 +70,17 @@
             line-height: 1.5rem;
         }
 
-        /* Increased size for Message/Note text */
+        /* Original size for Message/Note text */
         .card-message {
             font-size: 1.125rem; /* lg */
             line-height: 1.75rem;
         }
-        /* --- END: FONT SIZE INCREASES --- */
+        /* --- END: ORIGINAL FONT SIZES --- */
 
-        /* FREE appointment special styling */
+        /* Subtle FREE appointment styling */
         .free-appointment-card {
-            background: linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%);
-            border: 3px solid #10b981;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .free-appointment-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .free-badge {
-            background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706);
-            color: #1f2937;
-            font-weight: 900;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.5);
-            animation: pulse-free 2s infinite;
-            border: 2px solid #fbbf24;
-        }
-
-        @keyframes pulse-free {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .free-price-container {
-            position: relative;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border: 3px solid #34d399;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-        }
-
-        .free-price-text {
-            font-size: 3rem;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            animation: glow-text 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow-text {
-            from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.3); }
-            to { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.6); }
+            background: #1e293b; /* Same as regular cards but with slight green tint */
+            border: 1px solid #10b981;
         }
 
         /* Styles for the modal (kept from original) */
@@ -270,7 +214,7 @@
             </div>
         {% endif %}
 
-        <div id="appointments-container" class="max-w-4xl mx-auto space-y-8">
+        <div id="appointments-container" class="max-w-4xl mx-auto space-y-4">
             {% for usl in termini %}
                 {% if usl.name == "OTKAZAN DAN" %}
                     <div class="appointment-card bg-red-900/50 rounded-2xl shadow-lg border border-red-700 overflow-hidden flex flex-col">
@@ -285,27 +229,28 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="appointment-card relative {% if usl.cena_termina == 0 %}free-appointment-card{% else %}bg-slate-800/50{% endif %} rounded-2xl shadow-lg border {% if usl.cena_termina == 0 %}border-emerald-400{% else %}border-slate-700{% endif %} overflow-hidden flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5"
+                    <div class="appointment-card relative {% if usl.cena_termina == 0 %}free-appointment-card{% else %}bg-slate-800/50{% endif %} rounded-xl shadow-lg border {% if usl.cena_termina == 0 %}border-emerald-500{% else %}border-slate-700{% endif %} overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
                             {% if user.is_superuser %}
                          onclick="openModal('{% if usl.name %}21{% else %}{{usl.user.id}}{% endif %}', '{{usl.effective_price}}', '{{usl.name}}', '{{usl.broj_telefona}}', '{% if usl.name %}{{usl.name}}{% else %}{{usl.user.ime_prezime}}{% endif %}', '{% if usl.broj_telefona %}{{usl.broj_telefona}}{% else %}{{usl.user.broj_telefona}}{% endif %}')"
                          style="cursor: pointer;"
                             {% endif %}>
 
-                        <div class="p-8 flex-grow">
-                            <div class="flex items-start justify-between mb-6">
-                                <div>
+                        <div class="p-4 flex-grow">
+                            <!-- Top row: Name/Phone and Time/Date -->
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex-1">
                                     {% if user.is_superuser or user.username == "hasko123" or user.username == "Muvehid" or user.username == "admin" %}
                                         <h2 class="card-name font-bold text-white">
                                             {% if usl.name %}{{ usl.name }}{% elif usl.user %}{{ usl.user.ime_prezime|default:"Nepoznato" }}{% else %}Nepoznata mušterija{% endif %}
                                         </h2>
-                                        <a href="tel:{% if usl.broj_telefona %}{{ usl.broj_telefona }}{% else %}{{ usl.user.broj_telefona }}{% endif %}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center mt-2 group">
+                                        <a href="tel:{% if usl.broj_telefona %}{{ usl.broj_telefona }}{% else %}{{ usl.user.broj_telefona }}{% endif %}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center mt-1 group">
                                             <i class="fa fa-phone mr-2 group-hover:scale-110 transition-transform"></i>
                                             <span>{% if usl.broj_telefona %}{{ usl.broj_telefona }}{% else %}{{ usl.user.broj_telefona }}{% endif %}</span>
                                         </a>
                                     {% else %}
                                         <h2 class="card-name font-bold text-white">{{ usl.frizer.name }}</h2>
                                         {% if usl.frizer.phone %}
-                                            <a href="tel:{{ usl.frizer.phone }}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center mt-2 group">
+                                            <a href="tel:{{ usl.frizer.phone }}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center mt-1 group">
                                                 <i class="fa fa-phone mr-2 group-hover:scale-110 transition-transform"></i>
                                                 <span>{{ usl.frizer.phone }}</span>
                                             </a>
@@ -313,28 +258,32 @@
                                     {% endif %}
                                 </div>
                                 <div class="text-right flex-shrink-0 ml-4">
-                                    <p class="card-time font-bold text-slate-200 bg-slate-700/50 px-4 py-2 rounded-lg">{{ usl.vreme|time:"H:i" }}</p>
-                                    <p class="card-date text-slate-200 mt-2">{{ usl.datum|date:"d M Y" }}</p>
+                                    <p class="card-time font-bold text-slate-200 bg-slate-700/50 px-3 py-1 rounded-lg">{{ usl.vreme|time:"H:i" }}</p>
+                                    <p class="card-date text-slate-200 mt-1">{{ usl.datum|date:"d M Y" }}</p>
                                 </div>
                             </div>
 
-                            <div class="my-8 text-center">
-                                <p class="text-4xl font-extrabold {% if usl.cena_termina == 0 %}text-white{% else %}text-teal-400{% endif %}">{{ usl.usluga.name }}</p>
-                                {% if usl.cena_termina == 0 %}
-                                    <div class="free-price-container mt-4 mx-auto max-w-xs">
+                            <!-- Middle row: Service and Price in one line -->
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="text-4xl font-extrabold {% if usl.cena_termina == 0 %}text-white{% else %}text-teal-400{% endif %} flex-1">{{ usl.usluga.name }}</p>
+                                <div class="text-right ml-4 flex-shrink-0">
+                                    {% if usl.cena_termina == 0 %}
+                                        <p class="text-3xl font-semibold text-emerald-400">
                                             🎁 BESPLATAN
-                                    </div>
-                                {% else %}
-                                    <p class="text-3xl font-semibold text-slate-200 mt-3">
-                                        {{ usl.effective_price }} <span class="text-2xl text-slate-400">RSD</span>
-                                    </p>
-                                {% endif %}
+                                        </p>
+                                    {% else %}
+                                        <p class="text-3xl font-semibold text-slate-200">
+                                            {{ usl.effective_price }} <span class="text-2xl text-slate-400">RSD</span>
+                                        </p>
+                                    {% endif %}
+                                </div>
                             </div>
 
+                            <!-- Additional services row -->
                             {% if usl.dodatne_usluge %}
-                                <div class="text-center my-8">
-                                    <p class="additional-services-header font-semibold text-slate-400 mb-3">Dodatne usluge:</p>
-                                    <div class="flex flex-wrap justify-center gap-3">
+                                <div class="mb-3">
+                                    <p class="additional-services-header font-semibold text-slate-400 mb-2">Dodatne usluge:</p>
+                                    <div class="flex flex-wrap gap-2">
                                         {% for dodatna in usl.dodatne_usluge_objekti %}
                                             <span class="additional-service-tag bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-full">{{ dodatna.name }}</span>
                                         {% endfor %}
@@ -342,8 +291,9 @@
                                 </div>
                             {% endif %}
 
+                            <!-- Message row -->
                             {% if usl.poruka %}
-                                <div class="mt-8 bg-slate-900/50 rounded-lg p-5">
+                                <div class="bg-slate-900/50 rounded-lg p-3">
                                     <div class="flex items-start">
                                         <span class="text-slate-400 mr-4 text-3xl">💬</span>
                                         <p class="card-message text-slate-300 italic">"{{ usl.poruka }}"</p>
