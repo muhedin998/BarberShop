@@ -116,10 +116,8 @@ SOCIALACCOUNT_PROVIDERS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'appointment.middleware.EnsureSitesExistMiddleware',  # Ensure sites exist on startup
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'appointment.middleware.DynamicSiteMiddleware',  # Dynamic site selection
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -127,10 +125,6 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'allauth.account.middleware.AccountMiddleware'
 ]
-
-# Add debug middleware in development
-if DEBUG:
-    MIDDLEWARE.append('appointment.middleware.SiteDebugMiddleware')
 
 ROOT_URLCONF = 'social1.urls'
 
