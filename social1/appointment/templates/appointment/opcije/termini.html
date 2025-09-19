@@ -37,45 +37,45 @@
             }
         {% endfor %}
 
-        /* --- START: ORIGINAL FONT SIZES --- */
-        /* Original size for Name/Barber Name */
+        /* --- START: SLIGHTLY BIGGER FONT SIZES --- */
+        /* Slightly bigger size for Name/Barber Name */
         .card-name {
-            font-size: 1.875rem; /* 3xl */
+            font-size: 1.75rem; /* text-xl+ */
             line-height: 2.25rem;
         }
 
-        /* Original size for Phone Number */
+        /* Slightly bigger size for Phone Number */
         .card-phone {
-            font-size: 1.5rem; /* 2xl */
+            font-size: 1.125rem; /* lg */
             line-height: 1.75rem;
         }
 
-        /* Original size for Date/Time */
+        /* Slightly bigger size for Date/Time */
         .card-time {
-            font-size: 2.5rem; /* 4xl */
-            line-height: 1;
+            font-size: 1.75rem; /* text-xl+ */
+            line-height: 2.25rem;
         }
         .card-date {
-            font-size: 1.5rem; /* lg */
-            line-height: 1.75rem;
-        }
-
-        /* Original size for Additional Services header and tags */
-        .additional-services-header {
-            font-size: 1.25rem; /* 2xl */
-            line-height: 1.75rem;
-        }
-        .additional-service-tag {
-            font-size: 1.25rem; /* base */
+            font-size: 1rem; /* base */
             line-height: 1.5rem;
         }
 
-        /* Original size for Message/Note text */
+        /* Slightly bigger size for Additional Services header and tags */
+        .additional-services-header {
+            font-size: 1rem; /* base */
+            line-height: 1.5rem;
+        }
+        .additional-service-tag {
+            font-size: 1.125rem; /* lg */
+            line-height: 1.75rem;
+        }
+
+        /* Slightly bigger size for Message/Note text */
         .card-message {
             font-size: 1.125rem; /* lg */
             line-height: 1.75rem;
         }
-        /* --- END: ORIGINAL FONT SIZES --- */
+        /* --- END: SLIGHTLY BIGGER FONT SIZES --- */
 
         /* Subtle FREE appointment styling */
         .free-appointment-card {
@@ -236,81 +236,74 @@
                             {% endif %}>
 
                         <div class="p-4 flex-grow">
-                            <!-- Top row: Name/Phone and Time/Date -->
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="flex-1">
-                                    {% if user.is_superuser or user.username == "hasko123" or user.username == "Muvehid" or user.username == "admin" %}
-                                        <h2 class="card-name font-bold text-white">
-                                            {% if usl.name %}{{ usl.name }}{% elif usl.user %}{{ usl.user.ime_prezime|default:"Nepoznato" }}{% else %}Nepoznata mušterija{% endif %}
-                                        </h2>
-                                        <a href="tel:{% if usl.broj_telefona %}{{ usl.broj_telefona }}{% else %}{{ usl.user.broj_telefona }}{% endif %}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center mt-1 group">
-                                            <i class="fa fa-phone mr-2 group-hover:scale-110 transition-transform"></i>
-                                            <span>{% if usl.broj_telefona %}{{ usl.broj_telefona }}{% else %}{{ usl.user.broj_telefona }}{% endif %}</span>
+                            <!-- Line 1: Name, Phone, Time, Date, Cancel all in one line -->
+                            <div class="flex items-center justify-between gap-3 mb-1">
+                                {% if user.is_superuser or user.username == "hasko123" or user.username == "Muvehid" or user.username == "admin" %}
+                                    <h2 class="card-name font-bold text-white flex-shrink-0">
+                                        {% if usl.name %}{{ usl.name }}{% elif usl.user %}{{ usl.user.ime_prezime|default:"Nepoznato" }}{% else %}Nepoznata mušterija{% endif %}
+                                    </h2>
+                                    <a href="tel:{% if usl.broj_telefona %}{{ usl.broj_telefona }}{% else %}{{ usl.user.broj_telefona }}{% endif %}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center group flex-shrink-0">
+                                        <i class="fa fa-phone mr-1 group-hover:scale-110 transition-transform"></i>
+                                        <span>{% if usl.broj_telefona %}{{ usl.broj_telefona }}{% else %}{{ usl.user.broj_telefona }}{% endif %}</span>
+                                    </a>
+                                {% else %}
+                                    <h2 class="card-name font-bold text-white flex-shrink-0">{{ usl.frizer.name }}</h2>
+                                    {% if usl.frizer.phone %}
+                                        <a href="tel:{{ usl.frizer.phone }}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center group flex-shrink-0">
+                                            <i class="fa fa-phone mr-1 group-hover:scale-110 transition-transform"></i>
+                                            <span>{{ usl.frizer.phone }}</span>
                                         </a>
-                                    {% else %}
-                                        <h2 class="card-name font-bold text-white">{{ usl.frizer.name }}</h2>
-                                        {% if usl.frizer.phone %}
-                                            <a href="tel:{{ usl.frizer.phone }}" class="card-phone text-sky-400 hover:text-sky-300 transition-colors duration-200 flex items-center mt-1 group">
-                                                <i class="fa fa-phone mr-2 group-hover:scale-110 transition-transform"></i>
-                                                <span>{{ usl.frizer.phone }}</span>
-                                            </a>
-                                        {% endif %}
                                     {% endif %}
-                                </div>
-                                <div class="text-right flex-shrink-0 ml-4">
-                                    <p class="card-time font-bold text-slate-200 bg-slate-700/50 px-3 py-1 rounded-lg">{{ usl.vreme|time:"H:i" }}</p>
-                                    <p class="card-date text-slate-200 mt-1">{{ usl.datum|date:"d M Y" }}</p>
+                                {% endif %}
+
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <p class="card-time font-bold text-slate-200 bg-slate-700/50 px-2 py-1 rounded">{{ usl.vreme|time:"H:i" }}</p>
+                                    <p class="card-date text-slate-200">{{ usl.datum|date:"d M Y" }}</p>
+                                    <a href="{% url 'otkazivanje' usl.id %}"
+                                       onclick="{% if user.is_superuser %}event.stopPropagation();{% endif %} return confirm('Da li želite da otkažete termin?');"
+                                       class="text-red-500 hover:text-red-600 transition-colors duration-200 p-1 rounded hover:bg-red-500/20 group"
+                                       title="Otkaži termin">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M3 6h18v2H3V6zm2 3h14l-1 14H6L5 9zm5-6h4c.6 0 1 .4 1 1v1H9V4c0-.6.4-1 1-1z"/>
+                                        </svg>
+                                    </a>
                                 </div>
                             </div>
 
-                            <!-- Middle row: Service and Price in one line -->
-                            <div class="flex items-center justify-between mb-3">
-                                <p class="text-4xl font-extrabold {% if usl.cena_termina == 0 %}text-white{% else %}text-teal-400{% endif %} flex-1">{{ usl.usluga.name }}</p>
+                            <!-- Line 2: Services row -->
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="bg-slate-700 text-slate-200 font-medium px-3 py-1 rounded text-lg">{{ usl.usluga.name }}</span>
+                                        {% if usl.dodatne_usluge %}
+                                            {% for dodatna in usl.dodatne_usluge_objekti %}
+                                                <span class="bg-slate-700 text-slate-200 font-medium px-3 py-1 rounded text-lg">{{ dodatna.name }}</span>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
                                 <div class="text-right ml-4 flex-shrink-0">
                                     {% if usl.cena_termina == 0 %}
-                                        <p class="text-3xl font-semibold text-emerald-400">
+                                        <p class="text-lg font-semibold text-emerald-400">
                                             🎁 BESPLATAN
                                         </p>
                                     {% else %}
-                                        <p class="text-3xl font-semibold text-slate-200">
-                                            {{ usl.effective_price }} <span class="text-2xl text-slate-400">RSD</span>
+                                        <p class="text-xl font-semibold text-slate-200">
+                                            {{ usl.effective_price }} <span class="text-base text-slate-400">RSD</span>
                                         </p>
                                     {% endif %}
                                 </div>
                             </div>
 
-                            <!-- Additional services row -->
-                            {% if usl.dodatne_usluge %}
-                                <div class="mb-3">
-                                    <p class="additional-services-header font-semibold text-slate-400 mb-2">Dodatne usluge:</p>
-                                    <div class="flex flex-wrap gap-2">
-                                        {% for dodatna in usl.dodatne_usluge_objekti %}
-                                            <span class="additional-service-tag bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-full">{{ dodatna.name }}</span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            <!-- Message row -->
+                            <!-- Line 3: Message row -->
                             {% if usl.poruka %}
-                                <div class="bg-slate-900/50 rounded-lg p-3">
+                                <div class="bg-slate-900/50 rounded-lg p-2">
                                     <div class="flex items-start">
-                                        <span class="text-slate-400 mr-4 text-3xl">💬</span>
+                                        <span class="text-slate-400 mr-2">💬</span>
                                         <p class="card-message text-slate-300 italic">"{{ usl.poruka }}"</p>
                                     </div>
                                 </div>
                             {% endif %}
-                        </div>
-
-                        <div class="bg-slate-800 p-4">
-                            <a href="{% url 'otkazivanje' usl.id %}"
-                               onclick="{% if user.is_superuser %}event.stopPropagation();{% endif %} return confirm('Da li želite da otkažete termin?');"
-                               class="w-full bg-slate-700 text-slate-300 font-bold py-4 px-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-red-600 hover:text-white flex items-center justify-center text-base group">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:scale-110" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                                Otkaži Termin
-                            </a>
                         </div>
                     </div>
                 {% endif %}
