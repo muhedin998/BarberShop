@@ -5,7 +5,7 @@
 {% block content %}
 <style>
 .help-hero {
-    background-image: url('/static/images/pozadina1.jpg');
+    background-image: url('/static/images/bgimage_1.jpeg');
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -160,7 +160,7 @@
     border: none;
     width: 100%;
     text-align: left;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #333;
     cursor: pointer;
@@ -412,6 +412,102 @@
     <p class="section-subtitle">Odgovore na najčešća pitanja možete pronaći ovde</p>
     
     <div class="faq-container">
+        <!-- Usage FAQ -->
+        <div class="faq-section">
+            <div class="faq-category">
+                <div class="faq-category-icon"><i class="fa fa-user-circle"></i></div>
+                <h3>Korišćenje</h3>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Registrovao sam se. Šta sada?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Odlično! Sada možete da se prijavite sa vašim korisničkim imenom i lozinkom i počnete da zakažete termine za frizerske usluge.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Kako da pristupim aplikaciji za zakazivanje termina?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Nema potrebe da instalirate aplikaciju. Sistem za zakazivanje je dostupan ako odete u pretraživač na adresu našeg sajta i kliknete na "PRIJAVI SE".</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li sa mobilnog telefona mogu da koristim sistem za zakazivanje?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Naravno! Potrebno je samo da odete na stranu za logovanje i pristupite aplikaciji sa svojim korisničkim imenom i lozinkom. Sajt je potpuno prilagođen mobilnim uređajima.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Sa kojih sve uređaja mogu da koristim sistem za termine?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Sistem za zakazivanje termina možete da koristite na bilo kom uređaju. Podržani su mobilni telefoni sa Windows, Android ili iOS operativnim sistemom. Takođe svi tablet uređaji i računari su podržani. Uživajte!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security FAQ -->
+        <div class="faq-section">
+            <div class="faq-category">
+                <div class="faq-category-icon"><i class="fa fa-shield"></i></div>
+                <h3>Sigurnost</h3>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li neko može da pristupi mojim podacima osim mene?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Ne. Podacima koje ste uneli nijedan drugi korisnik ne može da pristupi. Sistem je napravljen tako da svako ima pravo da pristupi samo svojim podacima. Na ovaj način vaši podaci su uvek zaštićeni.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li ima potrebe da čuvam kopije podataka?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Ne. Za čuvanje podataka smo odgovorni mi. Jednostavno, ne brinite o tome. Svi vaši termini i podaci su sigurno uskladišteni.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Da li mogu da promenim lozinku za pristup?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Funkcija za promenu lozinke je trenutno u razvoju. Za sada možete kontaktirati salon na +381 64 2172921 ili hasko83@gmail.com za pomoć oko promene lozinke.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Zaboravio sam lozinku. Šta sada?
+                    <i class="fa fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Prvo, ne brinite. Kontaktirajte nas na telefon +381 64 2172921 ili pošaljite email na hasko83@gmail.com sa email adresom koju ste koristili za registraciju i pomoći ćemo vam da resetujete lozinku.</p>
+                </div>
+            </div>
+        </div>
+
         <!-- General FAQ -->
         <div class="faq-section">
             <div class="faq-category">
@@ -543,16 +639,6 @@
                 <h3>Funkcije u razvoju</h3>
             </div>
             
-            <div class="faq-item">
-                <button class="faq-question" onclick="toggleFAQ(this)">
-                    Koje nove funkcije planirate?
-                    <i class="fa fa-chevron-down faq-icon"></i>
-                </button>
-                <div class="faq-answer">
-                    <p>Radimo na: online otkazivanju termina, pregledu istorije termina, resetovanju lozinke, live chat podršci, i poboljšanoj mobilnoj aplikaciji.</p>
-                </div>
-            </div>
-
             <div class="faq-item">
                 <button class="faq-question" onclick="toggleFAQ(this)">
                     Kada će biti dostupne nove funkcije?
