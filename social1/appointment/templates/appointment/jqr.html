@@ -4,27 +4,35 @@
 <!-- Header with full-height image -->
 <header class="bgimg-1 w3-display-container " id="home">
   <div class="w3-display-left w3-text-white" style="padding:48px">
-    <span class="w3-jumbo w3-hide-small w3-white w3-padding-large w3-hide-medium w3-large w3-margin-top w3-opacity brds">Frizerski salon <strong> HASKO </strong></span><br>
-    <span class="w3-xxlarge e w3-hide-large w3-white w3-opacity  brds-sm">Frizerski salon <strong> HASKO </strong></span>
+    <span class="w3-jumbo w3-hide-small w3-white w3-padding-large w3-hide-medium w3-large w3-margin-top w3-opacity brds seo-hidden">Frizerski salon <strong> HASKO </strong></span><br>
+    <span class="w3-xxlarge e w3-hide-large w3-white w3-opacity  brds-sm seo-hidden">Frizerski salon <strong> HASKO </strong></span>
     <br>
     <br>
-    <span class="w3-hide-large w3-padding-large w3-large w3-margin-top w3-white w3-opacity brds-sm" style="white-space: nowrap;">Više od dvadeset godina sa vama...</span>
-    
-    <span class="w3-white w3-hide-medium w3-hide-small w3-padding-large w3-large w3-margin-top w3-opacity brds">Više od dvadeset godina sa vama...</span>
+    <span class="w3-hide-large w3-padding-large w3-large w3-margin-top w3-white w3-opacity brds-sm seo-hidden" style="white-space: nowrap;">Više od dvadeset godina sa vama...</span>
+
+    <span class="w3-white w3-hide-medium w3-hide-small w3-padding-large w3-large w3-margin-top w3-opacity brds seo-hidden">Više od dvadeset godina sa vama...</span>
     <p><a href="{% url "termin" %}" class="btn btn-primary w3-padding-large w3-large mt-5 w3-hover-opacity-off brds"> <i class="fa-solid fa-calendar-check"></i> ZAKAŽITE TERMIN</a></p>
     <br>
   </div> 
-  <div class="w3-display-bottomleft w3-white w3-opacity w3-text-black w3-large w3-hide-medium w3-hide-small" style="padding:24px 48px; border-radius: 20px;">
-    <a href="https://www.facebook.com/muvehid.beciro?mibextid=ZbWKwL">    <i class="fa fa-facebook-official w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"  style="font-size: 2.73em; padding-right: 20px;"></i></a>
-    <a href="https://www.instagram.com/frizerski_salon_hasko/?igshid=YmMyMTA2M2Y="><i class="fa fa-instagram w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i></a>
-    <a href="https://youtube.com/@hasredin1983"><i class="fa fa-youtube-play w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i></a>
-    <a href="https://vm.tiktok.com/ZMFjSnoWv/"><i class="fab fa-tiktok w3-hover-opacity"  style="font-size: 2.73em; padding-right: 20px;"></i></a>
-  </div>
-  <div class="w3-display-bottomleft w3-white w3-opacity w3-text-black w3-large  w3-hide-large" style="padding:24px 48px; border-radius: 20px;">
-    <a href="https://www.facebook.com/muvehid.beciro?mibextid=ZbWKwL">    <i class="fa fa-facebook-official w3-hover-opacity"  style="font-size: 1.73em; padding-right: 10px;"  style="font-size: 2.73em; padding-right: 20px;"></i></a>
-    <a href="https://www.instagram.com/frizerski_salon_hasko/?igshid=YmMyMTA2M2Y="><i class="fa fa-instagram w3-hover-opacity"  style="font-size: 1.73em; padding-right: 10px;"></i></a>
-    <a href="https://youtube.com/@hasredin1983"><i class="fa fa-youtube-play w3-hover-opacity"  style="font-size: 1.73em; padding-right: 10px;"></i></a>
-    <a href="https://vm.tiktok.com/ZMFjSnoWv/"><i class="fab fa-tiktok w3-hover-opacity"  style="font-size: 1.73em; padding-right: 10px;"></i></a>
+  <!-- Modern Social Media Menu -->
+  <div class="modern-social-container">
+    <div class="social-trigger" onclick="toggleSocialMenu()">
+      <i class="fa fa-users"></i>
+    </div>
+    <div class="social-menu" id="socialMenu">
+      <a href="https://www.facebook.com/muvehid.beciro?mibextid=ZbWKwL" class="social-item facebook" target="_blank">
+        <i class="fa fa-facebook"></i>
+      </a>
+      <a href="https://www.instagram.com/frizerski_salon_hasko/?igshid=YmMyMTA2M2Y=" class="social-item instagram" target="_blank">
+        <i class="fa fa-instagram"></i>
+      </a>
+      <a href="https://youtube.com/@hasredin1983" class="social-item youtube" target="_blank">
+        <i class="fa fa-youtube"></i>
+      </a>
+      <a href="https://vm.tiktok.com/ZMFjSnoWv/" class="social-item tiktok" target="_blank">
+        <i class="fab fa-tiktok"></i>
+      </a>
+    </div>
   </div>
   
   <!-- Share Button attached to header -->
@@ -618,6 +626,211 @@ function showShareMessage(message) {
 }
 
 // No scroll detection needed - button naturally scrolls with header
+
+// Modern Social Menu Toggle
+function toggleSocialMenu() {
+    const menu = document.getElementById('socialMenu');
+    const trigger = document.querySelector('.social-trigger');
+
+    menu.classList.toggle('active');
+    trigger.classList.toggle('active');
+}
+
+// Close social menu when clicking outside
+document.addEventListener('click', function(event) {
+    const container = document.querySelector('.modern-social-container');
+    if (!container.contains(event.target)) {
+        const menu = document.getElementById('socialMenu');
+        const trigger = document.querySelector('.social-trigger');
+        menu.classList.remove('active');
+        trigger.classList.remove('active');
+    }
+});
 </script>
+
+<style>
+/* SEO-friendly way to hide content visually while keeping it accessible to search engines */
+.seo-hidden {
+    position: absolute !important;
+    left: -10000px !important;
+    top: auto !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+}
+
+/* Modern Social Media Menu */
+.modern-social-container {
+    position: fixed;
+    bottom: 100px;
+    left: 30px;
+    z-index: 1000;
+}
+
+.social-trigger {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    overflow: hidden;
+}
+
+.social-trigger::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2), transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.social-trigger:hover::before {
+    transform: translateX(100%);
+}
+
+.social-trigger:hover {
+    transform: rotate(180deg) scale(1.1);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+}
+
+.social-trigger.active {
+    transform: rotate(45deg);
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.social-menu {
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: none;
+}
+
+.social-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.social-item {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.social-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.3s ease;
+}
+
+.social-item:hover::before {
+    transform: scale(1);
+}
+
+.social-item.facebook {
+    background: linear-gradient(135deg, #3b5998, #8b9dc3);
+    animation-delay: 0.1s;
+}
+
+.social-item.instagram {
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+    animation-delay: 0.2s;
+}
+
+.social-item.youtube {
+    background: linear-gradient(135deg, #FF0000, #cc0000);
+    animation-delay: 0.3s;
+}
+
+.social-item.tiktok {
+    background: linear-gradient(135deg, #000000, #ff0050);
+    animation-delay: 0.4s;
+}
+
+.social-menu.active .social-item {
+    animation: slideInScale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes slideInScale {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.social-item:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .modern-social-container {
+        bottom: 80px;
+        left: 20px;
+    }
+
+    .social-trigger {
+        width: 55px;
+        height: 55px;
+        font-size: 18px;
+    }
+
+    .social-item {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .social-menu {
+        bottom: 70px;
+        left: 0;
+        gap: 12px;
+    }
+}
+</style>
 
 {% endblock %}
