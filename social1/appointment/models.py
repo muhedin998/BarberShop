@@ -22,10 +22,18 @@ class Frizer(models.Model):
         return self.name 
 
 class Usluge(models.Model):
+    KATEGORIJA_CHOICES = [
+        ('sisanje', 'Šišanje'),
+        ('brada', 'Brada'),
+        ('ostale_usluge', 'Ostale usluge'),
+        ('vip_usluge', 'Vip usluge'),
+    ]
+    
     name = models.CharField(max_length=250, default="Izaberite Uslugu")
     cena = models.IntegerField()
     duzina = models.DurationField(default=timedelta)
     slika = models.ImageField(upload_to="images/usluga/", null=True, blank=True)
+    kategorija = models.CharField(max_length=50, choices=KATEGORIJA_CHOICES, default='sisanje')
 
     def __str__(self):
             return F"{self.name}"

@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: barbershop_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: barbershop
+      MYSQL_USER: barberuser
+      MYSQL_PASSWORD: barberpass123
+      MYSQL_ROOT_PASSWORD: rootpass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - barbershop_network
+
+  web:
+    build: .
+    container_name: barbershop_web
+    restart: always
+    environment:
+      - DEBUG=True
+      - DB_NAME=barbershop
+      - DB_USER=barberuser
+      - DB_PASSWORD=barberpass123
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DJANGO_SECRET_KEY=xgmia2j!q1f+=77*yjc6^axs82dz@kb7c)z%__igt@k0#-b+*&
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./social1:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - barbershop_network
+
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:
+
+networks:
+  barbershop_network:
+    driver: bridge

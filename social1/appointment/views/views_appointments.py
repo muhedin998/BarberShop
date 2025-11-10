@@ -351,9 +351,12 @@ def zakazi(request):
     sada = datetime.now()
 
     usluge = Usluge.objects.all()
-    ls1=usluge[:round(len(usluge)/3)-1]
-    ls2= usluge[round(len(usluge)/3)-1:round(len(usluge)/3+len(usluge)/3)]
-    ls3= usluge[round(len(usluge)/3+len(usluge)/3):]
+    
+    # Organize services by category
+    usluge_sisanje = usluge.filter(kategorija='sisanje')
+    usluge_brada = usluge.filter(kategorija='brada')
+    usluge_ostale = usluge.filter(kategorija='ostale_usluge')
+    usluge_vip = usluge.filter(kategorija='vip_usluge')
 
     frizeri = Frizer.objects.all()
     interval = 30
@@ -401,9 +404,10 @@ def zakazi(request):
         'dan': format(sada.day, "02d"),
         'usluge': usluge,
         'frizeri': frizeri,
-        'ls1':ls1,
-        'ls2':ls2,
-        "ls3":ls3,
+        'usluge_sisanje': usluge_sisanje,
+        'usluge_brada': usluge_brada,
+        'usluge_ostale': usluge_ostale,
+        'usluge_vip': usluge_vip,
         'max_date': max_date,
         'min_date': min_date,
         'reviews': reviews,

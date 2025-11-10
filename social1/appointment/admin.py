@@ -3,10 +3,16 @@ from .models import Korisnik,  Termin, Usluge, Usluge, Frizer, Duznik, Notificat
 
 admin.site.register(Korisnik)
 admin.site.register(Termin)
-admin.site.register(Usluge)
 admin.site.register(Frizer)
 admin.site.register(Duznik)
 admin.site.register(Notification)
+
+@admin.register(Usluge)
+class UslugeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'kategorija', 'cena', 'duzina']
+    list_filter = ['kategorija']
+    search_fields = ['name']
+    ordering = ['kategorija', 'name']
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):

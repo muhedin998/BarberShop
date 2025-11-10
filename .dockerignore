@@ -1,0 +1,13 @@
+*.pyc
+__pycache__
+*.sqlite3
+.env
+.git
+.gitignore
+.DS_Store
+*.log
+media/*
+.idea
+.vscode
+migration_backup.json
+*.md

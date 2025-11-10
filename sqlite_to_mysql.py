@@ -34,13 +34,13 @@ def setup_mysql():
     
     commands = [
         "CREATE DATABASE IF NOT EXISTS barbershop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;",
-        "CREATE USER IF NOT EXISTS 'barberuser'@'localhost' IDENTIFIED BY 'barberpass123';", 
-        "GRANT ALL PRIVILEGES ON barbershop.* TO 'barberuser'@'localhost';",
+        "CREATE USER IF NOT EXISTS 'barberuser'@'%' IDENTIFIED BY 'barberpass123';", 
+        "GRANT ALL PRIVILEGES ON barbershop.* TO 'barberuser'@'%';",
         "FLUSH PRIVILEGES;"
     ]
     
     for cmd in commands:
-        result = subprocess.run(['mysql', '-u', 'root', '-h', '127.0.0.1', '-e', cmd], 
+        result = subprocess.run(['docker', 'exec', '-i', 'barbershop_mysql', 'mysql', '-uroot', '-prootpass123', '-e', cmd], 
                               capture_output=True, text=True)
         if result.returncode != 0:
             print(f"❌ MySQL command failed: {cmd}")
