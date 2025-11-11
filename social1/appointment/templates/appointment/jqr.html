@@ -144,24 +144,56 @@
 </div>
 
 <!-- Promo Section "Statistics" -->
-<div class="w3-container w3-row w3-center w3-dark-grey w3-padding-64">
-  <div class="w3-quarter">
-    <span class="w3-xxlarge">20+</span>
-    <br>Godina postojanja
+<div class="w3-container w3-row w3-center w3-dark-grey w3-padding-64" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);">
+  <div class="w3-quarter stats-box">
+    <i class="fa fa-calendar-check w3-text-amber" style="font-size: 48px; margin-bottom: 16px;"></i>
+    <div class="w3-xxlarge w3-text-white" style="font-weight: bold; margin: 8px 0;">{{ stats.years_experience }}+</div>
+    <div class="w3-text-light-grey w3-large">Godina iskustva</div>
   </div>
-  <div class="w3-quarter">
-    <span class="w3-xxlarge">1000+</span>
-    <br>Zadovoljnih klienata
+  <div class="w3-quarter stats-box">
+    <i class="fa fa-users w3-text-blue" style="font-size: 48px; margin-bottom: 16px;"></i>
+    <div class="w3-xxlarge w3-text-white" style="font-weight: bold; margin: 8px 0;">{{ stats.unique_clients }}+</div>
+    <div class="w3-text-light-grey w3-large">Zadovoljnih klijenata</div>
   </div>
-  <div class="w3-quarter">
-    <span class="w3-xxlarge">100+</span>
-    <br>Razlicitih frizura
+  <div class="w3-quarter stats-box">
+    <i class="fa fa-star w3-text-orange" style="font-size: 48px; margin-bottom: 16px;"></i>
+    <div class="w3-xxlarge w3-text-white" style="font-weight: bold; margin: 8px 0;">{{ stats.average_rating|floatformat:1 }}★</div>
+    <div class="w3-text-light-grey w3-large">Prosečna ocena</div>
   </div>
-  <div class="w3-quarter">
-    <span class="w3-xxlarge">3</span>
-    <br>Profesionalca
+  <div class="w3-quarter stats-box">
+    <i class="fa fa-scissors w3-text-green" style="font-size: 48px; margin-bottom: 16px;"></i>
+    <div class="w3-xxlarge w3-text-white" style="font-weight: bold; margin: 8px 0;">{{ stats.total_appointments }}+</div>
+    <div class="w3-text-light-grey w3-large">Završenih termina</div>
   </div>
 </div>
+
+<style>
+.stats-box {
+  padding: 20px;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.stats-box:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.stats-box i {
+  transition: all 0.3s ease;
+}
+
+.stats-box:hover i {
+  transform: scale(1.2) rotate(10deg);
+}
+
+@media (max-width: 768px) {
+  .stats-box {
+    width: 50% !important;
+    margin-bottom: 30px;
+  }
+}
+</style>
 
 <!-- Work Section -->
 <div class="w3-container" style="padding:128px 16px" id="work">

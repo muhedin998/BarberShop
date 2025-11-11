@@ -387,7 +387,7 @@ def zakazi(request):
     
     # Get review data for landing page section
     reviews = Review.objects.filter(is_approved=True).select_related('user')[:6]  # Show latest 6 reviews
-    review_stats = reviews.aggregate(
+    review_stats = Review.objects.filter(is_approved=True).aggregate(
         average_rating=Avg('rating'),
         total_reviews=Count('id')
     )
@@ -396,6 +396,16 @@ def zakazi(request):
         review_stats['average_rating'] = round(review_stats['average_rating'], 1)
     else:
         review_stats['average_rating'] = 0
+    
+    # Calculate dynamic statistics
+    total_appointments = Termin.objects.count()
+    unique_clients = Termin.objects.values('user').distinct().count()
+    total_services = Usluge.objects.count()
+    total_barbers = Frizer.objects.count()
+    
+    # Calculate years of experience (adjust salon_opened_year to your actual opening year)
+    salon_opened_year = 2003
+    years_experience = sada.year - salon_opened_year
     
     context = {
         'viewname': viewname,
@@ -412,6 +422,14 @@ def zakazi(request):
         'min_date': min_date,
         'reviews': reviews,
         'review_stats': review_stats,
+        'stats': {
+            'years_experience': years_experience,
+            'total_appointments': total_appointments,
+            'unique_clients': unique_clients,
+            'total_services': total_services,
+            'total_barbers': total_barbers,
+            'average_rating': review_stats['average_rating'],
+        }
     }
     return render(request, 'appointment/jqr.html', context)
 
