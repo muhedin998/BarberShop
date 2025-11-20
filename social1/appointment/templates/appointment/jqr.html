@@ -282,24 +282,18 @@
   opacity: 1;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .gallery-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
+/* Responsive - uvek 4 slike u redu */
 @media (max-width: 768px) {
   .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
+    padding: 0 8px;
   }
 }
 
 @media (max-width: 480px) {
   .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+    padding: 0 4px;
   }
 }
 </style>
