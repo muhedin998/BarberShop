@@ -290,3 +290,21 @@ class Banner(models.Model):
             start_date__lte=now,
             end_date__gte=now
         ).order_by('-created_at')
+
+
+class GalleryImage(models.Model):
+    image = models.ImageField(upload_to="images/gallery/", verbose_name="Slika")
+    title = models.CharField(max_length=200, blank=True, verbose_name="Naslov")
+    description = models.TextField(max_length=500, blank=True, verbose_name="Opis")
+    order = models.IntegerField(default=0, verbose_name="Redosled prikazivanja")
+    is_active = models.BooleanField(default=True, verbose_name="Aktivan")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', '-created_at']
+        verbose_name = "Slika iz galerije"
+        verbose_name_plural = "Slike iz galerije"
+    
+    def __str__(self):
+        return self.title if self.title else f"Slika {self.id}"

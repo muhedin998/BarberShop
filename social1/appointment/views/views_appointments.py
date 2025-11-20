@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from ..forms import TestForm
 from django.contrib import messages
 from datetime import datetime, time, timedelta
-from ..models import Usluge, Frizer, Termin, Notification, Review
+from ..models import Usluge, Frizer, Termin, Notification, Review, GalleryImage
 from django.core.serializers import serialize
 import json
 from django.core.mail import EmailMessage
@@ -422,6 +422,7 @@ def zakazi(request):
         'min_date': min_date,
         'reviews': reviews,
         'review_stats': review_stats,
+        'gallery_images': GalleryImage.objects.filter(is_active=True),
         'stats': {
             'years_experience': years_experience,
             'total_appointments': total_appointments,

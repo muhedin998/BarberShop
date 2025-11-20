@@ -198,47 +198,147 @@
 <!-- Work Section -->
 <div class="w3-container" style="padding:128px 16px" id="work">
   <h3 class="w3-center"> NAŠE KREACIJE</h3>
-  <p class="w3-center w3-large">Pogleadajte šta mi možemo napraviti</p>
+  <p class="w3-center w3-large">Pogledajte šta mi možemo napraviti</p>
 
-  <div class="w3-row-padding" style="margin-top:64px">
-    <div class="w3-col l3 m6">
-      <img src="{% static 'images/pocetni1.jpg' %}" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity">
-    </div>
-    <div class="w3-col l3 m6">
-      <img src="{% static 'images/pocetni2.jpg' %}" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity" >
-    </div>
-    <div class="w3-col l3 m6">
-      <img src="{% static 'images/pocetni3.jpg' %}" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity" >
-    </div>
-    <div class="w3-col l3 m6">
-      <img src="{% static 'images/pocetni4.jpg' %}" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity">
-    </div>
+  {% if user.is_superuser %}
+  <div class="w3-center" style="margin-top: 32px; margin-bottom: 32px;">
+    <a href="/admin/appointment/galleryimage/add/" class="w3-button w3-green w3-round" target="_blank">
+      <i class="fa fa-plus"></i> Dodaj novu sliku
+    </a>
+    <a href="/admin/appointment/galleryimage/" class="w3-button w3-blue w3-round" target="_blank">
+      <i class="fa fa-edit"></i> Upravljaj slikama
+    </a>
   </div>
+  {% endif %}
 
-  <!-- <div class="w3-row-padding w3-section">
-    <div class="w3-col l3 m6">
-      <img src="/w3images/tech_tablet.jpg" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity" alt="A tablet">
-    </div>
-    <div class="w3-col l3 m6">
-      <img src="/w3images/tech_camera.jpg" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity" alt="A camera">
-    </div>
-    <div class="w3-col l3 m6">
-      <img src="/w3images/tech_typewriter.jpg" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity" alt="A typewriter">
-    </div>
-    <div class="w3-col l3 m6">
-      <img src="/w3images/tech_tableturner.jpg" style="width:100%" onclick="onClick(this)" class="w3-hover-opacity" alt="A tableturner">
-    </div>
-  </div> -->
+  <div class="gallery-grid" style="margin-top:64px">
+    {% if gallery_images %}
+      {% for image in gallery_images %}
+      <div class="gallery-item">
+        <img src="{{ image.image.url }}" alt="{{ image.title }}" onclick="openGalleryModal(this)" class="w3-hover-opacity">
+        {% if user.is_superuser %}
+        <div class="admin-controls">
+          <a href="/admin/appointment/galleryimage/{{ image.id }}/change/" target="_blank" class="w3-button w3-tiny w3-blue">
+            <i class="fa fa-edit"></i>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <!-- Fallback to static images if no gallery images exist -->
+      <div class="gallery-item">
+        <img src="{% static 'images/pocetni1.jpg' %}" onclick="openGalleryModal(this)" class="w3-hover-opacity">
+      </div>
+      <div class="gallery-item">
+        <img src="{% static 'images/pocetni2.jpg' %}" onclick="openGalleryModal(this)" class="w3-hover-opacity">
+      </div>
+      <div class="gallery-item">
+        <img src="{% static 'images/pocetni3.jpg' %}" onclick="openGalleryModal(this)" class="w3-hover-opacity">
+      </div>
+      <div class="gallery-item">
+        <img src="{% static 'images/pocetni4.jpg' %}" onclick="openGalleryModal(this)" class="w3-hover-opacity">
+      </div>
+    {% endif %}
+  </div>
 </div>
 
+<style>
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  aspect-ratio: 1;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.admin-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .admin-controls {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+</style>
+
 <!-- Modal for full size images on click-->
-<div id="modal01" class="w3-modal w3-black" onclick="this.style.display='none'">
-  <span class="w3-button w3-xxlarge w3-black w3-padding-large w3-display-topright" title="Close Modal Image">×</span>
+<div id="modal01" class="w3-modal w3-black" onclick="closeGalleryModal()">
+  <span class="w3-button w3-xxlarge w3-black w3-padding-large w3-display-topright" title="Close Modal Image" onclick="closeGalleryModal()">×</span>
   <div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64">
-    <img id="img01" class="w3-image">
+    <img id="img01" class="w3-image" style="max-width: 90%; max-height: 90vh;">
     <p id="caption" class="w3-opacity w3-large"></p>
   </div>
 </div>
+
+<script>
+// Gallery modal functions
+function openGalleryModal(element) {
+  document.getElementById("modal01").style.display = "block";
+  var img = document.getElementById("img01");
+  var captionText = document.getElementById("caption");
+  img.src = element.src;
+  captionText.innerHTML = element.alt || "";
+}
+
+function closeGalleryModal() {
+  document.getElementById("modal01").style.display = "none";
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === "Escape") {
+    closeGalleryModal();
+  }
+});
+
+// Legacy onClick function for backward compatibility
+function onClick(element) {
+  openGalleryModal(element);
+}
+</script>
 
 <!-- Skills Section -->
 <div class="w3-container w3-light-grey w3-padding-64">
