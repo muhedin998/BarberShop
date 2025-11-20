@@ -194,7 +194,11 @@
                     </div>
                 </div>
                 <label><br>Izaberite datum: </label><br>
-                <input required style=" padding: 20 5; width: 100%; margin-bottom: 4px;" class="w3-select" type="date" name="datum" id="datum" min="{{ min_date }}" max="{{ max_date }}" style="border: none; "><br>
+                <div class="date-picker-wrapper">
+                    <input required class="form-control date-picker-input" type="text" name="datum" id="datum" readonly placeholder="Kliknite za izbor datuma">
+                    <i class="fa fa-calendar date-picker-icon"></i>
+                </div>
+                <input type="hidden" id="datum-hidden" name="datum-value">
                 <small class="text-muted">Možete zakazati termin maksimalno 30 dana unapred</small><br><br>
                 
                 
@@ -270,23 +274,241 @@
 <br><br><br>
 
 <script>
-    const picker = document.getElementById('datum');
-    picker.addEventListener('input', function(e){
-        var day = new Date(this.value).getUTCDay();
-        if([5].includes(day)){
-            e.preventDefault();
-            picker.value = getNextMonday(this.value).toISOString().substring(0,10);
-            alert('Petkom ne radimo ! \n');
+    // Custom Date Picker functionality
+    let currentDate = new Date();
+    let selectedDate = null;
+    
+    // Create proper date boundaries
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+    
+    const minDate = new Date(today);
+    
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 30); // 30 days from today
+    
+    function initDatePicker() {
+        const dateInput = document.getElementById('datum');
+        const datePickerWrapper = document.querySelector('.date-picker-wrapper');
+        
+        dateInput.addEventListener('click', function() {
+            showCalendar();
+        });
+        
+        // Set initial value if exists
+        if (dateInput.value) {
+            selectedDate = new Date(dateInput.value);
         }
-    });
-
-    function getNextMonday(value) {
-        date = new Date(value)
-        const dateCopy = new Date(date.getTime());
-
-        const nextMonday = new Date(dateCopy.setDate(dateCopy.getDate() + 1));
-        return nextMonday;
     }
+    
+    function showCalendar() {
+        // Remove any existing calendar
+        const existingCalendar = document.getElementById('custom-calendar');
+        if (existingCalendar) {
+            existingCalendar.remove();
+            const existingBackdrop = document.getElementById('calendar-backdrop');
+            if (existingBackdrop) existingBackdrop.remove();
+            return;
+        }
+        
+        // Create backdrop
+        const backdrop = document.createElement('div');
+        backdrop.id = 'calendar-backdrop';
+        backdrop.className = 'calendar-backdrop';
+        backdrop.onclick = () => {
+            const calendar = document.getElementById('custom-calendar');
+            if (calendar) calendar.remove();
+            backdrop.remove();
+        };
+        document.body.appendChild(backdrop);
+        
+        const calendar = document.createElement('div');
+        calendar.id = 'custom-calendar';
+        calendar.className = 'custom-calendar';
+        
+        // Calendar header
+        const header = document.createElement('div');
+        header.className = 'calendar-header';
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.className = 'calendar-nav-btn';
+        prevBtn.innerHTML = '<i class="fa fa-chevron-left"></i>';
+        prevBtn.onclick = () => changeMonth(-1);
+        
+        const monthYear = document.createElement('div');
+        monthYear.className = 'calendar-month-year';
+        monthYear.textContent = formatMonthYear(currentDate);
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = 'calendar-nav-btn';
+        nextBtn.innerHTML = '<i class="fa fa-chevron-right"></i>';
+        nextBtn.onclick = () => changeMonth(1);
+        
+        header.appendChild(prevBtn);
+        header.appendChild(monthYear);
+        header.appendChild(nextBtn);
+        
+        // Weekday headers
+        const weekdays = document.createElement('div');
+        weekdays.className = 'calendar-weekdays';
+        ['Ned', 'Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub'].forEach(day => {
+            const dayEl = document.createElement('div');
+            dayEl.className = 'calendar-weekday';
+            dayEl.textContent = day;
+            weekdays.appendChild(dayEl);
+        });
+        
+        // Days grid
+        const daysGrid = document.createElement('div');
+        daysGrid.className = 'calendar-days';
+        renderDays(daysGrid);
+        
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'calendar-close-btn';
+        closeBtn.innerHTML = '<i class="fa fa-times"></i> Zatvori';
+        closeBtn.onclick = () => {
+            calendar.remove();
+            const backdrop = document.getElementById('calendar-backdrop');
+            if (backdrop) backdrop.remove();
+        };
+        
+        calendar.appendChild(header);
+        calendar.appendChild(weekdays);
+        calendar.appendChild(daysGrid);
+        calendar.appendChild(closeBtn);
+        
+        document.body.appendChild(calendar);
+        
+        // Close on backdrop click
+        setTimeout(() => {
+            document.addEventListener('click', closeCalendarOnOutsideClick);
+        }, 100);
+    }
+    
+    function closeCalendarOnOutsideClick(e) {
+        const calendar = document.getElementById('custom-calendar');
+        const dateInput = document.getElementById('datum');
+        
+        if (calendar && !calendar.contains(e.target) && e.target !== dateInput) {
+            calendar.remove();
+            document.removeEventListener('click', closeCalendarOnOutsideClick);
+        }
+    }
+    
+    function formatMonthYear(date) {
+        const months = ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun', 
+                       'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
+        return `${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+    
+    function renderDays(container) {
+        container.innerHTML = '';
+        
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        
+        // Add empty cells for days before first day of month
+        const startDay = firstDay.getDay();
+        for (let i = 0; i < startDay; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day empty';
+            container.appendChild(emptyDay);
+        }
+        
+        // Add days
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const dayEl = document.createElement('div');
+            dayEl.className = 'calendar-day';
+            dayEl.textContent = day;
+            
+            const dayDate = new Date(year, month, day);
+            dayDate.setHours(0, 0, 0, 0); // Reset time for accurate comparison
+            const dayOfWeek = dayDate.getDay();
+            
+            // Disable Fridays (day 5)
+            if (dayOfWeek === 5) {
+                dayEl.classList.add('disabled');
+                dayEl.title = 'Petkom ne radimo';
+            }
+            // Disable dates in the past
+            else if (dayDate < minDate) {
+                dayEl.classList.add('disabled');
+                dayEl.title = 'Datum je u prošlosti';
+            }
+            // Disable dates more than 30 days in the future
+            else if (dayDate > maxDate) {
+                dayEl.classList.add('disabled');
+                dayEl.title = 'Možete zakazati maksimalno 30 dana unapred';
+            }
+            // Check if date is selected
+            else if (selectedDate && dayDate.toDateString() === selectedDate.toDateString()) {
+                dayEl.classList.add('selected');
+            }
+            // Check if date is today
+            else if (dayDate.toDateString() === new Date().toDateString()) {
+                dayEl.classList.add('today');
+            }
+            
+            if (!dayEl.classList.contains('disabled')) {
+                dayEl.onclick = () => selectDate(dayDate);
+            }
+            
+            container.appendChild(dayEl);
+        }
+    }
+    
+    function changeMonth(delta) {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1);
+        
+        const calendar = document.getElementById('custom-calendar');
+        if (calendar) {
+            const monthYear = calendar.querySelector('.calendar-month-year');
+            monthYear.textContent = formatMonthYear(currentDate);
+            
+            const daysGrid = calendar.querySelector('.calendar-days');
+            renderDays(daysGrid);
+        }
+    }
+    
+    function selectDate(date) {
+        selectedDate = date;
+        
+        // Format date as YYYY-MM-DD for form submission (without timezone issues)
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        
+        // Update input display
+        const dateInput = document.getElementById('datum');
+        dateInput.value = formattedDate;
+        
+        // Close calendar and backdrop
+        const calendar = document.getElementById('custom-calendar');
+        if (calendar) {
+            calendar.remove();
+        }
+        const backdrop = document.getElementById('calendar-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        
+        // Trigger change event
+        const event = new Event('input', { bubbles: true });
+        dateInput.dispatchEvent(event);
+    }
+    
+    // Initialize date picker on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initDatePicker();
+    });
 
     let dodatneUslugeCount = 0;
     const MAX_DODATNE_USLUGE = 3;
@@ -1241,8 +1463,264 @@
         border: 2px dashed rgba(40, 167, 69, 0.2);
     }
 
+    /* Custom Date Picker Styles */
+    .date-picker-wrapper {
+        position: relative;
+        width: 100%;
+        margin-bottom: 4px;
+    }
+    
+    .date-picker-input {
+        width: 100% !important;
+        padding: 20px 50px 20px 20px !important;
+        font-size: 1.1em !important;
+        border: 1px solid #ddd !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        background: white !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        transition: all 0.3s ease !important;
+        min-height: 56px !important;
+    }
+    
+    .date-picker-input:hover {
+        border-color: #007bff !important;
+        box-shadow: 0 4px 8px rgba(0,123,255,0.15) !important;
+    }
+    
+    .date-picker-input:focus {
+        outline: none !important;
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.25) !important;
+    }
+    
+    .date-picker-icon {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        font-size: 1.3em;
+        pointer-events: none;
+    }
+    
+    .calendar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .custom-calendar {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        z-index: 10000;
+        width: 90vw;
+        max-width: 420px;
+        padding: 20px;
+        animation: calendarSlideIn 0.3s ease;
+    }
+    
+    @keyframes calendarSlideIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -45%);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+    
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 10px 0;
+    }
+    
+    .calendar-nav-btn {
+        background: #f0f0f0;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        color: #333;
+        font-size: 1.1em;
+    }
+    
+    .calendar-nav-btn:hover {
+        background: #007bff;
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .calendar-month-year {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: #333;
+    }
+    
+    .calendar-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    
+    .calendar-weekday {
+        text-align: center;
+        font-weight: 600;
+        color: #666;
+        font-size: 0.85em;
+        padding: 6px 2px;
+    }
+    
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        margin-bottom: 20px;
+    }
+    
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        background: #f8f9fa;
+        color: #333;
+        min-height: 40px;
+        overflow: hidden;
+        font-size: 0.95em;
+        padding: 4px;
+        box-sizing: border-box;
+    }
+    
+    .calendar-day:hover:not(.disabled):not(.empty) {
+        background: #007bff;
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .calendar-day.today {
+        border: 2px solid #007bff;
+        font-weight: 700;
+    }
+    
+    .calendar-day.selected {
+        background: #28a745;
+        color: white;
+        font-weight: 700;
+    }
+    
+    .calendar-day.disabled {
+        background: #e9ecef;
+        color: #adb5bd;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+    
+    .calendar-day.empty {
+        background: transparent;
+        cursor: default;
+    }
+    
+    .calendar-close-btn {
+        width: 100%;
+        padding: 12px;
+        background: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.05em;
+    }
+    
+    .calendar-close-btn:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
     /* Mobile responsive - Make everything BIGGER for touch */
     @media (max-width: 768px) {
+        /* Date picker input bigger on mobile */
+        .date-picker-input {
+            font-size: 1.2em !important;
+            padding: 22px 60px 22px 22px !important;
+            min-height: 68px !important;
+        }
+        
+        .date-picker-icon {
+            font-size: 1.5em;
+            right: 22px;
+        }
+        
+        /* Calendar takes full width on mobile */
+        .custom-calendar {
+            width: 95vw;
+            max-width: 95vw;
+            padding: 20px 16px;
+        }
+        
+        .calendar-month-year {
+            font-size: 1.3em;
+        }
+        
+        .calendar-nav-btn {
+            width: 45px;
+            height: 45px;
+            font-size: 1.2em;
+        }
+        
+        .calendar-weekday {
+            font-size: 0.8em;
+            padding: 6px 0;
+        }
+        
+        .calendar-days {
+            gap: 8px;
+        }
+        
+        .calendar-day {
+            font-size: 1em;
+            font-weight: 600;
+            min-height: 44px;
+            padding: 6px;
+        }
+        
+        .calendar-close-btn {
+            padding: 16px;
+            font-size: 1.2em;
+        }
+        
         .loyalty-badge {
             font-size: 1.8rem;
             padding: 2rem 2rem;
