@@ -101,9 +101,10 @@ def potvrdi(request):
     
     # Calculate loyalty message for second step
     try:
-        current_appointments = Termin.objects.filter(user=request.user).count()
+        # Use loyalty counter instead of counting all appointments
+        current_appointments = request.user.loyalty_appointment_count
         next_appointment_number = current_appointments + 1
-        
+
         # Calculate appointments remaining until next free appointment
         # Free appointments are: 15th, 30th, 45th, etc.
         if next_appointment_number % 15 == 0 and next_appointment_number > 0:
@@ -278,9 +279,10 @@ def termin(request):
     is_next_free = False
 
     try:
-        current_appointments = Termin.objects.filter(user=request.user).count()
+        # Use loyalty counter instead of counting all appointments
+        current_appointments = request.user.loyalty_appointment_count
         next_appointment_number = current_appointments + 1
-        
+
         # Calculate appointments remaining until next free appointment
         # Free appointments are: 15th, 30th, 45th, etc.
         if next_appointment_number % 15 == 0 and next_appointment_number > 0:
@@ -293,7 +295,7 @@ def termin(request):
                 is_next_free = f"⭐ Još samo 1 termin do besplatnog! (trenutno imate {current_appointments} termina)"
             else:
                 is_next_free = f"📊 Još {appointments_until_free} termina do besplatnog! (trenutno imate {current_appointments} termina)"
-            
+
         termin_counter = next_appointment_number
     except Exception as e:
         termin_counter = 0

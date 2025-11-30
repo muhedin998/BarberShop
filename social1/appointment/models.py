@@ -9,6 +9,7 @@ class Korisnik(AbstractUser):
     is_email_verified = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
     dugovanje = models.IntegerField(default=0)
+    loyalty_appointment_count = models.IntegerField(default=0, help_text="Number of appointments counted toward loyalty program (every 15th is free)")
 
     def __str__(self):
         return f"{self.username} - {self.dugovanje}"
@@ -169,19 +170,30 @@ class Termin(models.Model):
         return services
 
     def save(self, *args, **kwargs):
+        from django.db import transaction
+
+        is_new = self.pk is None
+
         if self.cena_termina is None:
             self.cena_termina = self.calculate_total_price()
 
             # Apply free appointment logic (every 15th appointment)
-            if self.user and not self.user.is_superuser:
-                # Count *existing* appointments (excluding the one we're about to save)
-                previous_appointments = Termin.objects.filter(user=self.user).count()
+            if self.user and not self.user.is_superuser and is_new:
+                # Use loyalty counter instead of counting all appointments
+                with transaction.atomic():
+                    # Lock the user row to prevent race conditions
+                    user = Korisnik.objects.select_for_update().get(pk=self.user.pk)
 
-                # This one will be the (previous + 1)th
-                next_number = previous_appointments + 1
+                    # Increment loyalty counter
+                    user.loyalty_appointment_count += 1
+                    next_number = user.loyalty_appointment_count
 
-                if next_number % 15 == 0:
-                    self.cena_termina = 0
+                    # Check if this is a free appointment
+                    if next_number % 15 == 0:
+                        self.cena_termina = 0
+
+                    # Save user with updated counter
+                    user.save(update_fields=['loyalty_appointment_count'])
 
         super().save(*args, **kwargs)
 
