@@ -70,7 +70,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Application definition
 
 # Use localhost for development, production site for deployed environment
-SITE_ID = 8 #8 for MySQL, was 5 for SQLite
+# 5 for SQLite, 8 for MySQL
+SITE_ID = 5 if os.environ.get('USE_SQLITE') == '1' else 8
 
 # Site URL for ngrok/development (set this when using ngrok)
 # Example: SITE_URL = 'https://abc123.ngrok-free.app'
