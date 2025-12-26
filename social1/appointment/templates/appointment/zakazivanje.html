@@ -249,8 +249,36 @@
             </div>
             {% endif %}
             
-            <label>Izaberite termin: </label><br>
-            {{ form.vreme }}
+            <label>Izaberite termin: </label>
+
+            <!-- Hidden select for form submission and JavaScript filtering -->
+            <div style="display: none;">
+                {{ form.vreme }}
+            </div>
+
+            <!-- Custom Dropdown Trigger -->
+            <div class="custom-select-container">
+                <div class="custom-select-trigger" id="time-trigger" onclick="toggleTimeDropdown()">
+                    <span id="time-selected">Kliknite za izbor termina...</span>
+                    <div class="custom-select-arrow">
+                        <i class="fa fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="custom-select-backdrop" id="time-backdrop" onclick="closeTimeDropdown()"></div>
+                <div class="custom-select-dropdown time-dropdown" id="time-dropdown">
+                    <div class="dropdown-header">
+                        <h4 class="dropdown-title">Izaberite termin</h4>
+                        <button class="dropdown-close" onclick="closeTimeDropdown()" type="button">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <!-- Modern grid display for time slots -->
+                    <div class="time-slots-grid" id="time-slots-grid">
+                        <!-- Time slots will be populated here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
             <label class="mt-2">Ostavite poruku: <span style="opacity: 0.5;">(opciono)</span></label><br>
             
             {{ form.poruka }}
@@ -959,6 +987,7 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeAllDropdowns();
+            closeTimeDropdown();
         }
     });
 
@@ -1045,7 +1074,145 @@
                 }
             });
         }
+
+        // Initialize time slots grid with delay to ensure base.html script runs first
+        setTimeout(function() {
+            initializeTimeGrid();
+        }, 100);
     });
+
+    // Time Grid Functions
+    function initializeTimeGrid() {
+        const selectElement = document.getElementById('id_vreme');
+        const gridContainer = document.getElementById('time-slots-grid');
+
+        if (!selectElement || !gridContainer) {
+            return;
+        }
+
+        // Initial population
+        populateTimeGrid();
+
+        // Set up observer to watch for changes in the select (when slots are filtered)
+        const observer = new MutationObserver(function(mutations) {
+            populateTimeGrid();
+        });
+
+        observer.observe(selectElement, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    function populateTimeGrid() {
+        const selectElement = document.getElementById('id_vreme');
+        const gridContainer = document.getElementById('time-slots-grid');
+
+        if (!selectElement || !gridContainer) return;
+
+        // Clear existing grid items
+        gridContainer.innerHTML = '';
+
+        // Get all available options (that weren't filtered out)
+        const options = Array.from(selectElement.options).filter(opt => opt.value);
+
+        if (options.length === 0) {
+            gridContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #666;">Učitavanje dostupnih termina...</div>';
+
+            // Try again after a delay in case the filtering hasn't finished
+            setTimeout(function() {
+                const retryOptions = Array.from(selectElement.options).filter(opt => opt.value);
+                if (retryOptions.length === 0) {
+                    gridContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #666;">Nema dostupnih termina</div>';
+                } else {
+                    populateTimeGrid();
+                }
+            }, 500);
+            return;
+        }
+
+        // Create grid items for each available time slot
+        options.forEach(option => {
+            const timeSlot = document.createElement('div');
+            timeSlot.className = 'time-slot-item';
+            timeSlot.textContent = option.text;
+            timeSlot.dataset.value = option.value;
+
+            // Add click handler
+            timeSlot.addEventListener('click', function() {
+                selectTimeSlot(this);
+            });
+
+            gridContainer.appendChild(timeSlot);
+        });
+    }
+
+    function selectTimeSlot(slotElement) {
+        // Remove selection from all slots
+        document.querySelectorAll('.time-slot-item').forEach(slot => {
+            slot.classList.remove('selected');
+        });
+
+        // Add selection to clicked slot
+        slotElement.classList.add('selected');
+
+        // Update hidden select element
+        const selectElement = document.getElementById('id_vreme');
+        const selectedValue = slotElement.dataset.value;
+        selectElement.value = selectedValue;
+
+        // Update trigger text
+        const triggerText = document.getElementById('time-selected');
+        triggerText.textContent = slotElement.textContent;
+        triggerText.classList.add('selected');
+
+        // Close dropdown
+        closeTimeDropdown();
+    }
+
+    // Time Dropdown Toggle Functions
+    function toggleTimeDropdown() {
+        const dropdown = document.getElementById('time-dropdown');
+        const backdrop = document.getElementById('time-backdrop');
+        const trigger = document.getElementById('time-trigger');
+        const arrow = trigger.querySelector('.custom-select-arrow i');
+
+        if (dropdown.classList.contains('open')) {
+            closeTimeDropdown();
+        } else {
+            openTimeDropdown();
+        }
+    }
+
+    function openTimeDropdown() {
+        const dropdown = document.getElementById('time-dropdown');
+        const backdrop = document.getElementById('time-backdrop');
+        const trigger = document.getElementById('time-trigger');
+        const arrow = trigger.querySelector('.custom-select-arrow i');
+
+        dropdown.classList.add('open');
+        backdrop.classList.add('active');
+        arrow.classList.remove('fa-chevron-down');
+        arrow.classList.add('fa-chevron-up');
+
+        // Disable body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTimeDropdown() {
+        const dropdown = document.getElementById('time-dropdown');
+        const backdrop = document.getElementById('time-backdrop');
+        const trigger = document.getElementById('time-trigger');
+        const arrow = trigger.querySelector('.custom-select-arrow i');
+
+        dropdown.classList.remove('open');
+        backdrop.classList.remove('active');
+        arrow.classList.remove('fa-chevron-up');
+        arrow.classList.add('fa-chevron-down');
+
+        // Re-enable body scroll
+        document.body.style.overflow = '';
+    }
 
 </script>
 
@@ -1669,6 +1836,137 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
+    /* Time Dropdown Styling */
+    .time-dropdown {
+        max-height: 85vh !important;
+        height: auto !important;
+    }
+
+    .time-dropdown .dropdown-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #f8f9fa;
+    }
+
+    .time-slots-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        padding: 16px;
+        background: white;
+        max-height: calc(80vh - 80px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    /* Custom scrollbar styling */
+    .time-slots-grid::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .time-slots-grid::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+        margin: 8px 0;
+    }
+
+    .time-slots-grid::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        transition: background 0.3s ease;
+    }
+
+    .time-slots-grid::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+
+    .time-slot-item {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 1em;
+        color: #495057;
+        position: relative;
+        overflow: hidden;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .time-slot-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .time-slot-item:hover::before {
+        opacity: 1;
+    }
+
+    .time-slot-item:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.25);
+    }
+
+    .time-slot-item.selected {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        animation: pulse-selected 1s ease;
+    }
+
+    @keyframes pulse-selected {
+        0%, 100% {
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        50% {
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+    }
+
+    .time-slot-item.selected::before {
+        opacity: 0;
+    }
+
+    .time-slot-item.selected::after {
+        content: '\f00c';
+        font-family: FontAwesome;
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        font-size: 0.8em;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #time-selected.selected {
+        color: #333;
+        font-weight: 600;
+    }
+
     /* Mobile responsive - Make everything BIGGER for touch */
     @media (max-width: 768px) {
         /* Date picker input bigger on mobile */
@@ -1806,6 +2104,38 @@
         #dodaj-uslugu-section {
             margin: 25px 0 !important;
             padding: 20px !important;
+        }
+
+        /* Time slots grid - mobile optimized */
+        .time-slots-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 12px;
+            max-height: calc(75vh - 80px);
+        }
+
+        /* Larger scrollbar for mobile */
+        .time-slots-grid::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .time-slot-item {
+            font-size: 1.1em;
+            padding: 14px 8px;
+            min-height: 60px;
+            font-weight: 700;
+        }
+
+        .time-slot-item.selected::after {
+            width: 26px;
+            height: 26px;
+            font-size: 0.9em;
+            top: 5px;
+            right: 5px;
+        }
+
+        .time-dropdown {
+            max-height: 80vh !important;
         }
     }
 </style>
