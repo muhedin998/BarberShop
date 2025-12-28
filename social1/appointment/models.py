@@ -196,6 +196,22 @@ class Termin(models.Model):
                     user.save(update_fields=['loyalty_appointment_count'])
 
         super().save(*args, **kwargs)
+    
+    def delete(self, *args, **kwargs):
+        from django.db import transaction
+        
+        # Decrement loyalty counter when appointment is cancelled
+        if self.user and not self.user.is_superuser:
+            with transaction.atomic():
+                # Lock the user row to prevent race conditions
+                user = Korisnik.objects.select_for_update().get(pk=self.user.pk)
+                
+                # Only decrement if counter is greater than 0
+                if user.loyalty_appointment_count > 0:
+                    user.loyalty_appointment_count -= 1
+                    user.save(update_fields=['loyalty_appointment_count'])
+        
+        super().delete(*args, **kwargs)
 
     class Meta:
         unique_together = ['datum','vreme','frizer']
