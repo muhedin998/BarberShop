@@ -104,7 +104,7 @@
     </a>
     <a class="nav-item {% if request.path == '/notifications-page/' %}active{% endif %}"
        id="notifications-page"
-       href="{% url 'notifications_page' %}">
+       href="{% if user.is_authenticated %}{% url 'notifications_page' %}{% else %}{% url 'user_login' %}{% endif %}">
         <div class="notification-icon-container">
             <i class="fa fa-bell"></i>
             {% if unread_notification_count > 0 %}
@@ -114,12 +114,14 @@
         <span>Obaveštenja</span>
     </a>
 
-    <a class="nav-item {% if request.path == '/opcije_termini/' %}active{% endif %}" href="{% url 'opcije_termini' %}" id="opcije_termini">
+    <a class="nav-item {% if request.path == '/opcije_termini/' %}active{% endif %}"
+       href="{% if user.is_authenticated %}{% url 'opcije_termini' %}{% else %}{% url 'user_login' %}{% endif %}"
+       id="opcije_termini">
         <i class="fa fa-calendar"></i>
         <span>Termini</span>
     </a>
     <a class="nav-item {% if request.path == '/profile-page/' %}active{% endif %}"
-       href="{% url 'profile_page' %}"
+       href="{% if user.is_authenticated %}{% url 'profile_page' %}{% else %}{% url 'user_login' %}{% endif %}"
        id="profile-page">
         <i class="fa fa-user"></i>
         <span>Profil</span>
